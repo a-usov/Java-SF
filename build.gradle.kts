@@ -7,6 +7,7 @@ plugins {
     checkstyle
     pmd
     id("de.undercouch.download") version "4.0.0"
+    antlr
 }
 
 repositories {
@@ -16,6 +17,7 @@ repositories {
 dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.3.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.3.1")
+    antlr("org.antlr:antlr4:4.5")
 }
 
 application {
@@ -44,10 +46,25 @@ tasks {
     "checkstyleMain" {
         dependsOn("download-google-style")
     }
+
+    spotbugsMain {
+        reports.xml.isEnabled = false
+        reports.html.isEnabled = true
+    }
+
+    generateGrammarSource {
+        arguments = arguments + listOf("-visitor", "-no-listener")
+    }
 }
 
 checkstyle {
     toolVersion = "8.24"
+}
+
+tasks.withType<Checkstyle> {
+    exclude("**jsf/jsfVisitor.java**", "**jsf/jsfParser.java**", "**jsf/jsfBaseVisitor.java**", "**jsf/jsfLexer.java**")
+    ignoreFailures = false
+    maxWarnings = 0
 }
 
 pmd {
@@ -56,4 +73,5 @@ pmd {
 
 spotbugs {
     effort = "max"
+    excludeFilter = File("config/spotbugs/excludefilter.xml")
 }
