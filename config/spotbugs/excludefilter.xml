@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<FindBugsFilter>
+    <Match>
+        <Class name="jsf.jsfBaseVisitor" />
+    </Match>
+    <Match>
+        <Class name="jsf.jsfVisitor" />
+    </Match>
+    <Match>
+        <Class name="jsf.jsfLexer" />
+    </Match>
+    <Match>
+        <Class name="jsf.jsfParser" />
+    </Match>
+    <Match>
+        <Class name="jsf.jsfParser$ProgramContext" />
+    </Match>
+</FindBugsFilter>

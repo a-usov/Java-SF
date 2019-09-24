@@ -21,5 +21,11 @@
     <rule ref="category/java/multithreading.xml"/>
     <rule ref="category/java/performance.xml"/>
     <rule ref="category/java/security.xml"/>
-    
+
+    <exclude-pattern>.*jsfBaseVisitor.*</exclude-pattern>
+    <exclude-pattern>.*jsfLexer.*</exclude-pattern>
+    <exclude-pattern>.*jsfVisitor.*</exclude-pattern>
+    <exclude-pattern>.*jsfParser.*</exclude-pattern>
+
+
 </ruleset>
