@@ -1,0 +1,31 @@
+name: Compile Dissertation
+
+on: [push]
+
+jobs:
+  build:
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - uses: actions/checkout@v1
+    - name: Compile LaTeX document
+      uses: xu-cheng/latex-action@master
+      continue-on-error: true
+      with:
+        root_file: l4proj.tex
+        args: "-pdf -file-line-error -interaction=nonstopmode -f"
+        compiler: latexmk
+        working_directory: ./dissertation/
+    - name: Backup Latex compile
+      uses: xu-cheng/latex-action@master
+      with:
+        root_file: l4proj.tex
+        args: "-pdf -file-line-error -interaction=nonstopmode -f"
+        compiler: latexmk
+        working_directory: ./dissertation/
+    - uses: actions/upload-artifact@master
+      if: success()
+      with:
+        name: dissertation
+        path: ./dissertation/l4proj.pdf
