@@ -27,4 +27,5 @@
 ## Week 2
 
 ### 30 Sep 2019 Mon
+* *4 hours* Finish initial JSF grammar, start on contextual analysis, designing a good design pattern.
 
