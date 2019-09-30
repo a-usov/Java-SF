@@ -5,9 +5,9 @@ package jsf;
 }
 
 program
-        :       CLASS classlbl=ID (EXTEND extendlbl=ID)? LBRAC
-                    fielddecl+ constructordecl
-                RBRAC EOF
+        :       (CLASS classlbl=ID (EXTEND extendlbl=ID)? LBRAC
+                    fielddecl* constructordecl methoddecl*
+                RBRAC)* expression EOF
         ;
 
 fielddecl
@@ -15,12 +15,22 @@ fielddecl
         ;
 
 constructordecl
-        :       ID LPAR objecttype ID (COMMA objecttype ID)* RPAR LBRAC
+        :       ID LPAR (objecttype ID (COMMA objecttype ID)*)? RPAR LBRAC
                     SUPER LPAR (ID (COMMA ID)*)? RPAR SEMI
                     (THIS DOT ID EQ ID SEMI)*
                 RBRAC
         ;
 
+methoddecl
+        :       objecttype ID LPAR (objecttype ID)? RPAR LBRAC
+                    RETURN expression SEMI
+                RBRAC
+        ;
+
+expression
+        :       NUMBER | ID | expression DOT ID | expression DOT ID LPAR expression RPAR | NEW objecttype LPAR (expression (COMMA expression)*)? RPAR
+                | expression PLUS expression
+        ;
 
 objecttype
         :       EMPTY | basictype | ID
@@ -46,17 +56,21 @@ NOT     :       'not'                       ;
 EXTEND  :       'extends'                   ;
 THIS    :       'this'                      ;
 DOT     :       '.'                         ;
+RETURN  :       'return'                    ;
+NEW     :       'new'                       ;
 
 SEMI    :       ';'                         ;
 LPAR    :       '('                         ;
 RPAR    :       ')'                         ;
 LBRAC   :       '{'                         ;
 RBRAC   :       '}'                         ;
+PLUS    :       '+'                         ;
 
 
 COMMA   :       ','                         ;
 
 ID      :       LETTER (LETTER | DIGIT)*    ;
+NUMBER  :       DIGIT (DIGIT)*              ;
 SPACE   :       (' ' | '\t')+   -> skip     ;
 EOL     :       '\r'? '\n'      -> skip     ;
 EMPTY   :       'EMPTY'                     ;

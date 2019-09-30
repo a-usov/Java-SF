@@ -1,0 +1,14 @@
+class asd {
+
+    int a;
+
+    asd() {
+        super();
+    }
+
+    int b() {
+        return new asd().a(a) + 2;
+    }
+}
+
+a
