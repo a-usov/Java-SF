@@ -7,9 +7,11 @@
 
 ## Research completed
 
-Read main journal in the project, "Semantic Subtyping for Objects and Classes". 
-Started on reading "Featherweight Java paper".
-Found example of creating a [JVM Language](https://github.com/JakubDziworski/Enkel-JVM-language) using antlr to use as initial guidance. 
+Was completing summer internship so had limited time.
+
+* Read main journal in the project, "Semantic Subtyping for Objects and Classes". 
+* Started on reading "Featherweight Java paper".
+* Found example of creating a [JVM Language](https://github.com/JakubDziworski/Enkel-JVM-language) using antlr to use as initial guidance. 
 
 ## Ideas developed
 
@@ -19,6 +21,8 @@ Checkstyle, PMD and Spotbugs integrated into the build process as static analysi
 
 During internship, identified example of depedency injection where semantic subtyping could make
 programming easier.
+
+Using Github Pages to host an empty site that will eventually host the online try-me compiler
 
 ## Concerns or risks identified
 

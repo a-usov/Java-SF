@@ -8,7 +8,7 @@
 ## Week 1
 
 ### 23 Sep 2019 Mon
-
+* *0.5 hours* Advisor Meeting
 * *2.5 hours* Started on creating my grammar from the syntax from Semantic types journal
 
 ### 24 Sep 2019 Tue
@@ -23,3 +23,8 @@
 
 ### 27 Sep 2019 Fri
 * *1.5 hours* Finally finish adding dissertation compilation to CI
+
+## Week 2
+
+### 30 Sep 2019 Mon
+
