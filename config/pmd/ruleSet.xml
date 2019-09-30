@@ -13,11 +13,19 @@
         <exclude name="ShortClassName"/>
         <exclude name="AtLeastOneConstructor"/>
     </rule>
+
     <rule ref="category/java/bestpractices.xml" >
         <exclude name="SystemPrintln"/>
     </rule>
-    <rule ref="category/java/design.xml"/>
-    <rule ref="category/java/errorprone.xml"/>
+
+    <rule ref="category/java/design.xml">
+        <exclude name="LawOfDemeter"/>
+    </rule>
+
+    <rule ref="category/java/errorprone.xml">
+        <exclude name="DataflowAnomalyAnalysis"/>
+    </rule>
+
     <rule ref="category/java/multithreading.xml"/>
     <rule ref="category/java/performance.xml"/>
     <rule ref="category/java/security.xml"/>

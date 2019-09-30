@@ -9,6 +9,7 @@ import java.util.logging.Logger;
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
+import parsing.ProgramVisitor;
 
 public final class App {
 
@@ -33,7 +34,7 @@ public final class App {
 
       final ParseTree tree = parser.program();
 
-      final jsfBaseVisitor visitor = new jsfBaseVisitor();
+      final ProgramVisitor visitor = new ProgramVisitor();
       visitor.visit(tree);
     } catch (IOException e) {
       if (LOGGER.isLoggable(Level.SEVERE)) {

@@ -5,9 +5,13 @@ package jsf;
 }
 
 program
-        :       (CLASS classlbl=ID (EXTEND extendlbl=ID)? LBRAC
-                    fielddecl* constructordecl methoddecl*
-                RBRAC)* expression EOF
+        :       classdecl* expression EOF
+        ;
+
+classdecl
+        :   CLASS classlbl=ID (EXTEND extendlbl=ID)? LBRAC
+                fielddecl* constructordecl methoddecl*
+            RBRAC
         ;
 
 fielddecl

@@ -68,6 +68,7 @@ tasks.withType<Checkstyle> {
 }
 
 pmd {
+    ruleSets = listOf()
     ruleSetFiles = files("config/pmd/ruleSet.xml")
 }
 
