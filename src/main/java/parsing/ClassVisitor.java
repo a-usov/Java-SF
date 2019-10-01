@@ -1,21 +1,20 @@
 package parsing;
 
-import domain.ClassDeclaration;
+import domain.Class;
+import domain.Constructor;
 import domain.Field;
-import java.util.ArrayList;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Set;
 import jsf.jsfBaseVisitor;
 import jsf.jsfParser;
 
-public class ClassVisitor extends jsfBaseVisitor<ClassDeclaration> {
+public class ClassVisitor extends jsfBaseVisitor<Class> {
 
   private final Set<String> classNames = new HashSet<>();
-  private final List<Field> fields = new ArrayList<>();
+  private final Set<Field> fields = new HashSet<>();
 
   @Override
-  public ClassDeclaration visitClassdecl(final jsfParser.ClassdeclContext ctx) {
+  public Class visitClassdecl(final jsfParser.ClassdeclContext ctx) {
     final String name = ctx.classlbl.getText();
 
     if (classNames.contains(name)) {
@@ -25,13 +24,22 @@ public class ClassVisitor extends jsfBaseVisitor<ClassDeclaration> {
     }
 
     final FieldVisitor fieldVisitor = new FieldVisitor(name);
-    ctx.fielddecl().forEach(f -> fields.add(f.accept(fieldVisitor)));
+    ctx.fielddecl().forEach(f -> {
+      final Field field = f.accept(fieldVisitor);
+      if (fields.contains(field)) {
+        System.out.println("Oops");
+      } else {
+        fields.add(field);
+      }
+    });
 
-    System.out.println(fields);
-    return new ClassDeclaration(name);
+    final ConstructorVisitor constructorVisitor = new ConstructorVisitor(name);
+    final Constructor constructor = ctx.constructordecl().accept(constructorVisitor);
+
+    return new Class(name, fields, constructor);
   }
 
-  public List<Field> getFields() {
+  public Set<Field> getFields() {
     return fields;
   }
 

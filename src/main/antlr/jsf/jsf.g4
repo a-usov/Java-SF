@@ -19,10 +19,18 @@ fielddecl
         ;
 
 constructordecl
-        :       ID LPAR (objecttype ID (COMMA objecttype ID)*)? RPAR LBRAC
-                    SUPER LPAR (ID (COMMA ID)*)? RPAR SEMI
-                    (THIS DOT ID EQ ID SEMI)*
+        :       constructorname=ID LPAR (objecttype ID (COMMA objecttype ID)*)? RPAR LBRAC
+                    superdecl
+                    fieldassignment*
                 RBRAC
+        ;
+
+superdecl
+        :       SUPER LPAR (ID (COMMA ID)*)? RPAR SEMI
+        ;
+
+fieldassignment
+        :       THIS DOT field=ID EQ parameter=ID SEMI
         ;
 
 methoddecl

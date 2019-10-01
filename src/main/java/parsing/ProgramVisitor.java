@@ -1,6 +1,6 @@
 package parsing;
 
-import domain.ClassDeclaration;
+import domain.Class;
 import domain.Program;
 import java.util.ArrayList;
 import java.util.List;
@@ -9,7 +9,7 @@ import jsf.jsfParser;
 
 public class ProgramVisitor extends jsfBaseVisitor<Program> {
 
-  private final List<ClassDeclaration> classes = new ArrayList<>();
+  private final List<Class> classes = new ArrayList<>();
 
   @Override
   public Program visitProgram(final jsfParser.ProgramContext ctx) {
@@ -17,11 +17,12 @@ public class ProgramVisitor extends jsfBaseVisitor<Program> {
 
     ctx.classdecl().forEach(c -> classes.add(c.accept(classVisitor)));
 
-    System.out.println(classes);
-    return new Program(classes);
+    final Program program = new Program(classes);
+    System.out.println(program);
+    return program;
   }
 
-  public List<ClassDeclaration> getClasses() {
+  public List<Class> getClasses() {
     return classes;
   }
 }

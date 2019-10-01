@@ -12,6 +12,7 @@
     <rule ref="category/java/codestyle.xml">
         <exclude name="ShortClassName"/>
         <exclude name="AtLeastOneConstructor"/>
+        <exclude name="LongVariable" />
     </rule>
 
     <rule ref="category/java/bestpractices.xml" >

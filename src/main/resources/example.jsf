@@ -2,8 +2,9 @@ class asd {
 
     int a;
 
-    asd() {
-        super();
+    asd(int a, int b, int c) {
+        super(d, e, f);
+        this.a = a;
     }
 
     int b() {

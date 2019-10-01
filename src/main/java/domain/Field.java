@@ -32,6 +32,6 @@ public class Field {
 
   @Override
   public String toString() {
-    return type + " " + name + ", owner: " + owner;
+    return "Field: " + type + " " + name + ", owner: " + owner;
   }
 }
