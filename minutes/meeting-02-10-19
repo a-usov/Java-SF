@@ -1,0 +1,24 @@
+# Advisor Meeting 01/10/2019
+
+## Done
+
+* Added project template to repo, set up local build and CI for dissertation.
+* Completed initial grammar
+* Started on contextual analysis with good design pattern
+
+## To be done
+
+* Finish contextual analysis and code generation  ~20 hours work left
+
+
+## Questions
+
+* mathematical expressions as expressions?
+* compilation of multiple files?
+* java-like need of not needing forward declarations?
+* add in additional features now or later? eg multiple parameter methods vs singular
+
+
+## Minutes
+
+
