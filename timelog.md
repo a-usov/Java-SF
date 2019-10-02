@@ -29,3 +29,6 @@
 ### 30 Sep 2019 Mon
 * *4 hours* Finish initial JSF grammar, start on contextual analysis, designing a good design pattern.
 
+### 01 Oct 2019 Tue
+* *4 hours* Continuing contextual analysis up to visiting fields and constructors and its sub-nodes. Methods and expressions left
+
