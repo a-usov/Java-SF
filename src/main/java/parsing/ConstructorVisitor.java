@@ -1,5 +1,7 @@
 package parsing;
 
+import static util.TypeResolver.getFromTypeName;
+
 import domain.Constructor;
 import domain.Parameter;
 import java.util.ArrayList;
@@ -9,12 +11,9 @@ import jsf.jsfBaseVisitor;
 import jsf.jsfParser;
 import org.antlr.v4.runtime.misc.Pair;
 
-
 public class ConstructorVisitor extends jsfBaseVisitor<Constructor> {
 
   private final String owner;
-  private final List<Parameter> parameters = new ArrayList<>();
-  private final List<Pair<String, String>> fieldAssignments = new ArrayList<>();
 
   public ConstructorVisitor(final String owner) {
     super();
@@ -22,37 +21,31 @@ public class ConstructorVisitor extends jsfBaseVisitor<Constructor> {
   }
 
   @Override
-  public Constructor visitConstructordecl(final jsfParser.ConstructordeclContext ctx) {
+  public Constructor visitConstructorDecl(final jsfParser.ConstructorDeclContext ctx) {
+    final List<Parameter> parameters = new ArrayList<>();
+    final List<Pair<String, String>> fieldAssignments = new ArrayList<>();
+
+
     if (!ctx.constructorname.getText().equals(owner)) {
       System.out.println("Oops");
     }
 
-    if (ctx.objecttype().size() > 0) {
-      IntStream.range(0, ctx.objecttype().size()).forEach(i -> {
-        parameters.add(new Parameter(ctx.ID(i + 1).getText(), ctx.objecttype(i).getText()));
-      });
+    if (ctx.type().size() > 0) {
+      IntStream.range(0, ctx.type().size()).forEach(i ->
+          parameters.add(new Parameter(
+              ctx.ID(i + 1).getText(), getFromTypeName(ctx.type(i).getText()))));
     }
 
     final SuperVisitor superVisitor = new SuperVisitor();
-    final List<Parameter> superParameters = ctx.superdecl().accept(superVisitor);
+    final List<Parameter> superParameters = ctx.superDecl().accept(superVisitor);
 
     final FieldAssignmentVisitor fieldAssignmentVisitor = new FieldAssignmentVisitor();
-    ctx.fieldassignment().forEach(a -> {
-      fieldAssignments.add(a.accept(fieldAssignmentVisitor));
-    });
+    ctx.fieldAssignment().forEach(a -> fieldAssignments.add(a.accept(fieldAssignmentVisitor)));
 
     return new Constructor(parameters, superParameters, fieldAssignments);
   }
 
   public String getOwner() {
     return owner;
-  }
-
-  public List<Pair<String, String>> getFieldAssignments() {
-    return fieldAssignments;
-  }
-
-  public List<Parameter> getParameters() {
-    return parameters;
   }
 }

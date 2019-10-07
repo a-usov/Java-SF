@@ -3,47 +3,44 @@ package parsing;
 import domain.Class;
 import domain.Constructor;
 import domain.Field;
-import java.util.HashSet;
-import java.util.Set;
+import domain.Method;
+import java.util.HashMap;
+import java.util.Map;
 import jsf.jsfBaseVisitor;
 import jsf.jsfParser;
 
 public class ClassVisitor extends jsfBaseVisitor<Class> {
 
-  private final Set<String> classNames = new HashSet<>();
-  private final Set<Field> fields = new HashSet<>();
-
   @Override
-  public Class visitClassdecl(final jsfParser.ClassdeclContext ctx) {
+  public Class visitClassDecl(final jsfParser.ClassDeclContext ctx) {
+    final Map<String, Field> fields = new HashMap<>();
+    final Map<String, Method> methods = new HashMap<>();
+
     final String name = ctx.classlbl.getText();
 
-    if (classNames.contains(name)) {
-      System.out.println("Oops");
-    } else {
-      classNames.add(name);
-    }
-
     final FieldVisitor fieldVisitor = new FieldVisitor(name);
-    ctx.fielddecl().forEach(f -> {
+    ctx.fieldDecl().forEach(f -> {
       final Field field = f.accept(fieldVisitor);
-      if (fields.contains(field)) {
+      if (fields.containsKey(field.getName())) {
         System.out.println("Oops");
       } else {
-        fields.add(field);
+        fields.put(field.getName(), field);
       }
     });
 
     final ConstructorVisitor constructorVisitor = new ConstructorVisitor(name);
-    final Constructor constructor = ctx.constructordecl().accept(constructorVisitor);
+    final Constructor constructor = ctx.constructorDecl().accept(constructorVisitor);
 
-    return new Class(name, fields, constructor);
-  }
+    final MethodVisitor methodVisitor = new MethodVisitor();
+    ctx.methodDecl().forEach(m -> {
+      final Method method = m.accept(methodVisitor);
+      if (methods.containsKey(method.getName())) {
+        System.out.println("Oops");
+      } else {
+        methods.put(method.getName(), method);
+      }
+    });
 
-  public Set<Field> getFields() {
-    return fields;
-  }
-
-  public Set<String> getClassNames() {
-    return classNames;
+    return new Class(name, fields, constructor, methods);
   }
 }

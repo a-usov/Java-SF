@@ -5,51 +5,59 @@ package jsf;
 }
 
 program
-        :       classdecl* expression EOF
+        :       classDecl* expression EOF
         ;
 
-classdecl
+classDecl
         :   CLASS classlbl=ID (EXTEND extendlbl=ID)? LBRAC
-                fielddecl* constructordecl methoddecl*
+                fieldDecl* constructorDecl methodDecl*
             RBRAC
         ;
 
-fielddecl
-        :       objecttype ID SEMI
+fieldDecl
+        :       type ID SEMI
         ;
 
-constructordecl
-        :       constructorname=ID LPAR (objecttype ID (COMMA objecttype ID)*)? RPAR LBRAC
-                    superdecl
-                    fieldassignment*
+constructorDecl
+        :       constructorname=ID LPAR (type ID (COMMA type ID)*)? RPAR LBRAC
+                    superDecl
+                    fieldAssignment*
                 RBRAC
         ;
 
-superdecl
+superDecl
         :       SUPER LPAR (ID (COMMA ID)*)? RPAR SEMI
         ;
 
-fieldassignment
+fieldAssignment
         :       THIS DOT field=ID EQ parameter=ID SEMI
         ;
 
-methoddecl
-        :       objecttype ID LPAR (objecttype ID)? RPAR LBRAC
+methodDecl
+        :       returntype=type name=ID LPAR (paramtype=type paramname=ID)? RPAR LBRAC
                     RETURN expression SEMI
                 RBRAC
         ;
 
 expression
-        :       NUMBER | ID | expression DOT ID | expression DOT ID LPAR expression RPAR | NEW objecttype LPAR (expression (COMMA expression)*)? RPAR
-                | expression PLUS expression
+        :       e1=primExpression
+                    (op=(PLUS | MINUS | DIV | MULT) e2=primExpression)?
         ;
 
-objecttype
-        :       EMPTY | basictype | ID
+primExpression
+        :       NUMBER                                                                  # num
+        |       ID                                                                      # var
+        |       primExpression DOT ID                                                   # field
+        |       primExpression DOT ID LPAR expression RPAR                              # method
+        |       NEW type LPAR (expression (COMMA expression)*)? RPAR                    # object
         ;
 
-basictype
-        :       BYTE | INT | LONG | FLOAT | DOUBLE | CHAR
+type
+        :       basicType | ID
+        ;
+
+basicType
+        :       BYTE | INT | LONG | FLOAT | DOUBLE | CHAR | BOOL | VOID
         ;
 
 BYTE    :       'byte'                      ;
@@ -58,28 +66,31 @@ LONG    :       'long'                      ;
 FLOAT   :       'float'                     ;
 DOUBLE  :       'double'                    ;
 CHAR    :       'char'                      ;
+BOOL    :       'bool'                      ;
+VOID    :       'void'                      ;
 
 AND     :       'and'                       ;
 OR      :       'or'                        ;
-EQ      :       '='                         ;
+NOT     :       'not'                       ;
 CLASS   :       'class'                     ;
 SUPER   :       'super'                     ;
-NOT     :       'not'                       ;
 EXTEND  :       'extends'                   ;
 THIS    :       'this'                      ;
-DOT     :       '.'                         ;
 RETURN  :       'return'                    ;
 NEW     :       'new'                       ;
 
-SEMI    :       ';'                         ;
 LPAR    :       '('                         ;
 RPAR    :       ')'                         ;
 LBRAC   :       '{'                         ;
 RBRAC   :       '}'                         ;
+EQ      :       '='                         ;
 PLUS    :       '+'                         ;
-
-
+MINUS   :       '-'                         ;
+DIV     :       '/'                         ;
+MULT    :       '*'                         ;
 COMMA   :       ','                         ;
+DOT     :       '.'                         ;
+SEMI    :       ';'                         ;
 
 ID      :       LETTER (LETTER | DIGIT)*    ;
 NUMBER  :       DIGIT (DIGIT)*              ;

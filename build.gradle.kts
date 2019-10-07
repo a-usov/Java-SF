@@ -17,6 +17,7 @@ repositories {
 dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.3.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.3.1")
+    compileOnly("org.ow2.asm:asm:5.0.3")
     antlr("org.antlr:antlr4:4.5")
 }
 
@@ -62,7 +63,7 @@ checkstyle {
 }
 
 tasks.withType<Checkstyle> {
-    exclude("**jsf/jsfVisitor.java**", "**jsf/jsfParser.java**", "**jsf/jsfBaseVisitor.java**", "**jsf/jsfLexer.java**")
+    exclude("**jsf/jsfVisitor**", "**jsf/jsfParser**", "**jsf/jsfBaseVisitor*", "**jsf/jsfLexer**", "**domain/type/TypeSpecificOpcodes**")
     ignoreFailures = false
     maxWarnings = 0
 }

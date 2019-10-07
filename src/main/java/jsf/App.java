@@ -31,7 +31,6 @@ public final class App {
       final jsfLexer lexer = new jsfLexer(inputStream);
       final CommonTokenStream commonTokenStream = new CommonTokenStream(lexer);
       final jsfParser parser = new jsfParser(commonTokenStream);
-
       final ParseTree tree = parser.program();
 
       final ProgramVisitor visitor = new ProgramVisitor();
