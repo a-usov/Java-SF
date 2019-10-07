@@ -15,7 +15,7 @@ public class ProgramVisitor extends jsfBaseVisitor<Program> {
   public Program visitProgram(final jsfParser.ProgramContext ctx) {
     final ClassVisitor classVisitor = new ClassVisitor();
 
-    ctx.classdecl().forEach(c -> classes.add(c.accept(classVisitor)));
+    ctx.classDecl().forEach(c -> classes.add(c.accept(classVisitor)));
 
     final Program program = new Program(classes);
     System.out.println(program);

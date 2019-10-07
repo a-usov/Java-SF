@@ -10,6 +10,10 @@ class asd {
     int b() {
         return new asd().a(a) + 2;
     }
+
+    int c(Class d) {
+        return 2 + 2;
+    }
 }
 
 class as {

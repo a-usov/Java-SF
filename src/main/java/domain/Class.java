@@ -1,11 +1,12 @@
 package domain;
 
-import java.util.Set;
+import java.util.Map;
 
 public class Class {
   private final String name;
-  private final Set<Field> fields;
+  private final Map<String, Field> fields;
   private final Constructor constructor;
+  private final Map<String, Method> methods;
 
   /**
    * Creates a class struct that has a name, list of fields, and constructor.
@@ -13,11 +14,13 @@ public class Class {
    * @param fields Set of unique fields
    * @param constructor constructor of class
    */
-  public Class(final String name, final Set<Field> fields, final Constructor constructor) {
+  public Class(final String name, final Map<String, Field> fields,
+               final Constructor constructor, final Map<String, Method> methods) {
     super();
     this.name = name;
     this.fields = fields;
     this.constructor = constructor;
+    this.methods = methods;
   }
 
   public String getName() {
@@ -28,12 +31,16 @@ public class Class {
     return constructor;
   }
 
-  public Set<Field> getFields() {
+  public Map<String, Field> getFields() {
     return fields;
+  }
+
+  public Map<String, Method> getMethods() {
+    return methods;
   }
 
   @Override
   public String toString() {
-    return "Class: " + name + "\n" + fields + "\n" + constructor;
+    return "Class: " + name + "\n" + fields + "\n" + constructor + "\n" + methods;
   }
 }
