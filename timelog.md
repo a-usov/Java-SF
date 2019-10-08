@@ -32,3 +32,8 @@
 ### 01 Oct 2019 Tue
 * *4 hours* Continuing contextual analysis up to visiting fields and constructors and its sub-nodes. Methods and expressions left
 
+## Week 3
+
+### 08 Oct 2019 Mon
+* *8 hours* Continue contextual analysis. Finish repeated class/field/method name checking. Working on type checking that allows classes/methods to be declared in any order.
+
