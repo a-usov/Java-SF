@@ -12,29 +12,34 @@
     <rule ref="category/java/codestyle.xml">
         <exclude name="ShortClassName"/>
         <exclude name="AtLeastOneConstructor"/>
-        <exclude name="LongVariable" />
-        <exclude name="OnlyOneReturn" />s
+        <exclude name="LongVariable"/>
+        <exclude name="OnlyOneReturn"/>
+        <exclude name="ConfusingTernary"/>
     </rule>
 
-    <rule ref="category/java/bestpractices.xml" >
+    <rule ref="category/java/bestpractices.xml">
         <exclude name="SystemPrintln"/>
     </rule>
 
     <rule ref="category/java/design.xml">
         <exclude name="LawOfDemeter"/>
-        <exclude name="DataClass" />
-        <exclude name="AvoidThrowingRawExceptionTypes" />
+        <exclude name="DataClass"/>
+        <exclude name="AvoidThrowingRawExceptionTypes"/>
+        <exclude name="CyclomaticComplexity"/>
     </rule>
 
     <rule ref="category/java/errorprone.xml">
         <exclude name="DataflowAnomalyAnalysis"/>
+        <exclude name="BeanMembersShouldSerialize"/>
     </rule>
 
     <rule ref="category/java/multithreading.xml">
-        <exclude name="UseConcurrentHashMap" />
+        <exclude name="UseConcurrentHashMap"/>
     </rule>
 
-    <rule ref="category/java/performance.xml"/>
+    <rule ref="category/java/performance.xml">
+        <exclude name="InsufficientStringBufferDeclaration"/>
+    </rule>
     <rule ref="category/java/security.xml"/>
 
     <exclude-pattern>.*jsfBaseVisitor.*</exclude-pattern>

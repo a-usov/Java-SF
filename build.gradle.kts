@@ -18,6 +18,7 @@ dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.3.1")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.3.1")
     compileOnly("org.ow2.asm:asm:5.0.3")
+    implementation("com.google.guava:guava:23.5-jre")
     antlr("org.antlr:antlr4:4.5")
 }
 

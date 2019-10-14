@@ -2,7 +2,7 @@ package domain.type;
 
 public enum BasicType implements Type {
 
-  BOOLEAN("boolean",boolean.class,"Z", TypeSpecificOpcodes.INT),
+  BOOLEAN("bool",boolean.class,"Z", TypeSpecificOpcodes.INT),
   INT("int", int.class,"I", TypeSpecificOpcodes.INT),
   CHAR("char", char.class,"C", TypeSpecificOpcodes.INT),
   BYTE("byte", byte.class,"B", TypeSpecificOpcodes.INT),

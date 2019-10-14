@@ -7,6 +7,7 @@ public class Class {
   private final Map<String, Field> fields;
   private final Constructor constructor;
   private final Map<String, Method> methods;
+  private final String superName;
 
   /**
    * Creates a class struct that has a name, list of fields, and constructor.
@@ -14,13 +15,14 @@ public class Class {
    * @param fields Set of unique fields
    * @param constructor constructor of class
    */
-  public Class(final String name, final Map<String, Field> fields,
-               final Constructor constructor, final Map<String, Method> methods) {
+  public Class(final String name, final Map<String, Field> fields, final Constructor constructor,
+               final Map<String, Method> methods, final String superName) {
     super();
     this.name = name;
     this.fields = fields;
     this.constructor = constructor;
     this.methods = methods;
+    this.superName = superName;
   }
 
   public String getName() {
@@ -39,8 +41,13 @@ public class Class {
     return methods;
   }
 
+  public String getSuperName() {
+    return superName;
+  }
+
   @Override
   public String toString() {
-    return "Class: " + name + "\n" + fields + "\n" + constructor + "\n" + methods;
+    return "Class: " + name + " extends: " + superName + "\n" + fields + "\n"
+        + constructor + "\n" + methods;
   }
 }
