@@ -37,3 +37,9 @@
 ### 08 Oct 2019 Mon
 * *8 hours* Continue contextual analysis. Finish repeated class/field/method name checking. Working on type checking that allows classes/methods to be declared in any order.
 
+### 13 Oct 2019 Sun
+* *2 hours* Working on contextual analysis
+
+## Week 4
+* *6 hours* Finishing initial contextual analysis
+
