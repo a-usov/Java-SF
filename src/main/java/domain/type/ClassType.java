@@ -1,6 +1,5 @@
 package domain.type;
 
-import java.util.Objects;
 import org.objectweb.asm.Opcodes;
 
 public class ClassType implements Type {
@@ -89,25 +88,6 @@ public class ClassType implements Type {
   @Override
   public int getDivideOpcode() {
     throw new RuntimeException("Division operation not supported for custom objects");
-  }
-
-  @Override
-  public boolean equals(final Object object) {
-    if (this == object) {
-      return true;
-    }
-    if (object == null || getClass() != object.getClass()) {
-      return false;
-    }
-
-    final ClassType classType = (ClassType) object;
-
-    return Objects.equals(name, classType.name);
-  }
-
-  @Override
-  public int hashCode() {
-    return name == null ? 0 : name.hashCode();
   }
 
   @Override

@@ -1,11 +1,11 @@
 package jsf;
 
+import domain.Program;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-
 import org.antlr.v4.runtime.ANTLRInputStream;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
@@ -34,7 +34,9 @@ public final class App {
       final ParseTree tree = parser.program();
 
       final ProgramVisitor visitor = new ProgramVisitor();
-      visitor.visit(tree);
+      final Program program = visitor.visit(tree);
+
+      visitor.visit(program);
     } catch (IOException e) {
       if (LOGGER.isLoggable(Level.SEVERE)) {
         LOGGER.severe("Exception occurred: " + e);

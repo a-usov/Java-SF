@@ -1,10 +1,12 @@
 package domain;
 
 import java.util.List;
+import java.util.Map;
+
 import org.antlr.v4.runtime.misc.Pair;
 
 public class Constructor {
-  private final List<Parameter> parameterList;
+  private final Map<String, Parameter> parameterList;
   private final List<Parameter> superParameters;
   private final List<Pair<String, String>> fieldAssignments;
 
@@ -14,7 +16,7 @@ public class Constructor {
    * @param superParameters List of parameters passed to super constructor
    * @param fieldAssignments list of Pairs of field and value parameter assigned to field
    */
-  public Constructor(final List<Parameter> parameters, final List<Parameter> superParameters,
+  public Constructor(final Map<String, Parameter> parameters, final List<Parameter> superParameters,
                      final List<Pair<String, String>> fieldAssignments) {
     super();
     this.parameterList = parameters;
@@ -22,7 +24,7 @@ public class Constructor {
     this.fieldAssignments = fieldAssignments;
   }
 
-  public List<Parameter> getParameterList() {
+  public Map<String, Parameter> getParameterList() {
     return parameterList;
   }
 

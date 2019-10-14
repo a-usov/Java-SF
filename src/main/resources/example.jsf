@@ -1,23 +1,26 @@
-class asd {
+class asd extends as {
 
-    int a;
+    bool a;
+    int c;
 
-    asd(int a, int b, int c) {
-        super(d, e, f);
+    asd(bool a, int b, int c) {
+        super(a, b, c);
         this.a = a;
+        this.c = b;
+        this.c = c;
     }
 
     int b() {
-        return new asd().a(a) + 2;
+        return 2;
     }
 
-    int c(Class d) {
-        return 2 + 2;
+    asd e(asd a) {
+        return new asd();
     }
 }
 
 class as {
-    as() {
+    as(bool a, int b, int c) {
         super();
     }
 }

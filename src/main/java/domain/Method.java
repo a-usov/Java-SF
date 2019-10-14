@@ -1,6 +1,7 @@
 package domain;
 
 import domain.type.Type;
+import jsf.jsfParser.ExpressionContext;
 import org.antlr.v4.runtime.misc.Pair;
 
 public class Method {
@@ -8,6 +9,7 @@ public class Method {
   private final Type returnType;
   private final String name;
   private final Pair<Type, String> parameter;
+  private final ExpressionContext expression;
 
   /**
    * Creates a method, with a return type, name and single parameter.
@@ -15,10 +17,12 @@ public class Method {
    * @param name method name as String
    * @param parameter pair of the parameter type and parameter name
    */
-  public Method(final Type returnType, final String name, final Pair<Type, String> parameter) {
+  public Method(final Type returnType, final String name,
+                final Pair<Type, String> parameter, final ExpressionContext ctx) {
     this.returnType = returnType;
     this.name = name;
     this.parameter = parameter;
+    this.expression = ctx;
   }
 
   public String getName() {
@@ -31,6 +35,10 @@ public class Method {
 
   public Type getReturnType() {
     return returnType;
+  }
+
+  public ExpressionContext getExpression() {
+    return expression;
   }
 
   @Override

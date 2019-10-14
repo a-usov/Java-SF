@@ -49,7 +49,7 @@ primExpression
         |       ID                                                                      # var
         |       primExpression DOT ID                                                   # field
         |       primExpression DOT ID LPAR expression RPAR                              # method
-        |       NEW type LPAR (expression (COMMA expression)*)? RPAR                    # object
+        |       NEW ID LPAR (expression (COMMA expression)*)? RPAR                    # object
         ;
 
 type
