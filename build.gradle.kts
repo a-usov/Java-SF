@@ -3,10 +3,10 @@ import de.undercouch.gradle.tasks.download.Download
 plugins {
     java
     application
-    id("com.github.spotbugs") version "2.0.0"
+    id("com.github.spotbugs") version "2.0.1"
     checkstyle
     pmd
-    id("de.undercouch.download") version "4.0.0"
+    id("de.undercouch.download") version "4.0.1"
     antlr
 }
 
@@ -15,11 +15,11 @@ repositories {
 }
 
 dependencies {
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.3.1")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.3.1")
-    compileOnly("org.ow2.asm:asm:5.0.3")
-    implementation("com.google.guava:guava:23.5-jre")
-    antlr("org.antlr:antlr4:4.5")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.5.2")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.5.2")
+    compileOnly("org.ow2.asm:asm:7.2")
+    implementation("com.google.guava:guava:28.1-jre")
+    antlr("org.antlr:antlr4:4.7.2")
 }
 
 application {
@@ -27,7 +27,7 @@ application {
 }
 
 java {
-    sourceCompatibility = JavaVersion.VERSION_12
+    sourceCompatibility = JavaVersion.VERSION_13
 }
 
 tasks.withType<Jar> {
@@ -59,10 +59,6 @@ tasks {
     }
 }
 
-checkstyle {
-    toolVersion = "8.24"
-}
-
 tasks.withType<Checkstyle> {
     exclude("**jsf/jsfVisitor**", "**jsf/jsfParser**", "**jsf/jsfBaseVisitor*", "**jsf/jsfLexer**", "**domain/type/TypeSpecificOpcodes**")
     ignoreFailures = false
@@ -77,4 +73,5 @@ pmd {
 spotbugs {
     effort = "max"
     excludeFilter = File("config/spotbugs/excludefilter.xml")
+    toolVersion = "4.0.0-beta4"
 }
