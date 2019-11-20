@@ -1,4 +1,4 @@
-# Advisor Meeting 15/10/2019
+# Advisor Meeting 28/10/2019
 
 ## Done
 * Spent most of week working on coursework so not much progress.

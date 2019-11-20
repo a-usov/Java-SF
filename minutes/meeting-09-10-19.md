@@ -19,7 +19,7 @@
 * are mathematical expressions valid as field assignments
 * Addressing issue found in last meeting, is a Void type actually useful/needed in a pure functional subset? Used internally but not part of the language? 
 * Similarly with null values of fields, should they be allowed? or should a constructor initialise all field values?
-* Again similarly, is an Empty Set class type useful/needed. If empty set is type of method parameter, its a method that can never be called and cant be combined meanigfully with a boolean type connective, so useless?
+* Again similarly, is an Empty Set class type useful/needed. If empty set is type of method parameter, its a method that can never be called and cant be combined meaningfully with a boolean type connective, so useless?
 
 ## Minutes
 
