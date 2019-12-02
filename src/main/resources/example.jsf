@@ -3,10 +3,9 @@ class asd extends as {
     bool a;
     int c;
 
-    asd(bool a, int b, int c) {
-        super(a, b, c);
+    asd(bool a, int c) {
+        super();
         this.a = a;
-        this.c = b;
         this.c = c;
     }
 
@@ -20,8 +19,21 @@ class asd extends as {
 }
 
 class as {
-    as(bool a, int b, int c) {
+    as() {
         super();
+    }
+}
+
+class qwe {
+    bool a;
+    int c;
+    int d;
+
+    qwe(¬ Asd a, int c, int d) {
+        super();
+        this.a = a;
+        this.c = c;
+        this.d = d;
     }
 }
 
