@@ -53,7 +53,10 @@ primExpression
         ;
 
 type
-        :       basicType | ID
+        :       basicType
+        |       ID
+        |       SETNOT ID
+        |       type1=type bool=(COMP | INTER | UNION) type2=type
         ;
 
 basicType
@@ -91,6 +94,11 @@ MULT    :       '*'                         ;
 COMMA   :       ','                         ;
 DOT     :       '.'                         ;
 SEMI    :       ';'                         ;
+
+COMP   :       '\\'                         ;
+UNION   :       '|'                         ;
+INTER   :       '^'                         ;
+SETNOT  :       '¬'                         ;
 
 ID      :       LETTER (LETTER | DIGIT)*    ;
 NUMBER  :       DIGIT (DIGIT)*              ;

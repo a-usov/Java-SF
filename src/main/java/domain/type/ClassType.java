@@ -1,14 +1,40 @@
 package domain.type;
 
+import domain.Class;
+import domain.Field;
+import domain.Method;
 import org.objectweb.asm.Opcodes;
+
+import java.util.Map;
 
 public class ClassType implements Type {
   private final String name;
   private final String internalName;
+  private final Map<String, Field> fields;
+  private final Map<String, Method> methods;
+
+
 
   public ClassType(final String name) {
     this.name = name;
     this.internalName = name.replace(".", "/");
+    this.fields = null;
+    this.methods = null;
+  }
+
+  public ClassType(final String name, Class newClass) {
+    this.name = name;
+    this.internalName = name.replace(".", "/");
+    this.fields = newClass.getFields();
+    this.methods = newClass.getMethods();
+  }
+
+  public Map<String, Field> getFields() {
+    return fields;
+  }
+
+  public Map<String, Method> getMethods() {
+    return methods;
   }
 
   public static ClassType createInteger() {
@@ -37,9 +63,9 @@ public class ClassType implements Type {
   }
 
   @Override
-  public Class<?> getTypeClass() {
+  public java.lang.Class<?> getTypeClass() {
     try {
-      return Class.forName(name);
+      return java.lang.Class.forName(name);
     } catch (ClassNotFoundException e) {
       throw new RuntimeException(e);
     }
