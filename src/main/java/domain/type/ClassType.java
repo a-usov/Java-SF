@@ -1,39 +1,44 @@
 package domain.type;
 
-import domain.Class;
 import domain.Field;
 import domain.Method;
 import org.objectweb.asm.Opcodes;
-
+import java.util.HashMap;
 import java.util.Map;
 
 public class ClassType implements Type {
   private final String name;
   private final String internalName;
-  private final Map<String, Field> fields;
-  private final Map<String, Method> methods;
-
-
+  private final Map<String, Type> fields;
+  private final Map<String, Type> methods;
 
   public ClassType(final String name) {
     this.name = name;
     this.internalName = name.replace(".", "/");
-    this.fields = null;
-    this.methods = null;
+    this.fields = new HashMap<>();
+    this.methods = new HashMap<>();
   }
 
-  public ClassType(final String name, Class newClass) {
+  public ClassType(final String name, Map<String, Field> fields, Map<String, Method> methods) {
     this.name = name;
     this.internalName = name.replace(".", "/");
-    this.fields = newClass.getFields();
-    this.methods = newClass.getMethods();
+
+    this.fields = new HashMap<>();
+    for (var f : fields.values()) {
+      this.fields.put(f.getName(), f.getType());
+    }
+
+    this.methods = new HashMap<>();
+    for (var m : methods.values()) {
+      this.fields.put(m.getName(), m.getReturnType());
+    }
   }
 
-  public Map<String, Field> getFields() {
+  public Map<String, Type> getFields() {
     return fields;
   }
 
-  public Map<String, Method> getMethods() {
+  public Map<String, Type> getMethods() {
     return methods;
   }
 
@@ -73,7 +78,7 @@ public class ClassType implements Type {
 
   @Override
   public String getDescriptor() {
-    return  "L" + getInternalName() + ";";
+    return "L" + getInternalName() + ";";
   }
 
   @Override

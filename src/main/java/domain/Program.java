@@ -18,8 +18,8 @@ public class Program {
   @Override
   public String toString() {
     final StringBuilder output = new StringBuilder();
-    for (final var eachclass : classes.values()) {
-      output.append(eachclass).append("\n\n");
+    for (final var c : classes.values()) {
+      output.append(c).append("\n\n");
     }
     return output.toString();
   }

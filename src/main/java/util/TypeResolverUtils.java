@@ -6,10 +6,11 @@ import com.google.common.primitives.Ints;
 import domain.type.BasicType;
 import domain.type.ClassType;
 import domain.type.Type;
-import java.util.Arrays;
-import java.util.Optional;
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
+
+import java.util.Arrays;
+import java.util.Optional;
 
 public final class TypeResolverUtils {
 
@@ -39,7 +40,6 @@ public final class TypeResolverUtils {
   }
 
   // TODO - no support for anything other than ints right now
-
   /**
    * From a basic value as a string, infer its type.
    * @param value value as string to infer

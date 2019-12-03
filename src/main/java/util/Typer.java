@@ -1,12 +1,11 @@
 package util;
 
 import domain.Class;
+import domain.type.BasicType;
 import domain.type.ClassType;
 import domain.type.Type;
-import domain.type.BasicType;
 
 import java.util.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 public class Typer {
 
@@ -34,6 +33,7 @@ public class Typer {
 
   public static boolean addClass(Class newClass) {
     Set<Type> subclasses = new HashSet<>();
+    subclasses.add(newClass.getType());
 
     for (var c : subClasses.entrySet()) {
       if (c.getKey() instanceof ClassType) {
@@ -48,13 +48,11 @@ public class Typer {
           }
 
           if (existing.getFields().containsKey(entry.getKey())) {
-            if (! subClasses.get(existing.getFields().get(entry.getKey()).getType()).contains(entry.getValue().getType())) {
+            if (!subClasses.get(existing.getFields().get(entry.getKey())).contains(entry.getValue().getType())) {
               isValidSub = false;
             }
-          }
 
-          if (existing.getFields().containsKey(entry.getKey())) {
-            if (! subClasses.get(entry.getValue().getType()).contains(existing.getFields().get(entry.getKey()).getType())) {
+            if (!subClasses.get(entry.getValue().getType()).contains(existing.getFields().get(entry.getKey()))) {
               isValid = false;
             }
           } else {
@@ -63,7 +61,7 @@ public class Typer {
         }
 
         if (isValidSub) {
-          subClasses.get(existing).add(new ClassType(newClass.getName(), newClass));
+          subClasses.get(existing).add(newClass.getType());
         }
 
         if (isValid) {
@@ -71,9 +69,9 @@ public class Typer {
         }
       }
     }
-    var newType = new ClassType(newClass.getName(), newClass);
-    subClasses.put(newType, subclasses);
-    universeSet.add(newType);
+
+    subClasses.put(newClass.getType(), subclasses);
+    universeSet.add(newClass.getType());
     return true;
   }
 

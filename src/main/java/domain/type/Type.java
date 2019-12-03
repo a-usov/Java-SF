@@ -1,7 +1,6 @@
 package domain.type;
 
 // copied from https://github.com/JakubDziworski/Enkel-JVM-language
-
 public interface Type {
   String getName();
 

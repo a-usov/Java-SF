@@ -1,9 +1,9 @@
 package domain;
 
+import org.antlr.v4.runtime.misc.Pair;
+
 import java.util.List;
 import java.util.Map;
-
-import org.antlr.v4.runtime.misc.Pair;
 
 public class Constructor {
   private final Map<String, Parameter> parameterList;
@@ -12,8 +12,9 @@ public class Constructor {
 
   /**
    * Creates a constructor that holds the parameters, parameters passed to super() and assignments.
-   * @param parameters List of parameters passed to constructor
-   * @param superParameters List of parameters passed to super constructor
+   *
+   * @param parameters       List of parameters passed to constructor
+   * @param superParameters  List of parameters passed to super constructor
    * @param fieldAssignments list of Pairs of field and value parameter assigned to field
    */
   public Constructor(final Map<String, Parameter> parameters, final List<Parameter> superParameters,

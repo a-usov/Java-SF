@@ -1,27 +1,28 @@
 package parsing;
 
-import static util.TypeResolverUtils.getFromValue;
-
 import domain.Method;
+import domain.Parameter;
 import domain.Program;
 import domain.type.BasicType;
 import domain.type.ClassType;
 import domain.type.Type;
 import jsf.jsfBaseVisitor;
 import jsf.jsfParser;
-import org.antlr.v4.runtime.misc.Pair;
+
+import static util.TypeResolverUtils.getFromValue;
 
 public class ExpressionVisitor extends jsfBaseVisitor<Type> {
 
   private final Program program;
-  private final Pair<Type, String> parameter;
+  private final Parameter parameter;
 
   /**
    * Create an expression visitor, done on second round analysis.
-   * @param program whole program context
+   *
+   * @param program   whole program context
    * @param parameter the parameter of the method the expression is in
    */
-  public ExpressionVisitor(final Program program, final Pair<Type, String> parameter) {
+  public ExpressionVisitor(final Program program, final Parameter parameter) {
     super();
     this.program = program;
     this.parameter = parameter;
@@ -57,10 +58,10 @@ public class ExpressionVisitor extends jsfBaseVisitor<Type> {
 
   @Override
   public Type visitVar(final jsfParser.VarContext ctx) {
-    if (!ctx.ID().getText().equals(parameter.b)) {
+    if (!ctx.ID().getText().equals(parameter.getName())) {
       throw new RuntimeException("Referring to parameter that is not defined");
     }
-    return parameter.a;
+    return parameter.getType();
   }
 
   @Override
@@ -106,7 +107,7 @@ public class ExpressionVisitor extends jsfBaseVisitor<Type> {
       methodCallValue = BasicType.VOID;
     }
 
-    if (calledMethod.getParameter().a != methodCallValue) {
+    if (calledMethod.getParameter().getType() != methodCallValue) {
       throw new RuntimeException("Expression passed to method is of wrong type");
     }
 

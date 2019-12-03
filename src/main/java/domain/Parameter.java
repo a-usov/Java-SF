@@ -8,6 +8,7 @@ public class Parameter {
 
   /**
    * Creates a local parameter.
+   *
    * @param name name of parameter
    * @param type type of parameter, currently as a string
    */
