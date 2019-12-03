@@ -1,21 +1,18 @@
 package parsing;
 
-import static util.TypeResolverUtils.getFromTypeName;
-import static util.TypeResolverUtils.reportError;
-
 import domain.Constructor;
 import domain.Field;
 import domain.Parameter;
 import domain.Program;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.stream.IntStream;
 import jsf.jsfBaseVisitor;
 import jsf.jsfParser;
 import org.antlr.v4.runtime.misc.Pair;
+
+import java.util.*;
+import java.util.stream.IntStream;
+
+import static util.TypeResolverUtils.getFromTypeName;
+import static util.TypeResolverUtils.reportError;
 
 public class ConstructorVisitor extends jsfBaseVisitor<Constructor> {
 
@@ -31,9 +28,8 @@ public class ConstructorVisitor extends jsfBaseVisitor<Constructor> {
     final Map<String, Parameter> parameters = new LinkedHashMap<>();
     final List<Pair<String, String>> fieldAssignments = new ArrayList<>();
 
-
     if (!ctx.constructorname.getText().equals(owner)) {
-      System.out.println("Oops");
+      reportError("constructor name does not match the class", ctx);
     }
 
     if (ctx.type().size() > 0) {

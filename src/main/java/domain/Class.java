@@ -1,24 +1,28 @@
 package domain;
 
+import domain.type.ClassType;
 import java.util.Map;
 
 public class Class {
   private final String name;
+  private final ClassType type;
   private final Map<String, Field> fields;
   private final Constructor constructor;
   private final Map<String, Method> methods;
   private final String superName;
 
   /**
-   * Creates a class struct that has a name, list of fields, and constructor.
-   * @param name name of the class
-   * @param fields Set of unique fields
+   * Creates a class struct that has a name, list of fields, and constructor
+   *
+   * @param name        name of the class
+   * @param fields      Set of unique fields
    * @param constructor constructor of class
    */
   public Class(final String name, final Map<String, Field> fields, final Constructor constructor,
                final Map<String, Method> methods, final String superName) {
     super();
     this.name = name;
+    this.type = new ClassType(name, fields, methods);
     this.fields = fields;
     this.constructor = constructor;
     this.methods = methods;
@@ -45,9 +49,13 @@ public class Class {
     return superName;
   }
 
+  public ClassType getType() {
+    return type;
+  }
+
   @Override
   public String toString() {
     return "Class: " + name + " extends: " + superName + "\n" + fields + "\n"
-        + constructor + "\n" + methods;
+            + constructor + "\n" + methods;
   }
 }

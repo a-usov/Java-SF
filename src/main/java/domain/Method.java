@@ -2,23 +2,25 @@ package domain;
 
 import domain.type.Type;
 import jsf.jsfParser.ExpressionContext;
-import org.antlr.v4.runtime.misc.Pair;
 
 public class Method {
 
+  // TODO - Encapsulate return and parameter type
   private final Type returnType;
   private final String name;
-  private final Pair<Type, String> parameter;
+  private final Parameter parameter;
   private final ExpressionContext expression;
 
   /**
    * Creates a method, with a return type, name and single parameter.
+   *
    * @param returnType a Type which can be basic or a custom class
-   * @param name method name as String
-   * @param parameter pair of the parameter type and parameter name
+   * @param name       method name as String
+   * @param parameter  parameter that method takes
+   * @param ctx        the expression context within method that we store to type check later
    */
   public Method(final Type returnType, final String name,
-                final Pair<Type, String> parameter, final ExpressionContext ctx) {
+                final Parameter parameter, final ExpressionContext ctx) {
     this.returnType = returnType;
     this.name = name;
     this.parameter = parameter;
@@ -29,7 +31,7 @@ public class Method {
     return name;
   }
 
-  public Pair<Type, String> getParameter() {
+  public Parameter getParameter() {
     return parameter;
   }
 

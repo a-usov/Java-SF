@@ -1,5 +1,6 @@
 package domain.type;
 
+import org.antlr.v4.runtime.misc.Pair;
 import util.Typer;
 
 import java.util.HashSet;
@@ -8,76 +9,54 @@ import java.util.Set;
 public class BooleanType {
 
   private Type type;
-  private BooleanConnective connective;
-  private Boolean isNot;
-  private BooleanType type2;
+  private Boolean not;
+  private Pair<BooleanConnective, BooleanType> connective;
 
-  public BooleanType(Type type, Boolean isNot) {
+  public BooleanType(Type type, Boolean not) {
     this.type = type;
-    this.isNot = isNot;
+    this.not = not;
     this.connective = null;
-    this.type2 = null;
   }
 
-  public BooleanType(Type type, Boolean isNot, BooleanConnective connective, BooleanType type2) {
+  public BooleanType(Type type, Boolean not, Pair<BooleanConnective, BooleanType> type2) {
     this.type = type;
-    this.isNot = isNot;
-    this.connective = connective;
-    this.type2 = type2;
+    this.not = isNot;
+    this.connective = type2;
   }
 
   public Set<Type> getSet() {
-    if (this.getConnective() == null) {
-      if (this.getNot()) {
-        var result = new HashSet<>(Typer.universeSet);
-        var mine = Typer.subClasses.get(this.type);
-        for (var type : result) {
-          for (var type2 : mine)
-            if (type.getName().equals(type2.getName())) {
-              result.remove(type);
-            }
-        }
-        result.removeAll(mine);
-        return result;
-      } else {
-        return Typer.subClasses.get(this.type);
-      }
-    } else {
+    Set<Type> result = null;
 
-      Set<Type> result = null;
-      switch (this.getConnective()) {
+    if (this.getConnective() == null) {
+      result = Typer.subClasses.get(this.type);
+    } else {
+      var connective = this.getConnective().a;
+      var type2 = this.getConnective().b;
+
+      switch (connective) {
         case INTERS:
           var intersection = new HashSet<>(Typer.subClasses.get(this.type));
-          intersection.retainAll(getType2().getSet());
+          intersection.retainAll(type2.getSet());
           result = intersection;
           break;
         case UNION:
           var union = new HashSet<>(Typer.subClasses.get(this.type));
-          union.addAll(getType2().getSet());
+          union.addAll(type2.getSet());
           result = union;
           break;
-        case COMP:
-          var complement = new HashSet<>(Typer.subClasses.get(this.type));
-          complement.removeAll(getType2().getSet());
-          result = complement;
-          break;
-      };
-
-      if (this.getNot()) {
-        var result2 = new HashSet<>(Typer.universeSet);
-        result2.removeAll(result);
-        return result2;
-      } else {
-        return result;
       }
+    }
+
+    if (this.isNot()) {
+      var result2 = new HashSet<>(Typer.universeSet);
+      result2.removeAll(result);
+      return result2;
+    } else {
+      return result;
     }
   }
 
-  public BooleanType getType2() {
-    return type2;
-  }
-
-  public BooleanConnective getConnective() {
+  public Pair<BooleanConnective, BooleanType> getConnective() {
     return connective;
   }
 
@@ -85,7 +64,12 @@ public class BooleanType {
     return type;
   }
 
-  public Boolean getNot() {
-    return isNot;
+  public Boolean isNot() {
+    return not;
+  }
+
+  private enum BooleanConnective {
+    INTERS,
+    UNION,
   }
 }

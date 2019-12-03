@@ -1,14 +1,14 @@
 package parsing;
 
-import static util.TypeResolverUtils.getFromTypeName;
-
 import domain.Method;
+import domain.Parameter;
 import domain.Program;
 import domain.type.BasicType;
 import domain.type.Type;
 import jsf.jsfBaseVisitor;
 import jsf.jsfParser;
-import org.antlr.v4.runtime.misc.Pair;
+
+import static util.TypeResolverUtils.getFromTypeName;
 
 public class MethodVisitor extends jsfBaseVisitor<Method> {
 
@@ -16,9 +16,9 @@ public class MethodVisitor extends jsfBaseVisitor<Method> {
   public Method visitMethodDecl(final jsfParser.MethodDeclContext ctx) {
     final Type returnType = getFromTypeName(ctx.returntype.getText());
 
-    Pair<Type, String> parameter = new Pair<>(BasicType.VOID, "empty");
+    Parameter parameter = new Parameter("empty", BasicType.VOID);
     if (ctx.paramname != null && ctx.paramtype != null) {
-      parameter = new Pair<>(getFromTypeName(ctx.paramtype.getText()), ctx.paramname.getText());
+      parameter = new Parameter(ctx.paramname.getText(), getFromTypeName(ctx.paramtype.getText()));
     }
 
     final String name = ctx.name.getText();

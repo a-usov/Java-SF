@@ -1,19 +1,17 @@
 package parsing;
 
-import static util.TypeResolverUtils.reportError;
-
 import domain.Class;
 import domain.Program;
+import jsf.jsfBaseVisitor;
+import jsf.jsfParser;
+import util.Typer;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.Map;
 
-import domain.type.Type;
-import jsf.jsfBaseVisitor;
-import jsf.jsfParser;
-import util.Typer;
+import static util.TypeResolverUtils.reportError;
 
 public class ProgramVisitor extends jsfBaseVisitor<Program> {
 

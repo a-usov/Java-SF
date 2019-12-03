@@ -49,18 +49,18 @@ primExpression
         |       ID                                                                      # var
         |       primExpression DOT ID                                                   # field
         |       primExpression DOT ID LPAR expression RPAR                              # method
-        |       NEW ID LPAR (expression (COMMA expression)*)? RPAR                    # object
+        |       NEW ID LPAR (expression (COMMA expression)*)? RPAR                      # object
         ;
 
 type
-        :       basicType
-        |       ID
-        |       SETNOT ID
-        |       type1=type bool=(COMP | INTER | UNION) type2=type
+        :       basicType                                           # basic
+        |       ID                                                  # class
+        |       NOT ID                                              # notclass
+        |       LPAR type1=type bool=(AND | OR) type2=type RPAR     # boolean
         ;
 
 basicType
-        :       BYTE | INT | LONG | FLOAT | DOUBLE | CHAR | BOOL | VOID
+        :       BYTE | INT | LONG | FLOAT | DOUBLE | CHAR | BOOL
         ;
 
 BYTE    :       'byte'                      ;
@@ -70,11 +70,11 @@ FLOAT   :       'float'                     ;
 DOUBLE  :       'double'                    ;
 CHAR    :       'char'                      ;
 BOOL    :       'bool'                      ;
-VOID    :       'void'                      ;
 
 AND     :       'and'                       ;
 OR      :       'or'                        ;
 NOT     :       'not'                       ;
+
 CLASS   :       'class'                     ;
 SUPER   :       'super'                     ;
 EXTEND  :       'extends'                   ;
@@ -94,11 +94,6 @@ MULT    :       '*'                         ;
 COMMA   :       ','                         ;
 DOT     :       '.'                         ;
 SEMI    :       ';'                         ;
-
-COMP   :       '\\'                         ;
-UNION   :       '|'                         ;
-INTER   :       '^'                         ;
-SETNOT  :       '¬'                         ;
 
 ID      :       LETTER (LETTER | DIGIT)*    ;
 NUMBER  :       DIGIT (DIGIT)*              ;

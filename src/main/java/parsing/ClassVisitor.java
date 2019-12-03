@@ -1,16 +1,14 @@
 package parsing;
 
-import static util.TypeResolverUtils.reportError;
-
 import domain.Class;
-import domain.Constructor;
-import domain.Field;
-import domain.Method;
-import domain.Program;
-import java.util.HashMap;
-import java.util.Map;
+import domain.*;
 import jsf.jsfBaseVisitor;
 import jsf.jsfParser;
+
+import java.util.HashMap;
+import java.util.Map;
+
+import static util.TypeResolverUtils.reportError;
 
 public class ClassVisitor extends jsfBaseVisitor<Class> {
 
@@ -22,7 +20,7 @@ public class ClassVisitor extends jsfBaseVisitor<Class> {
     final String name = ctx.classlbl.getText();
     final String superName = ctx.extendlbl == null ? "" : ctx.extendlbl.getText();
 
-    final FieldVisitor fieldVisitor = new FieldVisitor(name);
+    final FieldVisitor fieldVisitor = new FieldVisitor();
     ctx.fieldDecl().forEach(f -> {
       final Field field = f.accept(fieldVisitor);
       if (fields.containsKey(field.getName())) {
