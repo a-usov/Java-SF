@@ -8,9 +8,9 @@ import java.util.Set;
 
 public class BooleanType {
 
-  private Type type;
-  private Boolean not;
-  private Pair<BooleanConnective, BooleanType> connective;
+  private final Type type;
+  private final Boolean not;
+  private final Pair<BooleanConnective, BooleanType> connective;
 
   public BooleanType(Type type, Boolean not) {
     this.type = type;
@@ -20,7 +20,7 @@ public class BooleanType {
 
   public BooleanType(Type type, Boolean not, Pair<BooleanConnective, BooleanType> type2) {
     this.type = type;
-    this.not = isNot;
+    this.not = not;
     this.connective = type2;
   }
 

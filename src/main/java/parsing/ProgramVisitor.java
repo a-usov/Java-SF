@@ -3,35 +3,33 @@ package parsing;
 import domain.Class;
 import domain.Program;
 import jsf.jsfBaseVisitor;
-import jsf.jsfParser;
+import jsf.jsfParser.ProgramContext;
 import util.Typer;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.Map;
+
 
 import static util.TypeResolverUtils.reportError;
 
 public class ProgramVisitor extends jsfBaseVisitor<Program> {
 
   @Override
-  public Program visitProgram(final jsfParser.ProgramContext ctx) {
-    final Map<String, Class> classes = new HashMap<>();
+  public Program visitProgram(final ProgramContext ctx) {
+    final var classes = new HashMap<String, Class>();
 
-    final ClassVisitor classVisitor = new ClassVisitor();
-
-    ctx.classDecl().forEach(c -> {
-      final Class visitingClass = c.accept(classVisitor);
-      if (classes.containsKey(visitingClass.getName())) {
-        throw new RuntimeException(
-            reportError("repeated class name: " + visitingClass.getName(), c));
+    final var classVisitor = new ClassVisitor();
+    ctx.classDecl().forEach(classCtx -> {
+      final Class c = classCtx.accept(classVisitor);
+      if (classes.containsKey(c.getName())) {
+            reportError("repeated class name: " + c.getName(), c.getCtx());
       } else {
-        classes.put(visitingClass.getName(), visitingClass);
+        classes.put(c.getName(), c);
       }
     });
 
-    final Program program = new Program(classes);
+    final var program = new Program(classes);
     System.out.println(program);
     return program;
   }
@@ -41,7 +39,7 @@ public class ProgramVisitor extends jsfBaseVisitor<Program> {
    * @param program the program we are visiting
    */
   public void visit(final Program program) {
-    final ClassVisitor classVisitor = new ClassVisitor();
+    final var classVisitor = new ClassVisitor();
 
     generateRelation(program.getClasses().values());
 
@@ -61,6 +59,7 @@ public class ProgramVisitor extends jsfBaseVisitor<Program> {
     }
 
     if (classes.equals(untyped)) {
+      // TODO fix me
       throw new RuntimeException("We have a circular dependency");
     } else if (! untyped.isEmpty()) {
         generateRelation(untyped);

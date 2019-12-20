@@ -1,6 +1,8 @@
 package domain;
 
 import domain.type.ClassType;
+import jsf.jsfParser.ClassDeclContext;
+
 import java.util.Map;
 
 public class Class {
@@ -10,6 +12,7 @@ public class Class {
   private final Constructor constructor;
   private final Map<String, Method> methods;
   private final String superName;
+  private final ClassDeclContext ctx;
 
   /**
    * Creates a class struct that has a name, list of fields, and constructor
@@ -19,7 +22,7 @@ public class Class {
    * @param constructor constructor of class
    */
   public Class(final String name, final Map<String, Field> fields, final Constructor constructor,
-               final Map<String, Method> methods, final String superName) {
+               final Map<String, Method> methods, final String superName, final ClassDeclContext ctx) {
     super();
     this.name = name;
     this.type = new ClassType(name, fields, methods);
@@ -27,6 +30,7 @@ public class Class {
     this.constructor = constructor;
     this.methods = methods;
     this.superName = superName;
+    this.ctx = ctx;
   }
 
   public String getName() {
@@ -53,9 +57,13 @@ public class Class {
     return type;
   }
 
+  public ClassDeclContext getCtx() {
+    return ctx;
+  }
+
   @Override
   public String toString() {
     return "Class: " + name + " extends: " + superName + "\n" + fields + "\n"
-            + constructor + "\n" + methods;
+        + constructor + "\n" + methods;
   }
 }

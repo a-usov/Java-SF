@@ -2,6 +2,7 @@ package domain;
 
 import domain.type.Type;
 import jsf.jsfParser.ExpressionContext;
+import jsf.jsfParser.MethodDeclContext;
 
 public class Method {
 
@@ -10,6 +11,7 @@ public class Method {
   private final String name;
   private final Parameter parameter;
   private final ExpressionContext expression;
+  private final MethodDeclContext ctx;
 
   /**
    * Creates a method, with a return type, name and single parameter.
@@ -17,14 +19,15 @@ public class Method {
    * @param returnType a Type which can be basic or a custom class
    * @param name       method name as String
    * @param parameter  parameter that method takes
-   * @param ctx        the expression context within method that we store to type check later
+   * @param exprCtx    the expression context within method that we store to type check later
    */
   public Method(final Type returnType, final String name,
-                final Parameter parameter, final ExpressionContext ctx) {
+                final Parameter parameter, final ExpressionContext exprCtx, final MethodDeclContext methodCtx) {
     this.returnType = returnType;
     this.name = name;
     this.parameter = parameter;
-    this.expression = ctx;
+    this.expression = exprCtx;
+    this.ctx = methodCtx;
   }
 
   public String getName() {
@@ -41,6 +44,10 @@ public class Method {
 
   public ExpressionContext getExpression() {
     return expression;
+  }
+
+  public MethodDeclContext getCtx() {
+    return ctx;
   }
 
   @Override
