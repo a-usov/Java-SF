@@ -7,7 +7,12 @@ import domain.type.BasicType;
 import domain.type.ClassType;
 import domain.type.Type;
 import jsf.jsfBaseVisitor;
-import jsf.jsfParser;
+import jsf.jsfParser.ExpressionContext;
+import jsf.jsfParser.NumContext;
+import jsf.jsfParser.VarContext;
+import jsf.jsfParser.FieldContext;
+import jsf.jsfParser.MethodContext;
+import jsf.jsfParser.ObjectContext;
 
 import static util.TypeResolverUtils.getFromValue;
 
@@ -29,7 +34,7 @@ public class ExpressionVisitor extends jsfBaseVisitor<Type> {
   }
 
   @Override
-  public Type visitExpression(final jsfParser.ExpressionContext ctx) {
+  public Type visitExpression(final ExpressionContext ctx) {
     final Type type = ctx.e1.accept(this);
 
     Type type2 = null;
@@ -52,12 +57,12 @@ public class ExpressionVisitor extends jsfBaseVisitor<Type> {
   }
 
   @Override
-  public Type visitNum(final jsfParser.NumContext ctx) {
+  public Type visitNum(final NumContext ctx) {
     return getFromValue(ctx.NUMBER().getText());
   }
 
   @Override
-  public Type visitVar(final jsfParser.VarContext ctx) {
+  public Type visitVar(final VarContext ctx) {
     if (!ctx.ID().getText().equals(parameter.getName())) {
       throw new RuntimeException("Referring to parameter that is not defined");
     }
@@ -65,7 +70,7 @@ public class ExpressionVisitor extends jsfBaseVisitor<Type> {
   }
 
   @Override
-  public Type visitField(final jsfParser.FieldContext ctx) {
+  public Type visitField(final FieldContext ctx) {
     final Type subExpression = ctx.primExpression().accept(this);
     if (subExpression.getClass() == BasicType.class) {
       throw new RuntimeException("Cannot access field of a basic type");
@@ -84,7 +89,7 @@ public class ExpressionVisitor extends jsfBaseVisitor<Type> {
   }
 
   @Override
-  public Type visitMethod(final jsfParser.MethodContext ctx) {
+  public Type visitMethod(final MethodContext ctx) {
     final Type subExpression = ctx.primExpression().accept(this);
 
     if (subExpression.getClass() == BasicType.class) {
@@ -115,7 +120,7 @@ public class ExpressionVisitor extends jsfBaseVisitor<Type> {
   }
 
   @Override
-  public Type visitObject(final jsfParser.ObjectContext ctx) {
+  public Type visitObject(final ObjectContext ctx) {
     return new ClassType(ctx.ID().getText());
   }
 }

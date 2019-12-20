@@ -37,6 +37,8 @@ public final class App {
 
       visitor.visit(program);
 
+    } catch (NullPointerException e) {
+      e.printStackTrace();
     } catch (Exception e) {
       if (LOGGER.isLoggable(Level.SEVERE)) {
         LOGGER.severe("Exception occurred: " + e);

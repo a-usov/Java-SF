@@ -9,8 +9,8 @@ import java.util.*;
 
 public class Typer {
 
-  public static Map<Type, Set<Type>> subClasses = new HashMap<>();
-  public static Set<Type> universeSet = new HashSet<>();
+  public static final Map<Type, Set<Type>> subClasses = new HashMap<>();
+  public static final Set<Type> universeSet = new HashSet<>();
 
   static {
     subClasses.put(BasicType.BOOLEAN, new HashSet<>(Collections.singletonList(BasicType.BOOLEAN)));
@@ -43,7 +43,7 @@ public class Typer {
         boolean isValidSub = true;
 
         for (var entry : newClass.getFields().entrySet()) {
-          if (! subClasses.containsKey(entry.getValue().getType())) {
+          if (!subClasses.containsKey(entry.getValue().getType())) {
             return false;
           }
 
