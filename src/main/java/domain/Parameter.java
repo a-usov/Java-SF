@@ -6,7 +6,7 @@ import org.antlr.v4.runtime.Token;
 public class Parameter {
   private final String name;
   private final Type type;
-  private Token ctx;
+  private final Token ctx;
 
   /**
    * Creates a local parameter.

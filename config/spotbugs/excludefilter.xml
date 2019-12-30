@@ -15,4 +15,11 @@
     <Match>
         <Class name="jsf.jsfParser$ProgramContext" />
     </Match>
+    <Match>
+        <Class name="jsf.jsfParser$BooleanContext" />
+    </Match>
+    <Match>
+        <Class name="util.TyperHelper" />
+        <Bug pattern="MS_MUTABLE_COLLECTION" />
+    </Match>
 </FindBugsFilter>

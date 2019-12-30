@@ -1,11 +1,11 @@
 package parsing;
 
 import domain.Parameter;
+import java.util.ArrayList;
+import java.util.List;
 import jsf.jsfBaseVisitor;
 import jsf.jsfParser.SuperDeclContext;
 
-import java.util.ArrayList;
-import java.util.List;
 
 public class SuperVisitor extends jsfBaseVisitor<List<Parameter>> {
 

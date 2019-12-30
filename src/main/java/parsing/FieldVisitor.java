@@ -1,11 +1,11 @@
 package parsing;
 
+import static util.TypeResolverUtils.getFromTypeName;
+
 import domain.Field;
 import domain.type.Type;
 import jsf.jsfBaseVisitor;
 import jsf.jsfParser.FieldDeclContext;
-
-import static util.TypeResolverUtils.getFromTypeName;
 
 public class FieldVisitor extends jsfBaseVisitor<Field> {
 

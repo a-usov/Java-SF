@@ -1,13 +1,17 @@
 package parsing;
 
+import static util.TypeResolverUtils.reportError;
+
 import domain.Class;
-import domain.*;
-import jsf.jsfBaseVisitor;
-import jsf.jsfParser.ClassDeclContext;
+import domain.Constructor;
+import domain.Field;
+import domain.Method;
+import domain.Program;
 
 import java.util.HashMap;
 
-import static util.TypeResolverUtils.reportError;
+import jsf.jsfBaseVisitor;
+import jsf.jsfParser.ClassDeclContext;
 
 public class ClassVisitor extends jsfBaseVisitor<Class> {
 
@@ -52,10 +56,9 @@ public class ClassVisitor extends jsfBaseVisitor<Class> {
    * @param program    the whole program structure
    */
   public void visit(final Class visitClass, final Program program) {
-    if (visitClass.getSuperName() != null) {
-      if (program.getClasses().get(visitClass.getSuperName()) == null) {
-        reportError("The super class " + visitClass.getSuperName() + " of class " + visitClass.getName() + " does not exist", visitClass.getCtx());
-      }
+    if (visitClass.getSuperName() != null && program.getClasses().get(visitClass.getSuperName()) == null) {
+      reportError("The super class " + visitClass.getSuperName() + " of class " + visitClass.getName()
+          + " does not exist", visitClass.getCtx());
     }
 
     final var constructorVisitor = new ConstructorVisitor(visitClass.getName());

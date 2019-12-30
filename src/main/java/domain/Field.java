@@ -14,7 +14,7 @@ public class Field {
    * @param name name of the field
    * @param type type of the field
    */
-  public Field(final String name, final Type type, FieldDeclContext ctx) {
+  public Field(final String name, final Type type, final FieldDeclContext ctx) {
     super();
     this.name = name;
     this.type = type;

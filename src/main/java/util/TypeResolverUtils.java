@@ -6,16 +6,16 @@ import com.google.common.primitives.Ints;
 import domain.type.BasicType;
 import domain.type.ClassType;
 import domain.type.Type;
-import org.antlr.v4.runtime.ParserRuleContext;
-import org.antlr.v4.runtime.Token;
 
 import java.util.Arrays;
 import java.util.Optional;
 
+import org.antlr.v4.runtime.ParserRuleContext;
+import org.antlr.v4.runtime.Token;
+
 public final class TypeResolverUtils {
 
   private TypeResolverUtils() {
-
   }
 
   /**
@@ -62,14 +62,12 @@ public final class TypeResolverUtils {
   }
 
   /**
-   * Create a error message string given a msg and a context in the program.
+   * Throw a Runtime Exception given a msg and a context in the program.
    *
    * @param message message to display with error
    * @param ctx     context of msg that has line numbers of error
-   * @return formatted error msg
    */
-  public static String reportError(final String message, final ParserRuleContext ctx) {
-    // Print an error message relating to the given part of the AST.
+  public static void reportError(final String message, final ParserRuleContext ctx) {
     final Token start = ctx.getStart();
     final Token finish = ctx.getStop();
     final int startLine = start.getLine();
@@ -80,8 +78,13 @@ public final class TypeResolverUtils {
     throw new RuntimeException(startLine + ":" + startCol + "-" + finishLine + ":" + finishCol + " " + message);
   }
 
-  public static String reportError(final String message, final Token ctx) {
-    // Print an error message relating to the given part of the AST.
+  /**
+   * Throw a Runtime Exception given a single token of the AST instead of a context.
+   *
+   * @param message message to display with error
+   * @param ctx     Token where error occured
+   */
+  public static void reportError(final String message, final Token ctx) {
     final int startLine = ctx.getLine();
     final int startCol = ctx.getCharPositionInLine();
 
