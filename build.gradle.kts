@@ -1,12 +1,9 @@
-import de.undercouch.gradle.tasks.download.Download
-
 plugins {
     java
     application
     id("com.github.spotbugs") version "2.0.1"
     checkstyle
     pmd
-    id("de.undercouch.download") version "4.0.1"
     antlr
 }
 
@@ -38,17 +35,7 @@ tasks.withType<Jar> {
     from(configurations.runtime.get().map { if (it.isDirectory) it else zipTree(it) })
 }
 
-task<Download>("download-google-style") {
-    src("https://raw.githubusercontent.com/checkstyle/checkstyle/master/src/main/resources/google_checks.xml")
-    dest(File("config/checkstyle/checkstyle.xml"))
-    overwrite(false)
-}
-
 tasks {
-    "checkstyleMain" {
-        dependsOn("download-google-style")
-    }
-
     spotbugsMain {
         reports.xml.isEnabled = false
         reports.html.isEnabled = true

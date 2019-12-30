@@ -1,17 +1,17 @@
 package parsing;
 
+import static util.TypeResolverUtils.reportError;
+
 import domain.Class;
 import domain.Program;
-import jsf.jsfBaseVisitor;
-import jsf.jsfParser.ProgramContext;
-import util.Typer;
 
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 
-
-import static util.TypeResolverUtils.reportError;
+import jsf.jsfBaseVisitor;
+import jsf.jsfParser.ProgramContext;
+import util.TyperHelper;
 
 public class ProgramVisitor extends jsfBaseVisitor<Program> {
 
@@ -23,7 +23,7 @@ public class ProgramVisitor extends jsfBaseVisitor<Program> {
     ctx.classDecl().forEach(classCtx -> {
       final Class c = classCtx.accept(classVisitor);
       if (classes.containsKey(c.getName())) {
-            reportError("repeated class name: " + c.getName(), c.getCtx());
+        reportError("repeated class name: " + c.getName(), c.getCtx());
       } else {
         classes.put(c.getName(), c);
       }
@@ -36,6 +36,7 @@ public class ProgramVisitor extends jsfBaseVisitor<Program> {
 
   /**
    * Second round visit for a whole program.
+   *
    * @param program the program we are visiting
    */
   public void visit(final Program program) {
@@ -43,26 +44,26 @@ public class ProgramVisitor extends jsfBaseVisitor<Program> {
 
     generateRelation(program.getClasses().values());
 
-    System.out.println("Relation: " + Typer.subClasses);
-    System.out.println("Universe: " + Typer.universeSet);
+    System.out.println("Relation: " + TyperHelper.SUB_CLASSES);
+    System.out.println("Universe: " + TyperHelper.UNIVERSE_SET);
 
     program.getClasses().values().forEach(c -> classVisitor.visit(c, program));
   }
 
-  private void generateRelation(Collection<Class> classes) {
-    var untyped = new ArrayList<Class>();
+  private void generateRelation(final Collection<Class> classes) {
+    final var untyped = new ArrayList<Class>();
 
-    for (var class_ : classes) {
-      if (! Typer.addClass(class_)) {
-        untyped.add(class_);
+    for (final var c : classes) {
+      if (!TyperHelper.addClass(c)) {
+        untyped.add(c);
       }
     }
 
     if (classes.equals(untyped)) {
       // TODO fix me
       throw new RuntimeException("We have a circular dependency");
-    } else if (! untyped.isEmpty()) {
-        generateRelation(untyped);
+    } else if (!untyped.isEmpty()) {
+      generateRelation(untyped);
     }
   }
 }

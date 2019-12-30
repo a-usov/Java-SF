@@ -1,5 +1,8 @@
 package parsing;
 
+import static util.TypeResolverUtils.getFromTypeName;
+import static util.TypeResolverUtils.reportError;
+
 import domain.Method;
 import domain.Parameter;
 import domain.Program;
@@ -7,9 +10,6 @@ import domain.type.BasicType;
 import domain.type.Type;
 import jsf.jsfBaseVisitor;
 import jsf.jsfParser.MethodDeclContext;
-
-import static util.TypeResolverUtils.getFromTypeName;
-import static util.TypeResolverUtils.reportError;
 
 public class MethodVisitor extends jsfBaseVisitor<Method> {
 
@@ -19,7 +19,8 @@ public class MethodVisitor extends jsfBaseVisitor<Method> {
 
     Parameter parameter = new Parameter("empty", BasicType.VOID, ctx.paramname);
     if (ctx.paramname != null && ctx.paramtype != null) {
-      parameter = new Parameter(ctx.paramname.getText(), getFromTypeName(ctx.paramtype.getText()), ctx.paramname);
+      final var name = ctx.paramname.getText();
+      parameter = new Parameter(name, getFromTypeName(name), ctx.paramname);
     }
 
     final String name = ctx.name.getText();
@@ -38,8 +39,8 @@ public class MethodVisitor extends jsfBaseVisitor<Method> {
     final Type typeExpression = method.getExpression().accept(expressionVisitor);
 
     if (!typeExpression.getName().equals(method.getReturnType().getName())) {
-      reportError("Return type of expression of method " + method.getName()
-          + " does not match: " + typeExpression + " != " + method.getReturnType(), method.getCtx());
+      reportError("Return type of expression of method " + method.getName() + " does not match: "
+          + typeExpression + " != " + method.getReturnType(), method.getCtx());
     }
   }
 }

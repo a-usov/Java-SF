@@ -21,8 +21,8 @@ public class Method {
    * @param parameter  parameter that method takes
    * @param exprCtx    the expression context within method that we store to type check later
    */
-  public Method(final Type returnType, final String name,
-                final Parameter parameter, final ExpressionContext exprCtx, final MethodDeclContext methodCtx) {
+  public Method(final Type returnType, final String name, final Parameter parameter,
+                final ExpressionContext exprCtx, final MethodDeclContext methodCtx) {
     this.returnType = returnType;
     this.name = name;
     this.parameter = parameter;

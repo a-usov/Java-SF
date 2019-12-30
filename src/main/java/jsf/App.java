@@ -1,14 +1,14 @@
 package jsf;
 
 import domain.Program;
+import java.nio.file.Paths;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
 import org.antlr.v4.runtime.tree.ParseTree;
 import parsing.ProgramVisitor;
-import java.nio.file.Paths;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public final class App {
 
@@ -25,7 +25,9 @@ public final class App {
    */
   public static void main(final String[] args) {
     try {
-      final CharStream inputStream = CharStreams.fromPath(Paths.get(System.getProperty("user.dir"), "src/main/resources/example.jsf"));
+      // TODO change this to get input from args
+      final CharStream inputStream = CharStreams.fromPath(
+          Paths.get(System.getProperty("user.dir"), "src/main/resources/example.jsf"));
 
       final jsfLexer lexer = new jsfLexer(inputStream);
       final CommonTokenStream commonTokenStream = new CommonTokenStream(lexer);
@@ -37,8 +39,6 @@ public final class App {
 
       visitor.visit(program);
 
-    } catch (NullPointerException e) {
-      e.printStackTrace();
     } catch (Exception e) {
       if (LOGGER.isLoggable(Level.SEVERE)) {
         LOGGER.severe("Exception occurred: " + e);

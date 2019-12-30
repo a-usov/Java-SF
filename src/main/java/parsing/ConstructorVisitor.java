@@ -1,19 +1,21 @@
 package parsing;
 
+import static util.TypeResolverUtils.getFromTypeName;
+import static util.TypeResolverUtils.reportError;
+
 import domain.Constructor;
 import domain.Field;
 import domain.Parameter;
 import domain.Program;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.stream.IntStream;
 import jsf.jsfBaseVisitor;
 import jsf.jsfParser.ConstructorDeclContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Pair;
-
-import java.util.*;
-import java.util.stream.IntStream;
-
-import static util.TypeResolverUtils.getFromTypeName;
-import static util.TypeResolverUtils.reportError;
 
 public class ConstructorVisitor extends jsfBaseVisitor<Constructor> {
 
@@ -35,11 +37,11 @@ public class ConstructorVisitor extends jsfBaseVisitor<Constructor> {
 
     if (ctx.type().size() > 0) {
       IntStream.range(0, ctx.type().size()).forEach(i -> {
-        final var parameter = new Parameter(
-            ctx.ID(i + 1).getText(), getFromTypeName(ctx.type(i).getText()), ctx.ID(i + 1).getSymbol());
+        final var id = ctx.ID(i + 1);
 
+        final var parameter = new Parameter(id.getText(), getFromTypeName(ctx.type(i).getText()), id.getSymbol());
         if (parameters.containsKey(parameter.getName())) {
-              reportError("repeated formal parameter: " + parameter.getName(), parameter.getCtx());
+          reportError("repeated formal parameter: " + parameter.getName(), parameter.getCtx());
         } else {
           parameters.put(parameter.getName(), parameter);
         }
@@ -67,9 +69,7 @@ public class ConstructorVisitor extends jsfBaseVisitor<Constructor> {
     checkFieldAssign(constructor, program, owner);
   }
 
-  private void checkSuperCall(final Constructor constructor, final Program program,
-                              final String owner) {
-
+  private void checkSuperCall(final Constructor constructor, final Program program, final String owner) {
     final String superClassName = program.getClasses().get(owner).getSuperName();
 
     if (superClassName == null) {
@@ -77,14 +77,13 @@ public class ConstructorVisitor extends jsfBaseVisitor<Constructor> {
         reportError("Passing more variables to constructor super call than it takes", constructor.getCtx());
       }
     } else {
-      final var superClassParameters = program.getClasses().get(superClassName)
-          .getConstructor().getParameterList().values();
+      final var superParameters = program.getClasses().get(superClassName).getConstructor().getParameterList().values();
 
-      if (constructor.getSuperParameters().size() != superClassParameters.size()) {
+      if (constructor.getSuperParameters().size() != superParameters.size()) {
         reportError("Passing wrong number of arguments to super call of constructor", constructor.getCtx());
       }
 
-      final var superIterator = superClassParameters.iterator();
+      final var superIterator = superParameters.iterator();
       final var parameterIterator = constructor.getSuperParameters().iterator();
 
       while (superIterator.hasNext() && parameterIterator.hasNext()) {
@@ -94,7 +93,8 @@ public class ConstructorVisitor extends jsfBaseVisitor<Constructor> {
         final Parameter actualParam = constructor.getParameterList().get(formalParam.getName());
 
         if (actualParam == null) {
-          reportError("Parameter + " + formalParam.getName() + "doesnt exist in " + "constructor of " + owner, formalParam.getCtx());
+          reportError("Parameter + " + formalParam.getName() + "doesnt exist in "
+              + "constructor of " + owner, formalParam.getCtx());
         } else {
           if (superParam.getType() != actualParam.getType()) {
             reportError("Type of parameter doesnt match type of super constructor: "
@@ -105,8 +105,7 @@ public class ConstructorVisitor extends jsfBaseVisitor<Constructor> {
     }
   }
 
-  private void checkFieldAssign(final Constructor constructor, final Program program,
-                                final String owner) {
+  private void checkFieldAssign(final Constructor constructor, final Program program, final String owner) {
     final var fieldSet = new HashMap<String, Boolean>();
 
     program.getClasses().get(owner).getFields().values()
@@ -130,7 +129,8 @@ public class ConstructorVisitor extends jsfBaseVisitor<Constructor> {
 
     for (final var field : fieldSet.entrySet()) {
       if (!field.getValue()) {
-        reportError("Field + " + field.getKey() + " has not been set,", program.getClasses().get(owner).getFields().get(field.getKey()).getCtx());
+        reportError("Field + " + field.getKey() + " has not been set,",
+            program.getClasses().get(owner).getFields().get(field.getKey()).getCtx());
       }
     }
 

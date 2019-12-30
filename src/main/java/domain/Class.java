@@ -1,9 +1,8 @@
 package domain;
 
 import domain.type.ClassType;
-import jsf.jsfParser.ClassDeclContext;
-
 import java.util.Map;
+import jsf.jsfParser.ClassDeclContext;
 
 public class Class {
   private final String name;
@@ -15,7 +14,7 @@ public class Class {
   private final ClassDeclContext ctx;
 
   /**
-   * Creates a class struct that has a name, list of fields, and constructor
+   * Creates a class struct that has a name, list of fields, and constructor.
    *
    * @param name        name of the class
    * @param fields      Set of unique fields
@@ -63,7 +62,6 @@ public class Class {
 
   @Override
   public String toString() {
-    return "Class: " + name + " extends: " + superName + "\n" + fields + "\n"
-        + constructor + "\n" + methods;
+    return "Class: " + name + " extends: " + superName + "\n" + fields + "\n" + constructor + "\n" + methods;
   }
 }

@@ -1,5 +1,7 @@
 package parsing;
 
+import static util.TypeResolverUtils.getFromValue;
+
 import domain.Method;
 import domain.Parameter;
 import domain.Program;
@@ -8,13 +10,11 @@ import domain.type.ClassType;
 import domain.type.Type;
 import jsf.jsfBaseVisitor;
 import jsf.jsfParser.ExpressionContext;
-import jsf.jsfParser.NumContext;
-import jsf.jsfParser.VarContext;
 import jsf.jsfParser.FieldContext;
 import jsf.jsfParser.MethodContext;
+import jsf.jsfParser.NumContext;
 import jsf.jsfParser.ObjectContext;
-
-import static util.TypeResolverUtils.getFromValue;
+import jsf.jsfParser.VarContext;
 
 public class ExpressionVisitor extends jsfBaseVisitor<Type> {
 

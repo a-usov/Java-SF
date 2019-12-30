@@ -1,11 +1,10 @@
 package domain;
 
+import java.util.List;
+import java.util.Map;
 import jsf.jsfParser.ConstructorDeclContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Pair;
-
-import java.util.List;
-import java.util.Map;
 
 public class Constructor {
   private final Map<String, Parameter> parameterList;
@@ -47,8 +46,7 @@ public class Constructor {
 
   @Override
   public String toString() {
-    return "Constructor takes arguments : " + parameterList + "\n"
-        + "Super takes arguments" + superParameters + "\n"
+    return "Constructor takes arguments : " + parameterList + "\n" + "Super takes arguments" + superParameters + "\n"
         + "fields assigned are: " + fieldAssignments;
   }
 }
