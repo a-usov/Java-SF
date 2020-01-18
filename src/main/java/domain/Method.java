@@ -2,16 +2,17 @@ package domain;
 
 import domain.type.Type;
 import jsf.jsfParser.ExpressionContext;
-import jsf.jsfParser.MethodDeclContext;
+import org.antlr.v4.runtime.Token;
 
 public class Method {
 
   // TODO - Encapsulate return and parameter type
-  private final Type returnType;
+  private Type returnType;
+  private String returnTypeName;
   private final String name;
   private final Parameter parameter;
   private final ExpressionContext expression;
-  private final MethodDeclContext ctx;
+  private final Token token;
 
   /**
    * Creates a method, with a return type, name and single parameter.
@@ -19,15 +20,16 @@ public class Method {
    * @param returnType a Type which can be basic or a custom class
    * @param name       method name as String
    * @param parameter  parameter that method takes
-   * @param exprCtx    the expression context within method that we store to type check later
+   * @param ctx        the expression context within method that we store to type check later
    */
   public Method(final Type returnType, final String name, final Parameter parameter,
-                final ExpressionContext exprCtx, final MethodDeclContext methodCtx) {
+                final ExpressionContext ctx, final Token token, final String returnTypeName) {
     this.returnType = returnType;
     this.name = name;
     this.parameter = parameter;
-    this.expression = exprCtx;
-    this.ctx = methodCtx;
+    this.expression = ctx;
+    this.token = token;
+    this.returnTypeName = returnTypeName;
   }
 
   public String getName() {
@@ -42,12 +44,20 @@ public class Method {
     return returnType;
   }
 
+  public void setReturnType(Type type) {
+    this.returnType = type;
+  }
+
   public ExpressionContext getExpression() {
     return expression;
   }
 
-  public MethodDeclContext getCtx() {
-    return ctx;
+  public Token getToken() {
+    return token;
+  }
+
+  public String getReturnTypeName() {
+    return returnTypeName;
   }
 
   @Override

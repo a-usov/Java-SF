@@ -1,12 +1,13 @@
 package domain;
 
 import domain.type.Type;
-import jsf.jsfParser.FieldDeclContext;
+import org.antlr.v4.runtime.Token;
 
 public class Field {
   private final String name;
-  private final Type type;
-  private final FieldDeclContext ctx;
+  private Type type;
+  private final Token token;
+  private final String typeName;
 
   /**
    * Object representing a field in a class.
@@ -14,11 +15,12 @@ public class Field {
    * @param name name of the field
    * @param type type of the field
    */
-  public Field(final String name, final Type type, final FieldDeclContext ctx) {
+  public Field(final String name, final Type type, final Token token, final String typeName) {
     super();
     this.name = name;
     this.type = type;
-    this.ctx = ctx;
+    this.token = token;
+    this.typeName = typeName;
   }
 
   public String getName() {
@@ -29,8 +31,16 @@ public class Field {
     return type;
   }
 
-  public FieldDeclContext getCtx() {
-    return ctx;
+  public void setType(Type type) {
+    this.type = type;
+  }
+
+  public Token getToken() {
+    return token;
+  }
+
+  public String getTypeName() {
+    return typeName;
   }
 
   @Override

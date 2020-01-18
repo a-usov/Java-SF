@@ -28,8 +28,7 @@ public enum BasicType implements Type {
   private final String descriptor;
   private final TypeSpecificOpcodes opcodes;
 
-  BasicType(final String name, final Class<?> typeClass,
-            final String descriptor, final TypeSpecificOpcodes opcodes) {
+  BasicType(final String name, final Class<?> typeClass, final String descriptor, final TypeSpecificOpcodes opcodes) {
     this.name = name;
     this.typeClass = typeClass;
     this.descriptor = descriptor;

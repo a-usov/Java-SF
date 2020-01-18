@@ -7,17 +7,20 @@ import domain.Constructor;
 import domain.Field;
 import domain.Parameter;
 import domain.Program;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.IntStream;
+
 import jsf.jsfBaseVisitor;
 import jsf.jsfParser.ConstructorDeclContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Pair;
 
-public class ConstructorVisitor extends jsfBaseVisitor<Constructor> {
+public class ConstructorVisitor extends jsfBaseVisitor<Pair<Constructor, Boolean>> {
 
   private final String owner;
 
@@ -27,9 +30,11 @@ public class ConstructorVisitor extends jsfBaseVisitor<Constructor> {
   }
 
   @Override
-  public Constructor visitConstructorDecl(final ConstructorDeclContext ctx) {
+  public Pair<Constructor, Boolean> visitConstructorDecl(final ConstructorDeclContext ctx) {
     final var parameters = new LinkedHashMap<String, Parameter>();
     final var fieldAssignments = new ArrayList<Pair<Token, Token>>();
+
+    AtomicBoolean isResolved = new AtomicBoolean(true);
 
     if (!ctx.constructorname.getText().equals(owner)) {
       reportError("constructor name does not match the class", ctx);
@@ -41,8 +46,11 @@ public class ConstructorVisitor extends jsfBaseVisitor<Constructor> {
 
         final var parameter = new Parameter(id.getText(), getFromTypeName(ctx.type(i).getText()), id.getSymbol());
         if (parameters.containsKey(parameter.getName())) {
-          reportError("repeated formal parameter: " + parameter.getName(), parameter.getCtx());
+          reportError("repeated formal parameter: " + parameter.getName(), parameter.getToken());
         } else {
+          if (parameter.getType() == null) {
+            isResolved.set(false);
+          }
           parameters.put(parameter.getName(), parameter);
         }
 
@@ -55,7 +63,7 @@ public class ConstructorVisitor extends jsfBaseVisitor<Constructor> {
     final var fieldAssignmentVisitor = new FieldAssignmentVisitor();
     ctx.fieldAssignment().forEach(a -> fieldAssignments.add(a.accept(fieldAssignmentVisitor)));
 
-    return new Constructor(parameters, superParameters, fieldAssignments, ctx);
+    return new Pair<>(new Constructor(parameters, superParameters, fieldAssignments, ctx.constructorname), isResolved.get());
   }
 
   /**
@@ -74,13 +82,13 @@ public class ConstructorVisitor extends jsfBaseVisitor<Constructor> {
 
     if (superClassName == null) {
       if (constructor.getSuperParameters().size() > 0) {
-        reportError("Passing more variables to constructor super call than it takes", constructor.getCtx());
+        reportError("Passing more variables to constructor super call than it takes", constructor.getToken());
       }
     } else {
       final var superParameters = program.getClasses().get(superClassName).getConstructor().getParameterList().values();
 
       if (constructor.getSuperParameters().size() != superParameters.size()) {
-        reportError("Passing wrong number of arguments to super call of constructor", constructor.getCtx());
+        reportError("Passing wrong number of arguments to super call of constructor", constructor.getToken());
       }
 
       final var superIterator = superParameters.iterator();
@@ -94,11 +102,11 @@ public class ConstructorVisitor extends jsfBaseVisitor<Constructor> {
 
         if (actualParam == null) {
           reportError("Parameter + " + formalParam.getName() + "doesnt exist in "
-              + "constructor of " + owner, formalParam.getCtx());
+                  + "constructor of " + owner, formalParam.getToken());
         } else {
           if (superParam.getType() != actualParam.getType()) {
             reportError("Type of parameter doesnt match type of super constructor: "
-                + actualParam.getType() + " != " + superParam.getType(), actualParam.getCtx());
+                    + actualParam.getType() + " != " + superParam.getType(), actualParam.getToken());
           }
         }
       }
@@ -109,7 +117,7 @@ public class ConstructorVisitor extends jsfBaseVisitor<Constructor> {
     final var fieldSet = new HashMap<String, Boolean>();
 
     program.getClasses().get(owner).getFields().values()
-        .forEach(f -> fieldSet.put(f.getName(), false));
+            .forEach(f -> fieldSet.put(f.getName(), false));
 
     for (final var assignment : constructor.getFieldAssignments()) {
       final Field field = program.getClasses().get(owner).getFields().get(assignment.a.getText());
@@ -121,7 +129,7 @@ public class ConstructorVisitor extends jsfBaseVisitor<Constructor> {
         reportError("Parameter " + assignment.b.getText() + " does not exist", assignment.b);
       } else if (field.getType() != parameter.getType()) {
         reportError("Field " + assignment.a.getText() + " and parameter " + assignment.b.getText()
-            + " have different types: " + field.getType() + " != " + parameter.getType(), assignment.a);
+                + " have different types: " + field.getType() + " != " + parameter.getType(), assignment.a);
       }
 
       fieldSet.put(field.getName(), true);
@@ -130,7 +138,7 @@ public class ConstructorVisitor extends jsfBaseVisitor<Constructor> {
     for (final var field : fieldSet.entrySet()) {
       if (!field.getValue()) {
         reportError("Field + " + field.getKey() + " has not been set,",
-            program.getClasses().get(owner).getFields().get(field.getKey()).getCtx());
+                program.getClasses().get(owner).getFields().get(field.getKey()).getToken());
       }
     }
 

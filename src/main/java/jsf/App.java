@@ -1,6 +1,8 @@
 package jsf;
 
 import domain.Program;
+
+import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -39,7 +41,7 @@ public final class App {
 
       visitor.visit(program);
 
-    } catch (Exception e) {
+    } catch (IOException e) {
       if (LOGGER.isLoggable(Level.SEVERE)) {
         LOGGER.severe("Exception occurred: " + e);
       }

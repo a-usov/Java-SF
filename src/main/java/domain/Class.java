@@ -1,17 +1,21 @@
 package domain;
 
 import domain.type.ClassType;
+
 import java.util.Map;
-import jsf.jsfParser.ClassDeclContext;
+
+import org.antlr.v4.runtime.Token;
 
 public class Class {
-  private final String name;
   private final ClassType type;
+
   private final Map<String, Field> fields;
   private final Constructor constructor;
   private final Map<String, Method> methods;
   private final String superName;
-  private final ClassDeclContext ctx;
+
+  private final Token token;
+  private boolean isResolved;
 
   /**
    * Creates a class struct that has a name, list of fields, and constructor.
@@ -21,19 +25,20 @@ public class Class {
    * @param constructor constructor of class
    */
   public Class(final String name, final Map<String, Field> fields, final Constructor constructor,
-               final Map<String, Method> methods, final String superName, final ClassDeclContext ctx) {
+               final Map<String, Method> methods, final String superName, final Token ctx,
+               boolean isResolved) {
     super();
-    this.name = name;
-    this.type = new ClassType(name, fields, methods);
+    this.type = new ClassType(name);
     this.fields = fields;
     this.constructor = constructor;
     this.methods = methods;
     this.superName = superName;
-    this.ctx = ctx;
+    this.token = ctx;
+    this.isResolved = isResolved;
   }
 
   public String getName() {
-    return name;
+    return this.type.getName();
   }
 
   public Constructor getConstructor() {
@@ -56,12 +61,21 @@ public class Class {
     return type;
   }
 
-  public ClassDeclContext getCtx() {
-    return ctx;
+  public Token getToken() {
+    return token;
+  }
+
+  public boolean isResolved() {
+    return isResolved;
+  }
+
+  public void setResolved(boolean resolved) {
+    this.isResolved = resolved;
   }
 
   @Override
   public String toString() {
-    return "Class: " + name + " extends: " + superName + "\n" + fields + "\n" + constructor + "\n" + methods;
+    return "Class: " + this.type.getName() + " extends: " + superName + "\n" + fields + "\n" + constructor + "\n"
+            + methods + "\n" + "isResolved: " + isResolved;
   }
 }
