@@ -1,6 +1,7 @@
 package util;
 
 import domain.Class;
+import domain.Program;
 import domain.type.BasicType;
 import domain.type.ClassType;
 import domain.type.Type;
@@ -46,7 +47,7 @@ public final class TyperHelper {
    * @param newClass class to add
    * @return boolean if adding was succesful
    */
-  public static boolean addClass(final Class newClass) {
+  public static boolean addClass(final Class newClass, final Program program) {
     final Set<Type> subclasses = new HashSet<>();
     subclasses.add(newClass.getType());
 
@@ -54,6 +55,7 @@ public final class TyperHelper {
       if (c.getKey() instanceof ClassType) {
 
         final var existing = (ClassType) c.getKey();
+        final var existingClass = program.getClasses().get(existing.getName());
         boolean isValid = true;
         boolean isValidSub = true;
 
@@ -62,14 +64,14 @@ public final class TyperHelper {
             return false;
           }
 
-          if (existing.getFields().containsKey(entry.getKey())) {
-            if (!SUB_CLASSES.get(existing.getFields().get(entry.getKey()))
+          if (existingClass.getFields().containsKey(entry.getKey())) {
+            if (!SUB_CLASSES.get(existingClass.getFields().get(entry.getKey()))
                 .contains(entry.getValue().getType())) {
               isValidSub = false;
             }
 
             if (!SUB_CLASSES.get(entry.getValue().getType())
-                .contains(existing.getFields().get(entry.getKey()))) {
+                .contains(existingClass.getFields().get(entry.getKey()))) {
               isValid = false;
             }
           } else {

@@ -2,7 +2,7 @@ package domain;
 
 import java.util.List;
 import java.util.Map;
-import jsf.jsfParser.ConstructorDeclContext;
+
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Pair;
 
@@ -10,7 +10,7 @@ public class Constructor {
   private final Map<String, Parameter> parameterList;
   private final List<Parameter> superParameters;
   private final List<Pair<Token, Token>> fieldAssignments;
-  private final ConstructorDeclContext ctx;
+  private final Token token;
 
   /**
    * Creates a constructor that holds the parameters, parameters passed to super() and assignments.
@@ -20,12 +20,12 @@ public class Constructor {
    * @param fieldAssignments list of Pairs of field and value parameter assigned to field
    */
   public Constructor(final Map<String, Parameter> parameters, final List<Parameter> superParameters,
-                     final List<Pair<Token, Token>> fieldAssignments, final ConstructorDeclContext ctx) {
+                     final List<Pair<Token, Token>> fieldAssignments, final Token token) {
     super();
     this.parameterList = parameters;
     this.superParameters = superParameters;
     this.fieldAssignments = fieldAssignments;
-    this.ctx = ctx;
+    this.token = token;
   }
 
   public Map<String, Parameter> getParameterList() {
@@ -40,13 +40,13 @@ public class Constructor {
     return fieldAssignments;
   }
 
-  public ConstructorDeclContext getCtx() {
-    return ctx;
+  public Token getToken() {
+    return token;
   }
 
   @Override
   public String toString() {
     return "Constructor takes arguments : " + parameterList + "\n" + "Super takes arguments" + superParameters + "\n"
-        + "fields assigned are: " + fieldAssignments;
+            + "fields assigned are: " + fieldAssignments;
   }
 }

@@ -14,6 +14,6 @@ public class FieldVisitor extends jsfBaseVisitor<Field> {
     final String name = ctx.ID().getText();
     final Type type = getFromTypeName(ctx.type().getText());
 
-    return new Field(name, type, ctx);
+    return new Field(name, type, ctx.start, ctx.type().getText());
   }
 }

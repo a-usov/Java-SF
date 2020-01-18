@@ -1,7 +1,7 @@
 plugins {
     java
     application
-    id("com.github.spotbugs") version "2.0.1"
+    id ("com.github.spotbugs") version "3.0.0"
     checkstyle
     pmd
     antlr
@@ -14,8 +14,8 @@ repositories {
 dependencies {
     testImplementation("org.junit.jupiter:junit-jupiter-api:5.5.2")
     testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.5.2")
-    compileOnly("org.ow2.asm:asm:7.2")
-    implementation("com.google.guava:guava:28.1-jre")
+    compileOnly("org.ow2.asm:asm:7.3.1")
+    implementation("com.google.guava:guava:28.2-jre")
     antlr("org.antlr:antlr4:4.7.2")
 }
 
@@ -60,5 +60,5 @@ pmd {
 spotbugs {
     effort = "max"
     excludeFilter = File("config/spotbugs/excludefilter.xml")
-    toolVersion = "4.0.0-beta4"
+    toolVersion = "4.0.0-beta5"
 }

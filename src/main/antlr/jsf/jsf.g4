@@ -55,7 +55,7 @@ primExpression
 type
         :       basicType                                           # basic
         |       ID                                                  # class
-        |       NOT ID                                              # notclass
+        |       NOT ID                                              # notClass
         |       LPAR type1=type bool=(AND | OR) type2=type RPAR     # boolean
         ;
 

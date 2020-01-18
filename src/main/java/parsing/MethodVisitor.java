@@ -25,7 +25,7 @@ public class MethodVisitor extends jsfBaseVisitor<Method> {
 
     final String name = ctx.name.getText();
 
-    return new Method(returnType, name, parameter, ctx.expression(), ctx);
+    return new Method(returnType, name, parameter, ctx.expression(), ctx.start, ctx.returntype.getText());
   }
 
   /**
@@ -38,9 +38,9 @@ public class MethodVisitor extends jsfBaseVisitor<Method> {
     final var expressionVisitor = new ExpressionVisitor(program, method.getParameter());
     final Type typeExpression = method.getExpression().accept(expressionVisitor);
 
-    if (!typeExpression.getName().equals(method.getReturnType().getName())) {
+    if (!typeExpression.equals(method.getReturnType())) {
       reportError("Return type of expression of method " + method.getName() + " does not match: "
-          + typeExpression + " != " + method.getReturnType(), method.getCtx());
+              + typeExpression + " != " + method.getReturnType(), method.getToken());
     }
   }
 }

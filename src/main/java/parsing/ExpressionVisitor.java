@@ -6,6 +6,7 @@ import domain.Method;
 import domain.Parameter;
 import domain.Program;
 import domain.type.BasicType;
+import domain.type.BooleanType;
 import domain.type.ClassType;
 import domain.type.Type;
 import jsf.jsfBaseVisitor;
@@ -70,7 +71,7 @@ public class ExpressionVisitor extends jsfBaseVisitor<Type> {
   }
 
   @Override
-  public Type visitField(final FieldContext ctx) {
+  public BooleanType visitField(final FieldContext ctx) {
     final Type subExpression = ctx.primExpression().accept(this);
     if (subExpression.getClass() == BasicType.class) {
       throw new RuntimeException("Cannot access field of a basic type");
@@ -121,6 +122,11 @@ public class ExpressionVisitor extends jsfBaseVisitor<Type> {
 
   @Override
   public Type visitObject(final ObjectContext ctx) {
-    return new ClassType(ctx.ID().getText());
+    if (program.getClasses().get(ctx.ID().getText()) != null) {
+      return program.getClasses().get(ctx.ID().getText()).getType();
+    } else {
+      // TODO improve error message
+      throw new RuntimeException("A class called " + ctx.ID().getText() + " does not exist");
+    }
   }
 }

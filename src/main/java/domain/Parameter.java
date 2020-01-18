@@ -6,7 +6,7 @@ import org.antlr.v4.runtime.Token;
 public class Parameter {
   private final String name;
   private final Type type;
-  private final Token ctx;
+  private final Token token;
 
   /**
    * Creates a local parameter.
@@ -14,11 +14,11 @@ public class Parameter {
    * @param name name of parameter
    * @param type type of parameter, currently as a string
    */
-  public Parameter(final String name, final Type type, final Token ctx) {
+  public Parameter(final String name, final Type type, final Token token) {
     super();
     this.name = name;
     this.type = type;
-    this.ctx = ctx;
+    this.token = token;
   }
 
   public Type getType() {
@@ -29,8 +29,8 @@ public class Parameter {
     return name;
   }
 
-  public Token getCtx() {
-    return ctx;
+  public Token getToken() {
+    return token;
   }
 
   @Override
