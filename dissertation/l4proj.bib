@@ -2,7 +2,7 @@
   author    = {Simon {Peyton Jones}},
   title     = {How to Write a Great Research Paper},
   booktitle = {2017 Imperial College Computing Student Workshop, {ICCSW} 2017, September
-               26-27, 2017, London, {UK}},
+      26-27, 2017, London, {UK}},
   pages     = {1:1--1:1},
   year      = {2017},    
   
@@ -43,4 +43,176 @@
   pages={127--140},
   year={1968},
   publisher={Harcourt, Brace, Javanovich}
+}
+
+@article{Castagna2015,
+  abstract = {Twenty years ago, in an article titled " Covariance and contravari-ance: conflict without a cause " , I argued that covariant and con-travariant specialization of method parameters in object-oriented programming had different purposes and deduced that, not only they could, but actually they should both coexist in the same lan-guage. In this work I reexamine the result of that article in the light of recent advances in (sub-)typing theory and programming lan-guages, taking a fresh look at this old issue. Actually, the revamping of this problem is just an excuse for writing an essay that aims at explaining sophisticated type theo-retic concepts, in simple terms and by examples, to undergraduate computer science students and/or willing functional programmers.},
+  author = {Castagna, Giuseppe},
+  pages = {1--23},
+  title = {{Covariance and Contravariance : a fresh look at an old issue ( a primer in advanced type systems for learning functional programmers )}},
+  year = {2015}
+}
+
+@article{Castagna1995,
+  abstract = {In type-theoretic research on object-oriented programming, the issue of “covarianceversus contravariance” is atopicof continuing debate. In this short notewe argue that covariance and contravariance appropriately characterize two distinct and independent mechanisme. The so-called contravariance rule correctly captures the subtyping relation (that relation which establishes which sets of functions can replace another given set in every context). A covariant relation, instead, characterizes the speczalizatzon of code (i.e., the definition of new code which replaces old definitions in some particular cases). Therefore, covariance and contravariance are not opposing views, but distinct concepts that each have their place inobject-oriented systems. Both can (and should) be integrated in a type-safe manner in object-oriented languages. We also show that the independence of the two mechanisms is not characteristic of aparticular model but is valid in general, since covariant specialization is present in record-based models, although it is hidden by a deficiency of all existing calculi that realize this model. Asanaside, weshowthat the calculus can betaken asthebmic calculus for both anoverloading-bmed and arecord-based model, Using this approach, onenotonly obtains amoreuniform vision ofobject-oriented type theories, but in the case of the record-based approach, one also gains multiple dispatching, a feature that existing record-based models do not capture. {\textcopyright} 1995, ACM. All rights reserved.},
+  author = {Castagna, Giuseppe},
+  doi = {10.1145/203095.203096},
+  issn = {15584593},
+  journal = {ACM Transactions on Programming Languages and Systems (TOPLAS)},
+  number = {3},
+  pages = {431--447},
+  title = {{Covariance and Contravariance: Conflict without a Cause}},
+  volume = {17},
+  year = {1995}
+}
+
+@inproceedings{Igarashi2006,
+  abstract = {We propose union types for statically typed class-based object-oriented languages as a means to enhance the flexibility of subtyping. As its name suggests, a union type can be considered a set union of instances of several types and behaves as their least common supertype. It also plays the role of an interface that 'factors out' commonality of given types-fields of the same name and methods with similar signatures. Union types can be useful for implementing heterogeneous collections and for grouping independently developed classes with similar interfaces, which has been considered difficult in languages like Java. To rigorously show the safety of union types, we formalize them on top of Featherweight Java and prove that the type system is sound. Copyright 2006 ACM.},
+  author = {Igarashi, Atsushi and Nagira, Hideshi},
+  booktitle = {Proceedings of the ACM Symposium on Applied Computing},
+  doi = {10.1145/1141277.1141610},
+  isbn = {1595931082},
+  pages = {1435--1441},
+  title = {{Union types for object-oriented programming}},
+  volume = {2},
+  year = {2006}
+}
+
+@article{Igarashi1999,
+  abstract = {Several recent studies have introduced lightweight versions of Java: reduced languages in which complex features like threads and reflection are dropped to enable rigorous arguments about key properties such as type safety. We carry this process a step further, omitting almost all features of the full language (including interfaces and even assignment) to obtain a small calculus, Featherweight Java, for which rigorous proofs are not only possible but easy. Featherweight Java bears a similar relation to full Java as the lambda-calculus does to languages such as ML and Haskell. It offers a similar computational "feel," providing classes, methods, fields, inheritance, and dynamic typecasts, with a semantics closely following Java's. A proof of type safety for Featherweight Java thus illustrates many of the interesting features of a safety proof for the full language, while remaining pleasingly compact. The syntax, type rules, and operational semantics of Featherweight Java fit on one page, making it easier to understand the consequences of extensions and variations. As an illustration of its utility in this regard, we extend Featherweight Java with generic classes in the style of GJ (Bracha, Odersky, Stoutamire, and Wadler) and sketch a proof of type safety. The extended system formalizes for the first time some of the key features of GJ. {\textcopyright} 1999 ACM.},
+  author = {Igarashi, Atsushi and Pierce, Benjamin and Wadler, Philip},
+  doi = {10.1145/320385.320395},
+  issn = {03621340},
+  journal = {SIGPLAN Notices (ACM Special Interest Group on Programming Languages)},
+  number = {10},
+  pages = {132--146},
+  publisher = {Association for Computing Machinery},
+  title = {{Featherweight Java: A minimal core calculus for Java and GJ}},
+  volume = {34},
+  year = {1999}
+}
+
+@inproceedings{Castagna2005,
+  abstract = {Subtyping relations are usually defined either syntactically by a formal system or semantically by an interpretation of types into an untyped denotational model. In this work we show step by step how to define a subtyping relation semantically in the presence of functional types and dynamic dispatch on types, without the complexity of denotational models, and how to derive a complete subtyping algorithm. It also provides a recipe to add set-theoretic union, intersection, and negation types to your favourite language. The presentation is voluntarily kept informal and discursive and the technical details are reduced to a minimum since we rather insist on the motivations, the intuition, and the guidelines to apply the approach. Copyright 2005 ACM.},
+  author = {Castagna, Giuseppe and Frisch, Alain},
+  booktitle = {PPDP'05 - Proceedings of the Seventh ACM SIGPLAN Conference on Principles and Practice of Declarative Programming},
+  doi = {10.1145/1069774.1069793},
+  isbn = {1595930906},
+  issn = {03029743},
+  pages = {198--208},
+  title = {{A gentle introduction to semantic subtyping}},
+  volume = {2005},
+  year = {2005}
+}
+
+@article{Frisch2002,
+abstract = {Usually subtyping relations are defined either syntactically by a formal system or semantically by an interpretation of types in an untyped denotational model. In this work we show how to define a subtyping relation semantically, for a language whose operational semantics is driven by types; we consider a rich type algebra, with product, arrow, recursive, intersection, union and complement types. Our approach is to "bootstrap" the subtyping relation through a notion of set-theoretic model of the type algebra. The advantages of the semantic approach are manifold. Foremost we get "for free" many properties (e.g., the transitivity of subtyping) that, with axiomatized subtyping, would require tedious and error prone proofs. Equally important is that the semantic approach allows one to derive complete algorithms for the subtyping relation or the propagation of types through patterns. As the subtyping relation has a natural (inasmuch as semantic) interpretation, the type system can give informative error messages when static type-checking fails. Last but not least the approach has an immediate impact in the definition and the implementation of languages manipulating XML documents, as this was our original motivation.},
+author = {Frisch, Alain and Castagna, Giuseppe and Benzaken, V{\'{e}}ronique},
+doi = {10.1109/LICS.2002.1029823},
+issn = {10436871},
+journal = {Proceedings-Symposium on Logic in Computer Science},
+pages = {137--146},
+title = {{Semantic subtyping}},
+year = {2002}
+}
+
+@article{Frisch2008,
+abstract = {Subtyping relations are usually defined either syntactically by a formal system or semantically by an interpretation of types into an untyped denotational model. This work shows how to define a subtyping relation semantically in the presence of Boolean connectives, functional types and dynamic dispatch on types, without the complexity of denotational models, and how to derive a complete subtyping algorithm. {\textcopyright} 2008 ACM.},
+author = {Frisch, Alain and Castagna, Giuseppe and Benzaken, V{\'{e}}ronique},
+doi = {10.1145/1391289.1391293},
+issn = {1557735X},
+journal = {Journal of the ACM},
+month = {sep},
+number = {4},
+publisher = {Association for Computing Machinery (ACM)},
+title = {{Semantic subtyping: Dealing set-theoretically with function, union, intersection, and negation types}},
+volume = {55},
+year = {2008}
+}
+
+@article{Benzaken2003,
+author = {Benzaken, Veronique and Castagna, Giuseppe and Frisch, Alain},
+doi = {10.1145/944746.944711},
+issn = {03621340},
+journal = {ACM SIGPLAN Notices},
+month = {sep},
+number = {9},
+pages = {51--63},
+publisher = {Association for Computing Machinery (ACM)},
+title = {{CDuce: An XML-centric general-purpose language}},
+volume = {38},
+year = {2003}
+}
+
+@article{Hosoya2005,
+  author = {Hosoya, Haruo and Vouillon, Jerome and Pierce, Benjamin},
+  doi = {10.1145/1053468.1053470},
+  journal = {ACM Transactions on Programming Languages and Systems},
+  number = {1},
+  pages = {46--90},
+  title = {{Regular Expression Types for XML Recommended Citation}},
+  volume = {27},
+  year = {2005}
+}
+
+@article{Dardha2017,
+  abstract = {In this paper, we propose an integration of structural subtyping with boolean connectives and semantic subtyping to define a Java-like programming language that exploits the benefits of both techniques. Semantic subtyping is an approach for defining subtyping relation based on set-theoreticmodels, rather than syntactic rules. On the one hand, this approach involves some non-trivial mathematical machinery in the background. On the other hand, final users of the language need not know this machinery and the resulting subtyping relation is very powerful and intuitive. While semantic subtyping is naturally linked to the structural one, we show how our framework can also accommodate the nominal subtyping. Several examples show the expressivity and the practical advantages of our proposal.},
+  author = {Dardha, Ornela and Gorla, Daniele and Varacca, Daniele},
+  doi = {10.1093/comjnl/bxw080},
+  isbn = {9783642385919},
+  issn = {14602067},
+  journal = {Computer Journal},
+  month = {apr},
+  number = {5},
+  pages = {636--656},
+  publisher = {Oxford University Press},
+  title = {{Semantic Subtyping for Objects and Classes}},
+  volume = {60},
+  year = {2017}
+}
+
+@book{Pierce2002,
+  author = {Pierce, Benjamin},
+  isbn = {9780262162098},
+  publisher = {The MIT Press},
+  title = {{Types and Programming Languages}},
+  year = {2002}
+}
+
+@article{Castagna2008,
+  abstract = {Subtyping relations for the $\pi$-calculus are usually defined in a syntactic way, by means of structural rules. We propose a semantic characterisation of channel types and use it to derive a subtyping relation. The type system we consider includes read-only and write-only channel types, as well as boolean combinations of types. A set-theoretic interpretation of types is provided, in which boolean combinations of types are interpreted as the corresponding set-theoretic operations. Subtyping is defined as inclusion of the interpretations. We prove decidability of the subtyping relation and sketch the subtyping algorithm. In order to fully exploit the type system, we define a variant of the $\pi$-calculus where communication is subjected to pattern matching that performs dynamic typecase. {\textcopyright} 2008 Elsevier Ltd. All rights reserved.},
+  author = {Castagna, Giuseppe and Nicola, Rocco De and Varacca, Daniele and {De Nicola}, Rocco and Varacca, Daniele and Coppo, Mario and Dezani-Ciancaglini, Mariangiola and Ronchi, Simona and Rocca, Della},
+  doi = {10.1016/j.tcs.2008.01.049},
+  issn = {03043975},
+  journal = {Theoretical Computer Science},
+  month = {may},
+  number = {1-3},
+  pages = {217--242},
+  title = {{Semantic subtyping for the pi-calculus}},
+  volume = {398},
+  year = {2008}
+}
+
+@article{Hosoya2003,
+abstract = {XDuce is a statically typed programming language for XML processing. Its basic data values are XML documents, and its types (so-called regular expression types) directly correspond to document schemas. XDuce also provides a flexible form of regular expression pattern matching, integrating conditional branching, tag checking, and subtree extraction, as well as dynamic typechecking. We survey the principles of XDuce's design, develop examples illustrating its key features, describe its foundations in the theory of regular tree automata, and present a complete formal definition of its core, along with a proof of type safety. {\textcopyright} 2003, ACM. All rights reserved.},
+author = {Hosoya, H. and Pierce, B. C.},
+doi = {10.1145/767193.767195},
+issn = {15576051},
+journal = {ACM Transactions on Internet Technology},
+title = {{XDuce: A Statically Typed XML Processing Language}},
+year = {2003}
+}
+
+@article{Meyerson2014,
+abstract = {Andrew Gerrand, who works on the Go programming language at Google, speaks with Jeff Meyerson in this excerpt from Software Engineering Radio. His conversation with Jeff begins with a history of the language, including the details behind how Go was conceived and how the open source community contributes to it. Andrew explains how Go intends to simplify problems which have been motifs as Google has scaled. The Web extra at http://www.se-radio.net/2014/03/episode-202-andrew-gerrand/is an audio recording of Jeff Meyerson speaking with Andrew Gerrand about the Go programming language.},
+author = {Meyerson, Jeff},
+doi = {10.1109/MS.2014.127},
+issn = {07407459},
+journal = {IEEE Software},
+number = {5},
+pages = {104+101--103},
+title = {{The go programming language}},
+url = {https://golang.org/},
+volume = {31},
+year = {2014}
 }

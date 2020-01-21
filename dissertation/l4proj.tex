@@ -1,5 +1,3 @@
-% REMEMBER: You must not plagiarise anything in your report. Be extremely careful.
-
 \documentclass{l4proj}
 
     
@@ -11,9 +9,9 @@
 
 %==============================================================================
 %% METADATA
-\title{Level 4 Project Report Template}
-\author{John H. Williamson}
-\date{September 14, 2018}
+\title{Boolean types and semantic subtyping for Featherweight Java}
+\author{Artem Usov}
+\date{January 18, 2020}
 
 \maketitle
 
@@ -39,9 +37,8 @@
 % Please note that you are under no obligation to sign 
 % this declaration, but doing so would help future students.
 %
-%\def\consentname {My Name} % your full name
-%\def\consentdate {20 March 2018} % the date you agree
-%
+\def\consentname {Artem Usov} % your full name
+\def\consentdate {19 January 2020} % the date you agree
 \educationalconsent
 
 
@@ -78,7 +75,7 @@
 \chapter{Introduction}
 
 % reset page numbering. Don't remove this!
-\pagenumbering{arabic} 
+\pagenumbering{arabic}
 
 
 Why should the reader care about what are you doing and what are you actually doing?
@@ -93,20 +90,20 @@ This is the key question for any writing. Your reader:
 
 \begin{itemize}
     \item
-    is a trained computer scientist: \emph{don't explain basics}.
+          is a trained computer scientist: \emph{don't explain basics}.
     \item
-    has limited time: \emph{keep on topic}.
+          has limited time: \emph{keep on topic}.
     \item
-    has no idea why anyone would want to do this: \emph{motivate clearly}
+          has no idea why anyone would want to do this: \emph{motivate clearly}
     \item
-    might not know \emph{anything} about your project in particular:
-    \emph{explain your project}.
+          might not know \emph{anything} about your project in particular:
+          \emph{explain your project}.
     \item
-    but might know precise details and check them: \emph{be precise and
-    strive for accuracy.}
+          but might know precise details and check them: \emph{be precise and
+              strive for accuracy.}
     \item
-    doesn't know or care about you: \emph{personal discussions are
-    irrelevant}.
+          doesn't know or care about you: \emph{personal discussions are
+              irrelevant}.
 \end{itemize}
 
 Remember, you will be marked by your supervisor and one or more members
@@ -119,54 +116,149 @@ read these, but they will improve how you write.
 
 \begin{itemize}
     \item
-    \emph{How to write a great research paper} \cite{Pey17} (\textbf{recommended}, even though you aren't writing a research paper)
+          \emph{How to write a great research paper} \cite{Pey17} (\textbf{recommended}, even
+          though you aren't writing a research paper)
     \item
-    \emph{How to Write with Style} \cite{Von80}. Short and easy to read. Available online.
+          \emph{How to Write with Style} \cite{Von80}. Short and easy to read. Available online.
     \item
-    \emph{Style: The Basics of Clarity and Grace} \cite{Wil09} A very popular modern English style guide.
+          \emph{Style: The Basics of Clarity and Grace} \cite{Wil09} A very popular modern English 
+          style guide.
     \item
-    \emph{Politics and the English Language} \cite{Orw68}  A famous essay on effective, clear writing in English.
+          \emph{Politics and the English Language} \cite{Orw68}  A famous essay on effective, clear
+          writing in English.
     \item
-    \emph{The Elements of Style} \cite{StrWhi07} Outdated, and American, but a classic.
+          \emph{The Elements of Style} \cite{StrWhi07} Outdated, and American, but a classic.
     \item
-    \emph{The Sense of Style} \cite{Pin15} Excellent, though quite in-depth.
+          \emph{The Sense of Style} \cite{Pin15} Excellent, though quite in-depth.
 \end{itemize}
 
 \subsubsection{Citation styles}
 
 \begin{itemize}
-\item If you are referring to a reference as a noun, then cite it as: ``\citet{Orw68} discusses the role of language in political thought.''
-\item If you are referring implicitly to references, use: ``There are many good books on writing \citep{Orw68, Wil09, Pin15}.''
+    \item If you are referring to a reference as a noun, then cite it as: ``\citet{Orw68} discusses
+          the role of language in political thought.''
+    \item If you are referring implicitly to references, use: ``There are many good books on writing
+          \citep{Orw68, Wil09, Pin15}.''
 \end{itemize}
 
-There is a complete guide on good citation practice by Peter Coxhead available here: \url{http://www.cs.bham.ac.uk/~pxc/refs/index.html}. 
-If you are unsure about how to cite online sources, please see this guide: \url{https://student.unsw.edu.au/how-do-i-cite-electronic-sources}.
+There is a complete guide on good citation practice by Peter Coxhead available here: 
+\url{http://www.cs.bham.ac.uk/~pxc/refs/index.html}. 
+If you are unsure about how to cite online sources, please see this guide: 
+\url{https://student.unsw.edu.au/how-do-i-cite-electronic-sources}.
 
 \subsection{Plagiarism warning}
 
 \begin{highlight_title}{WARNING}
     
-    If you include material from other sources without full and correct attribution, you are commiting plagiarism. The penalties for plagiarism are severe.
-    Quote any included text and cite it correctly. Cite all images, figures, etc. clearly in the caption of the figure.
+    If you include material from other sources without full and correct attribution, you are 
+    commiting plagiarism. The penalties for plagiarism are severe. Quote any included text and cite
+    it correctly. Cite all images, figures, etc. clearly in the caption of the figure.
 \end{highlight_title}
 
 
 %==================================================================================================================================
 \chapter{Background}
 What did other people do, and how is it relevant to what you want to do?
-\section{Guidance}
-\begin{itemize}    
-    \item
-      Don't give a laundry list of references.
-    \item
-      Tie everything you say to your problem.
-    \item
-      Present an argument.
-    \item Think critically; weigh up the contribution of the background and put it in context.    
-    \item
-      \textbf{Don't write a tutorial}; provide background and cite
-      references for further information.
-\end{itemize}
+
+\section{Type Systems}
+
+Type systems are by far the most popular and best developed methods in modern software engineering 
+to reduce the number of run-time errors in a program. A possible definition of a type system is 
+given by \citet{Pierce2002} as:
+
+\textit{A type system is a tractable syntactic method for proving the absence of certain program
+    behaviors by classifying phrases according to the kinds of values they compute.}
+
+In particular, the most important detail in the above definition is the emphasis on classifying 
+phrases in our language into a particular type based on the kinds of values they hold or compute. 
+For example this would allow us to check that the arguments given to an arithmetic operation are 
+always numbers. This therefore allows us to validate that a program is absent of certain bad 
+run-time behaviour.
+
+However what the above definition is missing that is it defines a type system as solely a syntactic 
+method, where it is defined by a formal system of deduction rules, which is by far the most common 
+approach for a type system. There does exist an alternative method in the semantic approach. 
+\citet{Frisch2002} describe the semantic approach as instead starting with a model of the language 
+and all the possible values in the language and define an interpretation of types as subsets of 
+values the model.
+
+Such as model comes with several advantages, such as when $t \leq s$ does not hold, then it is
+possible to exhibit an element of the model which is in the interpretation of type $t$ and not $s$, 
+even in the presence of arrow \textit{(function)} types. This can then be used to show more 
+informative error messages to the programmer \citep{Castagna2005}. However due to being a more 
+technical, such as it being not trivial to actually define the interpretation of types as subsets of
+a model, it has received less attention than syntactic methods.
+
+The first problem we encounter in the semantic approach is that in the semantic approach, $t_{1}$
+is a subtype of $t_{2}$ if all the $t_{1}$-values are also $t_{2}$-values. However, in this way, 
+subtyping is defined by relying on the notion of well-typed values; hence, we need the typing 
+relation to determine typing judgements for values; but the typing rules use the subtyping relation
+which we are going to define \citep{Dardha2017}. So, there is a circularity as demonstrated in 
+Figure \ref{fig:circ}.
+
+To solve this problem, we follow the framework defined in \citep{Frisch2008}. The general idea of
+the framework is that we first extend the types in the language with \textit{Boolean Combinators}: 
+union $\lor$, intersection $\land$ and negation $\neg$. We then define an abstract model $\beta$ 
+where our types are interpreted according to the set-theoretic meaning of the combinators and can 
+define subtyping as set-inclusion and therefore define the typing rules. Separately, if we have a 
+notion of well-typed values, we can define another interpretation of types as sets of values. We can
+again define a subtyping relation $\nu$. While these may be different relation, if the models are 
+chosen carefully such that 
+\begin{equation}
+    s \leq_{\beta} t \iff s \leq_{\nu} t,
+\end{equation}
+then these models coincide and this closes the circularity. 
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.4\linewidth]{images/circularity.PNG}
+    \caption{TODO caption, \citep{Castagna2005}}
+    \label{fig:circ}
+\end{figure}
+
+\section{Featherweight Java}
+
+The syntax of the language is exactly that of Featherweight Java, or FJ \citep{Igarashi1999}, with 
+the associated type system only being different. This was chosen on purpose as the full features of 
+Java such as concurrency and reflection are orthogonal (\textit{TODO reword}) to the purpose of the 
+project while the type system of FJ still exactly corresponds to that of Java. The main key 
+simplification in FJ is the omission of assignment. All fields of an object are initialised in the
+constructor and not changed afterwards. While this restricts FJ to what is essentially a functional 
+fragment of Java, it is still fully computationally complete. The syntax of FJ can be seen in Figure
+\ref{fig:syntax} and a sample code fragment can be seen in Figure \ref{fig:class}.
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.4\linewidth]{images/syntax.PNG}
+    \caption{TODO caption, \citep{Igarashi1999}}
+    \label{fig:syntax}
+\end{figure}
+
+\begin{figure}
+    \centering
+    \includegraphics[width=0.4\linewidth]{images/class.PNG}
+    \caption{TODO caption, \citep{Igarashi1999}}
+    \label{fig:class}
+\end{figure}
+
+\section{Related Work}
+The closest similar area of research would likely be the work on $\mathbb{C}$Duce 
+\citep{Benzaken2003}, which is also a functional language with a semantic type system designed for 
+working with XML documents and a continuation of the work on XDuce \citep{Hosoya2003}. The language
+extended XDuce by introducing less XML specific types such as records, boolean connectives and arrow
+types. This therefore makes it similar to (\textit{TODO reword}) our language in that a class-based 
+semantic type system is a combination of the $\mathbb{C}$Duce record types with arrow types 
+\textit{(fields and methods)}
+
+Our work and the work on $\mathbb{C}$Duce follow the functional style of $\lambda$-calculus,
+whereas the work by \citet{Castagna2008} extends $\pi$-calculus with semantic subtyping.
+(\textit{TODO reword}) Similar work to ours creating an implementation for this would result in a 
+Golang-like language \citep{Meyerson2014}, creating a concurrency-focused language with more 
+intuitive types. The paper found that it was required to be able to decide and resolve the atomicy, 
+that is whether the only proper subtype is the empty type, of types in order to decide the subtyping
+relation, and observes that this same problem appears in $\lambda$-calculus and any other 
+semantic-based system, for which we will show where we encountered this problem further in this 
+paper. 
 
 %==================================================================================================================================
 \chapter{Analysis/Requirements}
@@ -203,16 +295,16 @@ You may include multiple figures in one float, as in Figure \ref{fig:synthetic},
 % Figures are important. Use them well.
 \begin{figure}
     \centering
-    \includegraphics[width=0.5\linewidth]{images/relu.pdf}    
-
+    \includegraphics[width=0.5\linewidth]{images/relu.pdf}
+    
     \caption{In figure captions, explain what the reader is looking at: ``A schematic of the rectifying linear unit, where $a$ is the output amplitude,
-    $d$ is a configurable dead-zone, and $Z_j$ is the input signal'', as well as why the reader is looking at this: 
-    ``It is notable that there is no activation \emph{at all} below 0, which explains our initial results.'' 
-    \textbf{Use vector image formats (.pdf) where possible}. Size figures appropriately, and do not make them over-large or too small to read.
+        $d$ is a configurable dead-zone, and $Z_j$ is the input signal'', as well as why the reader is looking at this: 
+        ``It is notable that there is no activation \emph{at all} below 0, which explains our initial results.'' 
+        \textbf{Use vector image formats (.pdf) where possible}. Size figures appropriately, and do not make them over-large or too small to read.
     }
-
+    
     % use the notation fig:name to cross reference a figure
-    \label{fig:relu} 
+    \label{fig:relu}
 \end{figure}
 
 
@@ -224,7 +316,7 @@ You may include multiple figures in one float, as in Figure \ref{fig:synthetic},
         \label{fig:syn1}
     \end{subfigure}
     ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
-      %(or a blank line to force the subfigure onto a new line)
+    %(or a blank line to force the subfigure onto a new line)
     \begin{subfigure}[b]{0.45\textwidth}
         \includegraphics[width=\textwidth]{images/synthetic_2.png}
         \caption{Synthetic image, white on black.}
@@ -233,8 +325,8 @@ You may include multiple figures in one float, as in Figure \ref{fig:synthetic},
     ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
     %(or a blank line to force the subfigure onto a new line)    
     \caption{Synthetic test images for edge detection algorithms. \subref{fig:syn1} shows various gray levels that require an adaptive algorithm. \subref{fig:syn2}
-    shows more challenging edge detection tests that have crossing lines. Fusing these into full segments typically requires algorithms like the Hough transform.
-    This is an example of using subfigures, with \texttt{subref}s in the caption.
+        shows more challenging edge detection tests that have crossing lines. Fusing these into full segments typically requires algorithms like the Hough transform.
+        This is an example of using subfigures, with \texttt{subref}s in the caption.
     }\label{fig:synthetic}
 \end{figure}
 
@@ -248,7 +340,7 @@ Equations should be typeset correctly and precisely. Make sure you get parenthes
 For example, we might define:
 \begin{equation}
     \hat{f}(\xi) = \frac{1}{2}\left[ \int_{-\infty}^{\infty} f(x) e^{2\pi i x \xi} \right],
-\end{equation}    
+\end{equation}
 where $\hat{f}(\xi)$ is the Fourier transform of the time domain signal $f(x)$.
 
 \subsection{Algorithms}
@@ -258,7 +350,7 @@ Algorithms can be set using \texttt{algorithm2e}, as in Algorithm \ref{alg:metro
 \begin{algorithm}
     \DontPrintSemicolon
     \KwData{$f_X(x)$, a probability density function returing the density at $x$.\; $\sigma$ a standard deviation specifying the spread of the proposal distribution.\;
-    $x_0$, an initial starting condition.}
+        $x_0$, an initial starting condition.}
     \KwResult{$s=[x_1, x_2, \dots, x_n]$, $n$ samples approximately drawn from a distribution with PDF $f_X(x)$.}
     \Begin{
         $s \longleftarrow []$\;
@@ -280,8 +372,8 @@ Algorithms can be set using \texttt{algorithm2e}, as in Algorithm \ref{alg:metro
         }
     }
     
-\caption{The Metropolis-Hastings MCMC algorithm for drawing samples from arbitrary probability distributions, 
-specialised for normal proposal distributions $q(x^\prime|x) = \mathcal{N}(x, \sigma^2)$. The symmetry of the normal distribution means the acceptance rule takes the simplified form.}\label{alg:metropolis}
+    \caption{The Metropolis-Hastings MCMC algorithm for drawing samples from arbitrary probability distributions,
+        specialised for normal proposal distributions $q(x^\prime|x) = \mathcal{N}(x, \sigma^2)$. The symmetry of the normal distribution means the acceptance rule takes the simplified form.}\label{alg:metropolis}
 \end{algorithm}
 
 \subsection{Tables}
@@ -291,47 +383,47 @@ extremely tedious otherwise.
 
 \begin{table}[]
     \caption{The standard table of operators in Python, along with their functional equivalents from the \texttt{operator} package. Note that table
-    captions go above the table, not below. Do not add additional rules/lines to tables. }\label{tab:operators}
+        captions go above the table, not below. Do not add additional rules/lines to tables. }\label{tab:operators}
     %\tt 
     \rowcolors{2}{}{gray!3}
     \begin{tabular}{@{}lll@{}}
-    %\toprule
-    \textbf{Operation}    & \textbf{Syntax}                & \textbf{Function}                            \\ %\midrule % optional rule for header
-    Addition              & \texttt{a + b}                          & \texttt{add(a, b)}                                    \\
-    Concatenation         & \texttt{seq1 + seq2}                    & \texttt{concat(seq1, seq2)}                           \\
-    Containment Test      & \texttt{obj in seq}                     & \texttt{contains(seq, obj)}                           \\
-    Division              & \texttt{a / b}                          & \texttt{div(a, b) }  \\
-    Division              & \texttt{a / b}                          & \texttt{truediv(a, b) } \\
-    Division              & \texttt{a // b}                         & \texttt{floordiv(a, b)}                               \\
-    Bitwise And           & \texttt{a \& b}                         & \texttt{and\_(a, b)}                                  \\
-    Bitwise Exclusive Or  & \texttt{a \textasciicircum b}           & \texttt{xor(a, b)}                                    \\
-    Bitwise Inversion     & \texttt{$\sim$a}                        & \texttt{invert(a)}                                    \\
-    Bitwise Or            & \texttt{a | b}                          & \texttt{or\_(a, b)}                                   \\
-    Exponentiation        & \texttt{a ** b}                         & \texttt{pow(a, b)}                                    \\
-    Identity              & \texttt{a is b}                         & \texttt{is\_(a, b)}                                   \\
-    Identity              & \texttt{a is not b}                     & \texttt{is\_not(a, b)}                                \\
-    Indexed Assignment    & \texttt{obj{[}k{]} = v}                 & \texttt{setitem(obj, k, v)}                           \\
-    Indexed Deletion      & \texttt{del obj{[}k{]}}                 & \texttt{delitem(obj, k)}                              \\
-    Indexing              & \texttt{obj{[}k{]}}                     & \texttt{getitem(obj, k)}                              \\
-    Left Shift            & \texttt{a \textless{}\textless b}       & \texttt{lshift(a, b)}                                 \\
-    Modulo                & \texttt{a \% b}                         & \texttt{mod(a, b)}                                    \\
-    Multiplication        & \texttt{a * b}                          & \texttt{mul(a, b)}                                    \\
-    Negation (Arithmetic) & \texttt{- a}                            & \texttt{neg(a)}                                       \\
-    Negation (Logical)    & \texttt{not a}                          & \texttt{not\_(a)}                                     \\
-    Positive              & \texttt{+ a}                            & \texttt{pos(a)}                                       \\
-    Right Shift           & \texttt{a \textgreater{}\textgreater b} & \texttt{rshift(a, b)}                                 \\
-    Sequence Repetition   & \texttt{seq * i}                        & \texttt{repeat(seq, i)}                               \\
-    Slice Assignment      & \texttt{seq{[}i:j{]} = values}          & \texttt{setitem(seq, slice(i, j), values)}            \\
-    Slice Deletion        & \texttt{del seq{[}i:j{]}}               & \texttt{delitem(seq, slice(i, j))}                    \\
-    Slicing               & \texttt{seq{[}i:j{]}}                   & \texttt{getitem(seq, slice(i, j))}                    \\
-    String Formatting     & \texttt{s \% obj}                       & \texttt{mod(s, obj)}                                  \\
-    Subtraction           & \texttt{a - b}                          & \texttt{sub(a, b)}                                    \\
-    Truth Test            & \texttt{obj}                            & \texttt{truth(obj)}                                   \\
-    Ordering              & \texttt{a \textless b}                  & \texttt{lt(a, b)}                                     \\
-    Ordering              & \texttt{a \textless{}= b}               & \texttt{le(a, b)}                                     \\
-    % \bottomrule
+        %\toprule
+        \textbf{Operation}    & \textbf{Syntax}                         & \textbf{Function}                          \\ %\midrule % optional rule for header
+        Addition              & \texttt{a + b}                          & \texttt{add(a, b)}                         \\
+        Concatenation         & \texttt{seq1 + seq2}                    & \texttt{concat(seq1, seq2)}                \\
+        Containment Test      & \texttt{obj in seq}                     & \texttt{contains(seq, obj)}                \\
+        Division              & \texttt{a / b}                          & \texttt{div(a, b) }                        \\
+        Division              & \texttt{a / b}                          & \texttt{truediv(a, b) }                    \\
+        Division              & \texttt{a // b}                         & \texttt{floordiv(a, b)}                    \\
+        Bitwise And           & \texttt{a \& b}                         & \texttt{and\_(a, b)}                       \\
+        Bitwise Exclusive Or  & \texttt{a \textasciicircum b}           & \texttt{xor(a, b)}                         \\
+        Bitwise Inversion     & \texttt{$\sim$a}                        & \texttt{invert(a)}                         \\
+        Bitwise Or            & \texttt{a | b}                          & \texttt{or\_(a, b)}                        \\
+        Exponentiation        & \texttt{a ** b}                         & \texttt{pow(a, b)}                         \\
+        Identity              & \texttt{a is b}                         & \texttt{is\_(a, b)}                        \\
+        Identity              & \texttt{a is not b}                     & \texttt{is\_not(a, b)}                     \\
+        Indexed Assignment    & \texttt{obj{[}k{]} = v}                 & \texttt{setitem(obj, k, v)}                \\
+        Indexed Deletion      & \texttt{del obj{[}k{]}}                 & \texttt{delitem(obj, k)}                   \\
+        Indexing              & \texttt{obj{[}k{]}}                     & \texttt{getitem(obj, k)}                   \\
+        Left Shift            & \texttt{a \textless{}\textless b}       & \texttt{lshift(a, b)}                      \\
+        Modulo                & \texttt{a \% b}                         & \texttt{mod(a, b)}                         \\
+        Multiplication        & \texttt{a * b}                          & \texttt{mul(a, b)}                         \\
+        Negation (Arithmetic) & \texttt{- a}                            & \texttt{neg(a)}                            \\
+        Negation (Logical)    & \texttt{not a}                          & \texttt{not\_(a)}                          \\
+        Positive              & \texttt{+ a}                            & \texttt{pos(a)}                            \\
+        Right Shift           & \texttt{a \textgreater{}\textgreater b} & \texttt{rshift(a, b)}                      \\
+        Sequence Repetition   & \texttt{seq * i}                        & \texttt{repeat(seq, i)}                    \\
+        Slice Assignment      & \texttt{seq{[}i:j{]} = values}          & \texttt{setitem(seq, slice(i, j), values)} \\
+        Slice Deletion        & \texttt{del seq{[}i:j{]}}               & \texttt{delitem(seq, slice(i, j))}         \\
+        Slicing               & \texttt{seq{[}i:j{]}}                   & \texttt{getitem(seq, slice(i, j))}         \\
+        String Formatting     & \texttt{s \% obj}                       & \texttt{mod(s, obj)}                       \\
+        Subtraction           & \texttt{a - b}                          & \texttt{sub(a, b)}                         \\
+        Truth Test            & \texttt{obj}                            & \texttt{truth(obj)}                        \\
+        Ordering              & \texttt{a \textless b}                  & \texttt{lt(a, b)}                          \\
+        Ordering              & \texttt{a \textless{}= b}               & \texttt{le(a, b)}                          \\
+        % \bottomrule
     \end{tabular}
-    \end{table}
+\end{table}
 \subsection{Code}
 
 Avoid putting large blocks of code in the report (more than a page in one block, for example). Use syntax highlighting if possible, as in Listing \ref{lst:callahan}.
@@ -371,21 +463,21 @@ Avoid putting large blocks of code in the report (more than a page in one block,
 \end{lstlisting}
 
 %==================================================================================================================================
-\chapter{Evaluation} 
+\chapter{Evaluation}
 How good is your solution? How well did you solve the general problem, and what evidence do you have to support that?
 
 \section{Guidance}
 \begin{itemize}
     \item
-        Ask specific questions that address the general problem.
+          Ask specific questions that address the general problem.
     \item
-        Answer them with precise evidence (graphs, numbers, statistical
-        analysis, qualitative analysis).
+          Answer them with precise evidence (graphs, numbers, statistical
+          analysis, qualitative analysis).
     \item
-        Be fair and be scientific.
+          Be fair and be scientific.
     \item
-        The key thing is to show that you know how to evaluate your work, not
-        that your work is the most amazing product ever.
+          The key thing is to show that you know how to evaluate your work, not
+          that your work is the most amazing product ever.
 \end{itemize}
 
 \section{Evidence}
@@ -393,45 +485,45 @@ Make sure you present your evidence well. Use appropriate visualisations, report
 
 If you visualise, follow the basic rules, as illustrated in Figure \ref{fig:boxplot}:
 \begin{itemize}
-\item Label everything correctly (axis, title, units).
-\item Caption thoroughly.
-\item Reference in text.
-\item \textbf{Include appropriate display of uncertainty (e.g. error bars, Box plot)}
-\item Minimize clutter.
+    \item Label everything correctly (axis, title, units).
+    \item Caption thoroughly.
+    \item Reference in text.
+    \item \textbf{Include appropriate display of uncertainty (e.g. error bars, Box plot)}
+    \item Minimize clutter.
 \end{itemize}
 
 See the file \texttt{guide\_to\_visualising.pdf} for further information and guidance.
 
 \begin{figure}
     \centering
-    \includegraphics[width=1.0\linewidth]{images/boxplot_finger_distance.pdf}    
-
+    \includegraphics[width=1.0\linewidth]{images/boxplot_finger_distance.pdf}
+    
     \caption{Average number of fingers detected by the touch sensor at different heights above the surface, averaged over all gestures. Dashed lines indicate
-    the true number of fingers present. The Box plots include bootstrapped uncertainty notches for the median. It is clear that the device is biased toward 
-    undercounting fingers, particularly at higher $z$ distances.
+        the true number of fingers present. The Box plots include bootstrapped uncertainty notches for the median. It is clear that the device is biased toward 
+        undercounting fingers, particularly at higher $z$ distances.
     }
-
+    
     % use the notation fig:name to cross reference a figure
-    \label{fig:boxplot} 
+    \label{fig:boxplot}
 \end{figure}
 
 
 %==================================================================================================================================
-\chapter{Conclusion}    
+\chapter{Conclusion}
 Summarise the whole project for a lazy reader who didn't read the rest (e.g. a prize-awarding committee).
 \section{Guidance}
 \begin{itemize}
     \item
-        Summarise briefly and fairly.
+          Summarise briefly and fairly.
     \item
-        You should be addressing the general problem you introduced in the
-        Introduction.        
+          You should be addressing the general problem you introduced in the
+          Introduction.        
     \item
-        Include summary of concrete results (``the new compiler ran 2x
-        faster'')
+          Include summary of concrete results (``the new compiler ran 2x
+          faster'')
     \item
-        Indicate what future work could be done, but remember: \textbf{you
-        won't get credit for things you haven't done}.
+          Indicate what future work could be done, but remember: \textbf{you
+              won't get credit for things you haven't done}.
 \end{itemize}
 
 %==================================================================================================================================
@@ -442,28 +534,30 @@ Summarise the whole project for a lazy reader who didn't read the rest (e.g. a p
 
 \begin{appendices}
 
-\chapter{Appendices}
 
-Typical inclusions in the appendices are:
-
-\begin{itemize}
-\item
-  Copies of ethics approvals (required if obtained)
-\item
-  Copies of questionnaires etc. used to gather data from subjects.
-\item
-  Extensive tables or figures that are too bulky to fit in the main body of
-  the report, particularly ones that are repetitive and summarised in the body.
-
-\item Outline of the source code (e.g. directory structure), or other architecture documentation like class diagrams.
-
-\item User manuals, and any guides to starting/running the software.
-
-\end{itemize}
-
-\textbf{Don't include your source code in the appendices}. It will be
-submitted separately.
-
+    \chapter{Appendices}
+    
+    
+    Typical inclusions in the appendices are:
+    
+    \begin{itemize}
+        \item
+              Copies of ethics approvals (required if obtained)
+        \item
+              Copies of questionnaires etc. used to gather data from subjects.
+        \item
+              Extensive tables or figures that are too bulky to fit in the main body of
+              the report, particularly ones that are repetitive and summarised in the body.
+              
+        \item Outline of the source code (e.g. directory structure), or other architecture documentation like class diagrams.
+              
+        \item User manuals, and any guides to starting/running the software.
+              
+    \end{itemize}
+    
+    \textbf{Don't include your source code in the appendices}. It will be
+    submitted separately.
+    
 \end{appendices}
 
 %==================================================================================================================================

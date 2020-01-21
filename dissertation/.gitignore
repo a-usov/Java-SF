@@ -245,3 +245,6 @@ TSWLatexianTemp*
 
 # generated if using elsarticle.cls
 *.spl
+
+# Dont check-in vscode folder
+.vscode/
