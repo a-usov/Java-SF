@@ -1,15 +1,11 @@
 package jsf;
 
-import domain.Program;
-
 import java.io.IOException;
 import java.nio.file.Paths;
 import java.util.logging.Level;
 import java.util.logging.Logger;
-import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.CharStreams;
 import org.antlr.v4.runtime.CommonTokenStream;
-import org.antlr.v4.runtime.tree.ParseTree;
 import parsing.ProgramVisitor;
 
 public final class App {
@@ -28,19 +24,20 @@ public final class App {
   public static void main(final String[] args) {
     try {
       // TODO change this to get input from args
-      final CharStream inputStream = CharStreams.fromPath(
-          Paths.get(System.getProperty("user.dir"), "src/main/resources/example.jsf"));
+      final var inputStream = CharStreams.fromPath(
+              Paths.get(System.getProperty("user.dir"), "src/main/resources/example.jsf"));
 
-      final jsfLexer lexer = new jsfLexer(inputStream);
-      final CommonTokenStream commonTokenStream = new CommonTokenStream(lexer);
-      final jsfParser parser = new jsfParser(commonTokenStream);
-      final ParseTree tree = parser.program();
+      final var lexer = new jsfLexer(inputStream);
+      final var commonTokenStream = new CommonTokenStream(lexer);
+      final var parser = new jsfParser(commonTokenStream);
+      final var tree = parser.program();
 
-      final ProgramVisitor visitor = new ProgramVisitor();
-      final Program program = visitor.visit(tree);
+      final var visitor = new ProgramVisitor();
+      final var program = visitor.visit(tree);
+
+      System.out.println(program);
 
       visitor.visit(program);
-
     } catch (IOException e) {
       if (LOGGER.isLoggable(Level.SEVERE)) {
         LOGGER.severe("Exception occurred: " + e);

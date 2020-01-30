@@ -8,24 +8,24 @@ import jsf.jsfParser;
 
 public class TypeVisitor extends jsfBaseVisitor<BooleanType> {
   @Override
-  public BooleanType visitBasic(jsfParser.BasicContext ctx) {
+  public BooleanType visitBasic(final jsfParser.BasicContext ctx) {
     return new BooleanType(getFromTypeName(ctx.getText()), false);
   }
 
   @Override
-  public BooleanType visitClass(jsfParser.ClassContext ctx) {
+  public BooleanType visitClass(final jsfParser.ClassContext ctx) {
     return new BooleanType(getFromTypeName(ctx.getText()), false);
   }
 
   @Override
-  public BooleanType visitNotClass(jsfParser.NotClassContext ctx) {
+  public BooleanType visitNotClass(final jsfParser.NotClassContext ctx) {
     return new BooleanType(getFromTypeName(ctx.getText()), true);
   }
 
   @Override
-  public BooleanType visitBoolean(jsfParser.BooleanContext ctx) {
-    BooleanType type1 = visit(ctx.type1);
-    BooleanType type2 = visit(ctx.type2);
+  public BooleanType visitBoolean(final jsfParser.BooleanContext ctx) {
+    final BooleanType type1 = visit(ctx.type1);
+    final BooleanType type2 = visit(ctx.type2);
 
     BooleanType.BooleanConnective connective;
 

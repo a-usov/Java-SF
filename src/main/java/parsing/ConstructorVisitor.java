@@ -7,20 +7,17 @@ import domain.Constructor;
 import domain.Field;
 import domain.Parameter;
 import domain.Program;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.IntStream;
-
 import jsf.jsfBaseVisitor;
 import jsf.jsfParser.ConstructorDeclContext;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Pair;
 
-public class ConstructorVisitor extends jsfBaseVisitor<Pair<Constructor, Boolean>> {
+public class ConstructorVisitor extends jsfBaseVisitor<Constructor> {
 
   private final String owner;
 
@@ -30,11 +27,9 @@ public class ConstructorVisitor extends jsfBaseVisitor<Pair<Constructor, Boolean
   }
 
   @Override
-  public Pair<Constructor, Boolean> visitConstructorDecl(final ConstructorDeclContext ctx) {
+  public Constructor visitConstructorDecl(final ConstructorDeclContext ctx) {
     final var parameters = new LinkedHashMap<String, Parameter>();
     final var fieldAssignments = new ArrayList<Pair<Token, Token>>();
-
-    AtomicBoolean isResolved = new AtomicBoolean(true);
 
     if (!ctx.constructorname.getText().equals(owner)) {
       reportError("constructor name does not match the class", ctx);
@@ -48,12 +43,8 @@ public class ConstructorVisitor extends jsfBaseVisitor<Pair<Constructor, Boolean
         if (parameters.containsKey(parameter.getName())) {
           reportError("repeated formal parameter: " + parameter.getName(), parameter.getToken());
         } else {
-          if (parameter.getType() == null) {
-            isResolved.set(false);
-          }
           parameters.put(parameter.getName(), parameter);
         }
-
       });
     }
 
@@ -63,7 +54,7 @@ public class ConstructorVisitor extends jsfBaseVisitor<Pair<Constructor, Boolean
     final var fieldAssignmentVisitor = new FieldAssignmentVisitor();
     ctx.fieldAssignment().forEach(a -> fieldAssignments.add(a.accept(fieldAssignmentVisitor)));
 
-    return new Pair<>(new Constructor(parameters, superParameters, fieldAssignments, ctx.constructorname), isResolved.get());
+    return new Constructor(parameters, superParameters, fieldAssignments, ctx.constructorname);
   }
 
   /**
@@ -102,11 +93,11 @@ public class ConstructorVisitor extends jsfBaseVisitor<Pair<Constructor, Boolean
 
         if (actualParam == null) {
           reportError("Parameter + " + formalParam.getName() + "doesnt exist in "
-                  + "constructor of " + owner, formalParam.getToken());
+              + "constructor of " + owner, formalParam.getToken());
         } else {
           if (superParam.getType() != actualParam.getType()) {
             reportError("Type of parameter doesnt match type of super constructor: "
-                    + actualParam.getType() + " != " + superParam.getType(), actualParam.getToken());
+                + actualParam.getType() + " != " + superParam.getType(), actualParam.getToken());
           }
         }
       }
@@ -114,10 +105,15 @@ public class ConstructorVisitor extends jsfBaseVisitor<Pair<Constructor, Boolean
   }
 
   private void checkFieldAssign(final Constructor constructor, final Program program, final String owner) {
-    final var fieldSet = new HashMap<String, Boolean>();
+    final var fieldHasBeenAssigned = new HashMap<String, Boolean>();
 
-    program.getClasses().get(owner).getFields().values()
-            .forEach(f -> fieldSet.put(f.getName(), false));
+    program.getClasses().get(owner).getFields().values().forEach(f -> fieldHasBeenAssigned.put(f.getName(), false));
+
+    final String superClassName = program.getClasses().get(owner).getSuperName();
+    if (superClassName != null) {
+      program.getClasses().get(superClassName).getFields().values()
+          .forEach(f -> fieldHasBeenAssigned.put(f.getName(), true));
+    }
 
     for (final var assignment : constructor.getFieldAssignments()) {
       final Field field = program.getClasses().get(owner).getFields().get(assignment.a.getText());
@@ -127,18 +123,18 @@ public class ConstructorVisitor extends jsfBaseVisitor<Pair<Constructor, Boolean
         reportError("Field " + assignment.a.getText() + " does not exist", assignment.a);
       } else if (parameter == null) {
         reportError("Parameter " + assignment.b.getText() + " does not exist", assignment.b);
-      } else if (field.getType() != parameter.getType()) {
+      } else if (!field.getType().getSet().contains(parameter.getType())) {
         reportError("Field " + assignment.a.getText() + " and parameter " + assignment.b.getText()
-                + " have different types: " + field.getType() + " != " + parameter.getType(), assignment.a);
+            + " have different types: " + field.getType() + " != " + parameter.getType(), assignment.a);
+      } else {
+        fieldHasBeenAssigned.put(field.getName(), true);
       }
-
-      fieldSet.put(field.getName(), true);
     }
 
-    for (final var field : fieldSet.entrySet()) {
+    for (final var field : fieldHasBeenAssigned.entrySet()) {
       if (!field.getValue()) {
         reportError("Field + " + field.getKey() + " has not been set,",
-                program.getClasses().get(owner).getFields().get(field.getKey()).getToken());
+            program.getClasses().get(owner).getFields().get(field.getKey()).getToken());
       }
     }
 

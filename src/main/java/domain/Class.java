@@ -13,9 +13,9 @@ public class Class {
   private final Constructor constructor;
   private final Map<String, Method> methods;
   private final String superName;
-
+  
   private final Token token;
-  private boolean isResolved;
+  private boolean resolved;
 
   /**
    * Creates a class struct that has a name, list of fields, and constructor.
@@ -25,8 +25,7 @@ public class Class {
    * @param constructor constructor of class
    */
   public Class(final String name, final Map<String, Field> fields, final Constructor constructor,
-               final Map<String, Method> methods, final String superName, final Token ctx,
-               boolean isResolved) {
+               final Map<String, Method> methods, final String superName, final Token ctx, final boolean resolved) {
     super();
     this.type = new ClassType(name);
     this.fields = fields;
@@ -34,7 +33,7 @@ public class Class {
     this.methods = methods;
     this.superName = superName;
     this.token = ctx;
-    this.isResolved = isResolved;
+    this.resolved = resolved;
   }
 
   public String getName() {
@@ -47,6 +46,10 @@ public class Class {
 
   public Map<String, Field> getFields() {
     return fields;
+  }
+
+  public void addField(final Field field) {
+    this.getFields().put(field.getName(), field);
   }
 
   public Map<String, Method> getMethods() {
@@ -66,16 +69,16 @@ public class Class {
   }
 
   public boolean isResolved() {
-    return isResolved;
+    return resolved;
   }
 
-  public void setResolved(boolean resolved) {
-    this.isResolved = resolved;
+  public void setResolved(final boolean resolved) {
+    this.resolved = resolved;
   }
 
   @Override
   public String toString() {
-    return "Class: " + this.type.getName() + " extends: " + superName + "\n" + fields + "\n" + constructor + "\n"
-            + methods + "\n" + "isResolved: " + isResolved;
+    return "Class: " + this.type.getName() + " extends: " + superName + "\n" + fields.values() + "\n" + constructor
+        + "\n" + methods + "\n" + "isResolved: " + resolved;
   }
 }

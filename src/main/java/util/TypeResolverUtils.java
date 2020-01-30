@@ -26,7 +26,7 @@ public final class TypeResolverUtils {
    */
   public static Type getFromTypeName(final String typeName) {
     final Optional<? extends Type> basicType = getBasicType(typeName);
-    return basicType.orElse(null);
+    return basicType.isPresent() ? basicType.get() : new ClassType(typeName);
   }
 
   /**

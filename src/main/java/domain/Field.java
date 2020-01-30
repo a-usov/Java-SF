@@ -1,13 +1,12 @@
 package domain;
 
-import domain.type.Type;
+import domain.type.BooleanType;
 import org.antlr.v4.runtime.Token;
 
 public class Field {
   private final String name;
-  private Type type;
+  private BooleanType type;
   private final Token token;
-  private final String typeName;
 
   /**
    * Object representing a field in a class.
@@ -15,32 +14,27 @@ public class Field {
    * @param name name of the field
    * @param type type of the field
    */
-  public Field(final String name, final Type type, final Token token, final String typeName) {
+  public Field(final String name, final BooleanType type, final Token token) {
     super();
     this.name = name;
     this.type = type;
     this.token = token;
-    this.typeName = typeName;
   }
 
   public String getName() {
     return name;
   }
 
-  public Type getType() {
+  public BooleanType getType() {
     return type;
   }
 
-  public void setType(Type type) {
+  public void setType(final BooleanType type) {
     this.type = type;
   }
 
   public Token getToken() {
     return token;
-  }
-
-  public String getTypeName() {
-    return typeName;
   }
 
   @Override

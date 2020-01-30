@@ -6,12 +6,9 @@ import domain.Method;
 import domain.Parameter;
 import domain.Program;
 import domain.type.BasicType;
-import domain.type.BooleanType;
-import domain.type.ClassType;
 import domain.type.Type;
 import jsf.jsfBaseVisitor;
 import jsf.jsfParser.ExpressionContext;
-import jsf.jsfParser.FieldContext;
 import jsf.jsfParser.MethodContext;
 import jsf.jsfParser.NumContext;
 import jsf.jsfParser.ObjectContext;
@@ -70,24 +67,26 @@ public class ExpressionVisitor extends jsfBaseVisitor<Type> {
     return parameter.getType();
   }
 
-  @Override
-  public BooleanType visitField(final FieldContext ctx) {
-    final Type subExpression = ctx.primExpression().accept(this);
-    if (subExpression.getClass() == BasicType.class) {
-      throw new RuntimeException("Cannot access field of a basic type");
-    } else {
-      final var classes = program.getClasses();
-      final var fieldName = ctx.ID().getText();
-
-      if (!classes.containsKey(subExpression.getName())) {
-        throw new RuntimeException("Type of class field access has not been defined");
-      } else if (!classes.get(subExpression.getName()).getFields().containsKey(fieldName)) {
-        throw new RuntimeException("Field being accessed does not exist");
-      } else {
-        return classes.get(subExpression.getName()).getFields().get(fieldName).getType();
-      }
-    }
-  }
+  // TODO - reimplement this
+  //
+  //  @Override
+  //  public Type visitField(final FieldContext ctx) {
+  //    final Type subExpression = ctx.primExpression().accept(this);
+  //    if (subExpression.getClass() == BasicType.class) {
+  //      throw new RuntimeException("Cannot access field of a basic type");
+  //    } else {
+  //      final var classes = program.getClasses();
+  //      final var fieldName = ctx.ID().getText();
+  //
+  //      if (!classes.containsKey(subExpression.getName())) {
+  //        throw new RuntimeException("Type of class field access has not been defined");
+  //      } else if (!classes.get(subExpression.getName()).getFields().containsKey(fieldName)) {
+  //        throw new RuntimeException("Field being accessed does not exist");
+  //      } else {
+  //        return classes.get(subExpression.getName()).getFields().get(fieldName).getType();
+  //      }
+  //    }
+  //  }
 
   @Override
   public Type visitMethod(final MethodContext ctx) {

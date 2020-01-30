@@ -12,11 +12,11 @@ repositories {
 }
 
 dependencies {
-    testImplementation("org.junit.jupiter:junit-jupiter-api:5.5.2")
-    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.5.2")
+    testImplementation("org.junit.jupiter:junit-jupiter-api:5.6.0")
+    testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine:5.6.0")
     compileOnly("org.ow2.asm:asm:7.3.1")
     implementation("com.google.guava:guava:28.2-jre")
-    antlr("org.antlr:antlr4:4.7.2")
+    antlr("org.antlr:antlr4:4.8")
 }
 
 application {
@@ -60,5 +60,5 @@ pmd {
 spotbugs {
     effort = "max"
     excludeFilter = File("config/spotbugs/excludefilter.xml")
-    toolVersion = "4.0.0-beta5"
+    toolVersion = "4.0.0-RC1"
 }

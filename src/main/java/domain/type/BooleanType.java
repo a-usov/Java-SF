@@ -2,7 +2,6 @@ package domain.type;
 
 import java.util.HashSet;
 import java.util.Set;
-
 import util.TyperHelper;
 
 public class BooleanType {
@@ -15,7 +14,14 @@ public class BooleanType {
   private final Type type;
   private final Boolean not;
 
-  public BooleanType(BooleanConnective connective, BooleanType left, BooleanType right) {
+  /**
+   * Creates a node in the boolean type tree that is a connective.
+   *
+   * @param connective The boolean connective of the expression, AND/OR
+   * @param left       The left sub-expression it applies to
+   * @param right      The right sub-expression it applies to
+   */
+  public BooleanType(final BooleanConnective connective, final BooleanType left, final BooleanType right) {
     this.leafNode = false;
     this.connective = connective;
     this.left = left;
@@ -25,7 +31,13 @@ public class BooleanType {
     this.not = null;
   }
 
-  public BooleanType(Type type, boolean not) {
+  /**
+   * Creates a node in the boolean type tree that is a concrete type with no moe sub-expressions.
+   *
+   * @param type The concrete type in an expression
+   * @param not  Whether this type has a NOT operator applied to it
+   */
+  public BooleanType(final Type type, final boolean not) {
     this.leafNode = true;
     this.type = type;
     this.not = not;
@@ -35,10 +47,18 @@ public class BooleanType {
     this.right = null;
   }
 
+  /**
+   * Returns the set of all subclasses according to the boolean type expression.
+   *
+   * @return Set of applicable subtypes
+   */
   public Set<Type> getSet() {
     Set<Type> result = null;
 
     if (this.isLeafNode()) {
+      if (!TyperHelper.SUB_CLASSES.containsKey(this.getType())) {
+        return new HashSet<>();
+      }
       result = new HashSet<>(TyperHelper.SUB_CLASSES.get(this.getType()));
 
       if (this.isNot()) {
@@ -63,9 +83,33 @@ public class BooleanType {
 
           inter1.retainAll(inter2);
           result = inter1;
+          break;
+        default:
       }
 
       return result;
+    }
+  }
+
+  /**
+   * Gets all the unique concrete types in the boolean expressions, this ignores NOT's and connectives.
+   *
+   * @return set of all types included in the expression
+   */
+  public Set<Type> getTypes() {
+    final var set = new HashSet<Type>();
+
+    typeGetHelper(set);
+
+    return set;
+  }
+
+  private void typeGetHelper(final Set<Type> set) {
+    if (this.isLeafNode()) {
+      set.add(this.getType());
+    } else {
+      this.getLeft().typeGetHelper(set);
+      this.getRight().typeGetHelper(set);
     }
   }
 
@@ -96,5 +140,14 @@ public class BooleanType {
   public enum BooleanConnective {
     INTERS,
     UNION,
+  }
+
+  @Override
+  public String toString() {
+    if (this.isLeafNode()) {
+      return "Type= " + type + ", not=" + not;
+    } else {
+      return connective + ": " + left + ", " + right;
+    }
   }
 }

@@ -25,7 +25,7 @@ public class MethodVisitor extends jsfBaseVisitor<Method> {
 
     final String name = ctx.name.getText();
 
-    return new Method(returnType, name, parameter, ctx.expression(), ctx.start, ctx.returntype.getText());
+    return new Method(returnType, name, parameter, ctx.expression(), ctx.start);
   }
 
   /**
