@@ -1,6 +1,7 @@
 package util;
 
 import domain.Class;
+import domain.Field;
 import domain.Program;
 import domain.type.BasicType;
 import domain.type.ClassType;
@@ -18,19 +19,20 @@ public final class TyperHelper {
   public static final Map<Type, Set<Type>> SUB_CLASSES = new HashMap<>();
   public static final Set<Type> UNIVERSE_SET = new HashSet<>();
 
-  private TyperHelper(){
+  private TyperHelper() {
   }
 
   static {
     SUB_CLASSES.put(BasicType.BOOLEAN, new HashSet<>(Collections.singletonList(BasicType.BOOLEAN)));
-    SUB_CLASSES.put(BasicType.DOUBLE, new HashSet<>(Arrays.asList(BasicType.DOUBLE, BasicType.INT,
-        BasicType.BYTE, BasicType.FLOAT, BasicType.LONG, BasicType.SHORT)));
 
-    SUB_CLASSES.put(BasicType.FLOAT, new HashSet<>(Arrays.asList(BasicType.FLOAT, BasicType.INT,
-        BasicType.BYTE, BasicType.LONG, BasicType.SHORT)));
+    SUB_CLASSES.put(BasicType.DOUBLE, new HashSet<>(Arrays.asList(BasicType.DOUBLE, BasicType.INT, BasicType.BYTE,
+            BasicType.FLOAT, BasicType.LONG, BasicType.SHORT)));
 
-    SUB_CLASSES.put(BasicType.LONG, new HashSet<>(Arrays.asList(BasicType.LONG, BasicType.INT,
-        BasicType.BYTE, BasicType.SHORT)));
+    SUB_CLASSES.put(BasicType.FLOAT, new HashSet<>(Arrays.asList(BasicType.FLOAT, BasicType.INT, BasicType.BYTE,
+            BasicType.LONG, BasicType.SHORT)));
+
+    SUB_CLASSES.put(BasicType.LONG, new HashSet<>(Arrays.asList(BasicType.LONG, BasicType.INT, BasicType.BYTE,
+            BasicType.SHORT)));
 
     SUB_CLASSES.put(BasicType.INT, new HashSet<>(Arrays.asList(BasicType.INT, BasicType.BYTE, BasicType.SHORT)));
 
@@ -54,37 +56,29 @@ public final class TyperHelper {
     for (final var c : SUB_CLASSES.entrySet()) {
       if (c.getKey() instanceof ClassType) {
 
-        final var existing = (ClassType) c.getKey();
-        final var existingClass = program.getClasses().get(existing.getName());
+        final ClassType existing = (ClassType) c.getKey();
+        final Class existingClass = program.getClasses().get(existing.getName());
+
         boolean isValid = true;
-        boolean isValidSub = true;
-
-        for (final var entry : newClass.getFields().entrySet()) {
-          if (!SUB_CLASSES.containsKey(entry.getValue().getType())) {
-            return false;
+        for (final var field : newClass.getFields().values()) {
+          for (final var type : field.getType().getTypes()) {
+            if (!SUB_CLASSES.containsKey(type)) {
+              return false;
+            }
           }
 
-          if (existingClass.getFields().containsKey(entry.getKey())) {
-            if (!SUB_CLASSES.get(existingClass.getFields().get(entry.getKey()))
-                .contains(entry.getValue().getType())) {
-              isValidSub = false;
-            }
-
-            if (!SUB_CLASSES.get(entry.getValue().getType())
-                .contains(existingClass.getFields().get(entry.getKey()))) {
-              isValid = false;
-            }
-          } else {
-            isValid = false;
-          }
+          isValid = canAdd(existingClass, field);
         }
-
-        if (isValidSub) {
-          SUB_CLASSES.get(existing).add(newClass.getType());
-        }
-
         if (isValid) {
           subclasses.add(existing);
+        }
+
+        isValid = true;
+        for (final var field : existingClass.getFields().values()) {
+          isValid = canAdd(newClass, field);
+        }
+        if (isValid) {
+          SUB_CLASSES.get(existing).add(newClass.getType());
         }
       }
     }
@@ -94,4 +88,18 @@ public final class TyperHelper {
     return true;
   }
 
+  private static boolean canAdd(final Class c, final Field field) {
+    if (c.getFields().containsKey(field.getName())) {
+      final var newSet = new HashSet<>(c.getFields().get(field.getName()).getType().getSet());
+
+      for (final var type : field.getType().getSet()) {
+        if (!newSet.contains(type)) {
+          return false;
+        }
+      }
+    } else {
+      return false;
+    }
+    return true;
+  }
 }

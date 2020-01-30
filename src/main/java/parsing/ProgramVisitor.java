@@ -4,11 +4,10 @@ import static util.TypeResolverUtils.reportError;
 
 import domain.Class;
 import domain.Program;
-
+import domain.type.ClassType;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
-
 import jsf.jsfBaseVisitor;
 import jsf.jsfParser.ProgramContext;
 import util.TyperHelper;
@@ -21,7 +20,7 @@ public class ProgramVisitor extends jsfBaseVisitor<Program> {
 
     final var classVisitor = new ClassVisitor();
     ctx.classDecl().forEach(classCtx -> {
-      final Class c = classCtx.accept(classVisitor);
+      final Class c = classVisitor.visit(classCtx);
       if (classes.containsKey(c.getName())) {
         reportError("repeated class name: " + c.getName(), c.getToken());
       } else {
@@ -29,9 +28,7 @@ public class ProgramVisitor extends jsfBaseVisitor<Program> {
       }
     });
 
-    final var program = new Program(classes);
-    System.out.println(program);
-    return program;
+    return new Program(classes);
   }
 
   /**
@@ -41,21 +38,41 @@ public class ProgramVisitor extends jsfBaseVisitor<Program> {
    */
   public void visit(final Program program) {
     var hasChanged = false;
-    do
+    do {
       hasChanged = resolve(program);
-    while (hasChanged);
+    } while (hasChanged);
 
-    for (var c : program.getClasses().values()) {
+    for (final var c : program.getClasses().values()) {
       if (!c.isResolved()) {
         // TODO make error message nicer
         throw new RuntimeException("Cannot resolve the types");
       }
     }
 
+    for (final var c : program.getClasses().values()) {
+      if (c.getSuperName() != null) {
+        if (program.getClasses().get(c.getSuperName()) == null) {
+          reportError("The super class " + c.getSuperName() + " of class " + c.getName()
+              + " does not exist", c.getToken());
+        } else {
+          final var superClass = program.getClasses().get(c.getSuperName());
+          for (final var field : superClass.getFields().values()) {
+            if (c.getFields().get(field.getName()) != null) {
+              reportError("Overwriting field of super class", c.getFields().get(field.getName()).getToken());
+            } else {
+              c.addField(field);
+            }
+          }
+        }
+
+      }
+    }
+
+    System.out.println(program);
+
     generateRelation(program.getClasses().values(), program);
 
     System.out.println("Relation: " + TyperHelper.SUB_CLASSES);
-    System.out.println("Universe: " + TyperHelper.UNIVERSE_SET);
 
     final var classVisitor = new ClassVisitor();
     program.getClasses().values().forEach(c -> classVisitor.visit(c, program));
@@ -63,7 +80,7 @@ public class ProgramVisitor extends jsfBaseVisitor<Program> {
     System.out.println(program);
   }
 
-  private void generateRelation(final Collection<Class> classes, Program program) {
+  private void generateRelation(final Collection<Class> classes, final Program program) {
     final var untyped = new ArrayList<Class>();
 
     for (final var c : classes) {
@@ -77,48 +94,30 @@ public class ProgramVisitor extends jsfBaseVisitor<Program> {
     }
   }
 
-  private boolean resolve(Program program) {
+  private boolean resolve(final Program program) {
     var hasChanged = false;
+    var allResolved = true;
 
-    for (var c : program.getClasses().values()) {
+    for (final var c : program.getClasses().values()) {
       if (!c.isResolved()) {
-        for (var f : c.getFields().values()) {
-          var typeName = f.getTypeName();
-          if (f.getType() == null && program.getClasses().get(typeName).isResolved()) {
-            f.setType(program.getClasses().get(typeName).getType());
-            hasChanged = true;
+        for (final var field : c.getFields().values()) {
+          for (final var type : field.getType().getTypes()) {
+            if (type instanceof ClassType) {
+              if (program.getClasses().get(type.getName()).isResolved()) {
+                hasChanged = true;
+              } else {
+                allResolved = false;
+              }
+            }
           }
         }
 
-        for (var m : c.getMethods().values()) {
-          var typeName = m.getReturnTypeName();
-          if (m.getReturnType() == null && program.getClasses().get(typeName).isResolved()) {
-            m.setReturnType(program.getClasses().get(typeName).getType());
-            hasChanged = true;
-          }
-        }
-
-        var hasBeenResolved = true;
-
-        for (var f : c.getFields().values()) {
-          if (f.getType() == null) {
-            hasBeenResolved = false;
-            break;
-          }
-        }
-
-        for (var m : c.getMethods().values()) {
-          if (m.getReturnType() == null) {
-            hasBeenResolved = false;
-            break;
-          }
-        }
-
-        if (hasBeenResolved) {
+        if (allResolved) {
           c.setResolved(true);
         }
       }
     }
+
     return hasChanged;
   }
 }

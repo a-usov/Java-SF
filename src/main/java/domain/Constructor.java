@@ -46,7 +46,7 @@ public class Constructor {
 
   @Override
   public String toString() {
-    return "Constructor takes arguments : " + parameterList + "\n" + "Super takes arguments" + superParameters + "\n"
-            + "fields assigned are: " + fieldAssignments;
+    return "Constructor takes arguments : " + parameterList.values() + "\n" + "Super takes arguments" + superParameters
+            + "\n" + "fields assigned are: " + fieldAssignments;
   }
 }

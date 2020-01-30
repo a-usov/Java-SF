@@ -1,5 +1,6 @@
 package domain.type;
 
+import java.util.Objects;
 import org.objectweb.asm.Opcodes;
 
 public class ClassType implements Type {
@@ -98,5 +99,24 @@ public class ClassType implements Type {
   @Override
   public String toString() {
     return "ClassType: " + name;
+  }
+
+  @Override
+  public boolean equals(final Object object) {
+    if (this == object) {
+      return true;
+    }
+
+    if (object instanceof ClassType) {
+      final ClassType type = (ClassType) object;
+      return type.getName().equals(this.getName());
+    }
+
+    return false;
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(name);
   }
 }

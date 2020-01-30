@@ -8,7 +8,6 @@ public class Method {
 
   // TODO - Encapsulate return and parameter type
   private Type returnType;
-  private String returnTypeName;
   private final String name;
   private final Parameter parameter;
   private final ExpressionContext expression;
@@ -23,13 +22,12 @@ public class Method {
    * @param ctx        the expression context within method that we store to type check later
    */
   public Method(final Type returnType, final String name, final Parameter parameter,
-                final ExpressionContext ctx, final Token token, final String returnTypeName) {
+                final ExpressionContext ctx, final Token token) {
     this.returnType = returnType;
     this.name = name;
     this.parameter = parameter;
     this.expression = ctx;
     this.token = token;
-    this.returnTypeName = returnTypeName;
   }
 
   public String getName() {
@@ -44,7 +42,7 @@ public class Method {
     return returnType;
   }
 
-  public void setReturnType(Type type) {
+  public void setReturnType(final Type type) {
     this.returnType = type;
   }
 
@@ -54,10 +52,6 @@ public class Method {
 
   public Token getToken() {
     return token;
-  }
-
-  public String getReturnTypeName() {
-    return returnTypeName;
   }
 
   @Override
