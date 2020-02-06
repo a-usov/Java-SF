@@ -46,17 +46,18 @@ expression
 
 primExpression
         :       NUMBER                                                                  # num
+        |       DECIMAL                                                                 # decimal
         |       ID                                                                      # var
         |       primExpression DOT ID                                                   # field
-        |       primExpression DOT ID LPAR expression RPAR                              # method
+        |       primExpression DOT ID LPAR (expression)? RPAR                           # method
         |       NEW ID LPAR (expression (COMMA expression)*)? RPAR                      # object
         ;
 
 type
-        :       basicType                                           # basic
-        |       ID                                                  # class
-        |       NOT ID                                              # notClass
-        |       LPAR type1=type bool=(AND | OR) type2=type RPAR     # boolean
+        :       basicType                                                               # basic
+        |       ID                                                                      # class
+        |       NOT ID                                                                  # notClass
+        |       LPAR type1=type bool=(AND | OR) type2=type RPAR                         # boolean
         ;
 
 basicType
@@ -97,6 +98,7 @@ SEMI    :       ';'                         ;
 
 ID      :       LETTER (LETTER | DIGIT)*    ;
 NUMBER  :       DIGIT (DIGIT)*              ;
+DECIMAL :       DIGIT DOT (DIGIT)*          ;
 SPACE   :       (' ' | '\t')+   -> skip     ;
 EOL     :       '\r'? '\n'      -> skip     ;
 EMPTY   :       'EMPTY'                     ;

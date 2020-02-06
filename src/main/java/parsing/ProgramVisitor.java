@@ -10,7 +10,7 @@ import java.util.Collection;
 import java.util.HashMap;
 import jsf.jsfBaseVisitor;
 import jsf.jsfParser.ProgramContext;
-import util.TyperHelper;
+import util.TypeHelper;
 
 public class ProgramVisitor extends jsfBaseVisitor<Program> {
 
@@ -68,23 +68,19 @@ public class ProgramVisitor extends jsfBaseVisitor<Program> {
       }
     }
 
-    System.out.println(program);
-
     generateRelation(program.getClasses().values(), program);
 
-    System.out.println("Relation: " + TyperHelper.SUB_CLASSES);
+    System.out.println("Relation: " + TypeHelper.SUB_CLASSES);
 
     final var classVisitor = new ClassVisitor();
     program.getClasses().values().forEach(c -> classVisitor.visit(c, program));
-
-    System.out.println(program);
   }
 
   private void generateRelation(final Collection<Class> classes, final Program program) {
     final var untyped = new ArrayList<Class>();
 
     for (final var c : classes) {
-      if (!TyperHelper.addClass(c, program)) {
+      if (!TypeHelper.addClass(c, program)) {
         untyped.add(c);
       }
     }

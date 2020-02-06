@@ -79,6 +79,6 @@ public class Class {
   @Override
   public String toString() {
     return "Class: " + this.type.getName() + " extends: " + superName + "\n" + fields.values() + "\n" + constructor
-        + "\n" + methods + "\n" + "isResolved: " + resolved;
+        + "\n" + methods.values() + "\n" + "isResolved: " + resolved;
   }
 }

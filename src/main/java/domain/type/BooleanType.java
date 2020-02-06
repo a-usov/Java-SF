@@ -2,7 +2,8 @@ package domain.type;
 
 import java.util.HashSet;
 import java.util.Set;
-import util.TyperHelper;
+
+import util.TypeHelper;
 
 public class BooleanType {
   private final boolean leafNode;
@@ -56,13 +57,13 @@ public class BooleanType {
     Set<Type> result = null;
 
     if (this.isLeafNode()) {
-      if (!TyperHelper.SUB_CLASSES.containsKey(this.getType())) {
+      if (!TypeHelper.SUB_CLASSES.containsKey(this.getType())) {
         return new HashSet<>();
       }
-      result = new HashSet<>(TyperHelper.SUB_CLASSES.get(this.getType()));
+      result = new HashSet<>(TypeHelper.SUB_CLASSES.get(this.getType()));
 
       if (this.isNot()) {
-        final var universe = new HashSet<>(TyperHelper.UNIVERSE_SET);
+        final var universe = new HashSet<>(TypeHelper.UNIVERSE_SET);
         universe.removeAll(result);
         return universe;
       } else {
