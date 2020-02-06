@@ -4,14 +4,12 @@ import static util.TypeResolverUtils.isNotValidSubtype;
 import static util.TypeResolverUtils.reportError;
 
 import domain.Constructor;
-import domain.Field;
 import domain.Parameter;
 import domain.Program;
 
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
-import java.util.List;
 import java.util.stream.IntStream;
 
 import jsf.jsfBaseVisitor;
@@ -52,9 +50,9 @@ public class ConstructorVisitor extends jsfBaseVisitor<Constructor> {
     }
 
     final var superVisitor = new SuperVisitor();
-    final List<String> superArgumentNames = superVisitor.visit(ctx.superDecl());
+    final var superArgumentNames = superVisitor.visit(ctx.superDecl());
 
-    final List<Parameter> superArguments = new ArrayList<>();
+    final var superArguments = new ArrayList<Parameter>();
     superArgumentNames.forEach(a -> {
       if (!parameters.containsKey(a)) {
         reportError("Parameter " + a + "doesnt exist in " + "constructor of " + owner, ctx.superDecl().start);
@@ -91,7 +89,7 @@ public class ConstructorVisitor extends jsfBaseVisitor<Constructor> {
   }
 
   private void checkSuperCall(final Constructor constructor, final Program program) {
-    final String superClassName = program.getClasses().get(owner).getSuperName();
+    final var superClassName = program.getClasses().get(owner).getSuperName();
 
     if (superClassName == null) {
       if (constructor.getSuperArguments().size() > 0) {
@@ -108,8 +106,8 @@ public class ConstructorVisitor extends jsfBaseVisitor<Constructor> {
       final var argumentIterator = constructor.getSuperArguments().iterator();
 
       while (parameterIterator.hasNext() && argumentIterator.hasNext()) {
-        final Parameter parameter = parameterIterator.next();
-        final Parameter argument = argumentIterator.next();
+        final var parameter = parameterIterator.next();
+        final var argument = argumentIterator.next();
 
         if (isNotValidSubtype(parameter.getType(), argument.getType())) {
           reportError("Type of parameter doesnt match type of super constructor: "
@@ -124,15 +122,15 @@ public class ConstructorVisitor extends jsfBaseVisitor<Constructor> {
 
     program.getClasses().get(owner).getFields().values().forEach(f -> fieldHasBeenAssigned.put(f.getName(), false));
 
-    final String superClassName = program.getClasses().get(owner).getSuperName();
+    final var superClassName = program.getClasses().get(owner).getSuperName();
     if (superClassName != null) {
       program.getClasses().get(superClassName).getFields().values()
           .forEach(f -> fieldHasBeenAssigned.put(f.getName(), true));
     }
 
     for (final var assignment : constructor.getFieldAssignments()) {
-      final Field field = program.getClasses().get(owner).getFields().get(assignment.a.getText());
-      final Parameter parameter = assignment.b;
+      final var field = program.getClasses().get(owner).getFields().get(assignment.a.getText());
+      final var parameter = assignment.b;
 
       if (field == null) {
         reportError("Field " + assignment.a.getText() + " does not exist", assignment.a);

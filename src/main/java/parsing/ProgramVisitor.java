@@ -20,7 +20,7 @@ public class ProgramVisitor extends jsfBaseVisitor<Program> {
 
     final var classVisitor = new ClassVisitor();
     ctx.classDecl().forEach(classCtx -> {
-      final Class c = classVisitor.visit(classCtx);
+      final var c = classVisitor.visit(classCtx);
       if (classes.containsKey(c.getName())) {
         reportError("repeated class name: " + c.getName(), c.getToken());
       } else {

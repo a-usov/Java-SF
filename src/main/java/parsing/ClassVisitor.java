@@ -19,10 +19,10 @@ public class ClassVisitor extends jsfBaseVisitor<Class> {
     final var fields = new HashMap<String, Field>();
     final var methods = new HashMap<String, Method>();
 
-    final String name = ctx.classlbl.getText();
-    final String superName = ctx.extendlbl == null ? null : ctx.extendlbl.getText();
+    final var name = ctx.classlbl.getText();
+    final var superName = ctx.extendlbl == null ? null : ctx.extendlbl.getText();
 
-    final AtomicBoolean isResolved = new AtomicBoolean(true);
+    final var isResolved = new AtomicBoolean(true);
 
     final var fieldVisitor = new FieldVisitor();
     ctx.fieldDecl().forEach(fieldCtx -> {

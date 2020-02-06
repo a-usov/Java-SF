@@ -17,7 +17,7 @@ public class Program {
 
   @Override
   public String toString() {
-    final StringBuilder output = new StringBuilder();
+    final var output = new StringBuilder();
     for (final var c : classes.values()) {
       output.append(c).append("\n\n");
     }
