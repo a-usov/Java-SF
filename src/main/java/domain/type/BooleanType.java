@@ -138,11 +138,6 @@ public class BooleanType {
     return right;
   }
 
-  public enum BooleanConnective {
-    INTERS,
-    UNION,
-  }
-
   @Override
   public String toString() {
     if (this.isLeafNode()) {
@@ -150,5 +145,10 @@ public class BooleanType {
     } else {
       return connective + ": " + left + ", " + right;
     }
+  }
+
+  public enum BooleanConnective {
+    INTERS,
+    UNION,
   }
 }

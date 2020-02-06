@@ -24,8 +24,8 @@ public class TypeVisitor extends jsfBaseVisitor<BooleanType> {
 
   @Override
   public BooleanType visitBoolean(final jsfParser.BooleanContext ctx) {
-    final BooleanType type1 = visit(ctx.type1);
-    final BooleanType type2 = visit(ctx.type2);
+    final var type1 = visit(ctx.type1);
+    final var type2 = visit(ctx.type2);
 
     BooleanType.BooleanConnective connective;
 

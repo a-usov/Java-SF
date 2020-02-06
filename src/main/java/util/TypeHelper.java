@@ -52,7 +52,7 @@ public final class TypeHelper {
    * @return boolean if adding was successful
    */
   public static boolean addClass(final Class newClass, final Program program) {
-    final Set<Type> subclasses = new HashSet<>();
+    final var subclasses = new HashSet<Type>();
     subclasses.add(newClass.getType());
 
     for (final var c : SUB_CLASSES.entrySet()) {
@@ -61,7 +61,7 @@ public final class TypeHelper {
         final ClassType existing = (ClassType) c.getKey();
         final Class existingClass = program.getClasses().get(existing.getName());
 
-        boolean isValid = true;
+        var isValid = true;
         for (final var field : newClass.getFields().values()) {
           for (final var type : field.getType().getTypes()) {
             if (!SUB_CLASSES.containsKey(type)) {

@@ -28,7 +28,7 @@ public final class TypeResolverUtils {
    * @return inferred basic type or custom class type
    */
   public static Type getFromTypeName(final String typeName) {
-    final Optional<? extends Type> basicType = getBasicType(typeName);
+    final var basicType = getBasicType(typeName);
     return basicType.isPresent() ? basicType.get() : new ClassType(typeName);
   }
 
@@ -117,12 +117,12 @@ public final class TypeResolverUtils {
    * @param ctx     context of msg that has line numbers of error
    */
   public static void reportError(final String message, final ParserRuleContext ctx) {
-    final Token start = ctx.getStart();
-    final Token finish = ctx.getStop();
-    final int startLine = start.getLine();
-    final int startCol = start.getCharPositionInLine();
-    final int finishLine = finish.getLine();
-    final int finishCol = finish.getCharPositionInLine();
+    final var start = ctx.getStart();
+    final var finish = ctx.getStop();
+    final var startLine = start.getLine();
+    final var startCol = start.getCharPositionInLine();
+    final var finishLine = finish.getLine();
+    final var finishCol = finish.getCharPositionInLine();
 
     throw new RuntimeException(startLine + ":" + startCol + "-" + finishLine + ":" + finishCol + " " + message);
   }
@@ -134,8 +134,8 @@ public final class TypeResolverUtils {
    * @param ctx     Token where error occurred
    */
   public static void reportError(final String message, final Token ctx) {
-    final int startLine = ctx.getLine();
-    final int startCol = ctx.getCharPositionInLine();
+    final var startLine = ctx.getLine();
+    final var startCol = ctx.getCharPositionInLine();
 
     throw new RuntimeException(startLine + ":" + startCol + " " + message);
   }
