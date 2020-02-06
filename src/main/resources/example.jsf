@@ -8,6 +8,10 @@ class asd extends as {
         this.b = b;
         this.c = c;
     }
+
+    (int or qwe) m(qwe r) {
+        return r.m();
+    }
 }
 
 class as {
@@ -27,6 +31,10 @@ class qwe {
     qwe(int a) {
         super();
         this.a = a;
+    }
+
+    int m() {
+        return 2;
     }
 }
 

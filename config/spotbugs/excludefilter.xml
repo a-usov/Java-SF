@@ -19,7 +19,7 @@
         <Class name="jsf.jsfParser$BooleanContext" />
     </Match>
     <Match>
-        <Class name="util.TyperHelper" />
+        <Class name="util.TypeHelper" />
         <Bug pattern="MS_MUTABLE_COLLECTION" />
     </Match>
 </FindBugsFilter>

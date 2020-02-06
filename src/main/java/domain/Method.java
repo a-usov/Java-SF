@@ -1,13 +1,13 @@
 package domain;
 
-import domain.type.Type;
+import domain.type.BooleanType;
 import jsf.jsfParser.ExpressionContext;
 import org.antlr.v4.runtime.Token;
 
 public class Method {
 
   // TODO - Encapsulate return and parameter type
-  private Type returnType;
+  private BooleanType returnType;
   private final String name;
   private final Parameter parameter;
   private final ExpressionContext expression;
@@ -21,7 +21,7 @@ public class Method {
    * @param parameter  parameter that method takes
    * @param ctx        the expression context within method that we store to type check later
    */
-  public Method(final Type returnType, final String name, final Parameter parameter,
+  public Method(final BooleanType returnType, final String name, final Parameter parameter,
                 final ExpressionContext ctx, final Token token) {
     this.returnType = returnType;
     this.name = name;
@@ -38,11 +38,11 @@ public class Method {
     return parameter;
   }
 
-  public Type getReturnType() {
+  public BooleanType getReturnType() {
     return returnType;
   }
 
-  public void setReturnType(final Type type) {
+  public void setReturnType(final BooleanType type) {
     this.returnType = type;
   }
 

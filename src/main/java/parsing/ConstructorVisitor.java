@@ -1,17 +1,19 @@
 package parsing;
 
-import static util.TypeResolverUtils.getFromTypeName;
+import static util.TypeResolverUtils.isNotValidSubtype;
 import static util.TypeResolverUtils.reportError;
 
 import domain.Constructor;
 import domain.Field;
 import domain.Parameter;
 import domain.Program;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.stream.IntStream;
+
 import jsf.jsfBaseVisitor;
 import jsf.jsfParser.ConstructorDeclContext;
 import org.antlr.v4.runtime.Token;
@@ -28,18 +30,19 @@ public class ConstructorVisitor extends jsfBaseVisitor<Constructor> {
 
   @Override
   public Constructor visitConstructorDecl(final ConstructorDeclContext ctx) {
-    final var parameters = new LinkedHashMap<String, Parameter>();
-    final var fieldAssignments = new ArrayList<Pair<Token, Token>>();
-
     if (!ctx.constructorname.getText().equals(owner)) {
       reportError("constructor name does not match the class", ctx);
     }
+
+    final var typeVisitor = new TypeVisitor();
+
+    final var parameters = new LinkedHashMap<String, Parameter>();
 
     if (ctx.type().size() > 0) {
       IntStream.range(0, ctx.type().size()).forEach(i -> {
         final var id = ctx.ID(i + 1);
 
-        final var parameter = new Parameter(id.getText(), getFromTypeName(ctx.type(i).getText()), id.getSymbol());
+        final var parameter = new Parameter(id.getText(), typeVisitor.visit(ctx.type(i)), id.getSymbol());
         if (parameters.containsKey(parameter.getName())) {
           reportError("repeated formal parameter: " + parameter.getName(), parameter.getToken());
         } else {
@@ -49,12 +52,31 @@ public class ConstructorVisitor extends jsfBaseVisitor<Constructor> {
     }
 
     final var superVisitor = new SuperVisitor();
-    final List<Parameter> superParameters = ctx.superDecl().accept(superVisitor);
+    final List<String> superArgumentNames = superVisitor.visit(ctx.superDecl());
 
+    final List<Parameter> superArguments = new ArrayList<>();
+    superArgumentNames.forEach(a -> {
+      if (!parameters.containsKey(a)) {
+        reportError("Parameter " + a + "doesnt exist in " + "constructor of " + owner, ctx.superDecl().start);
+      } else {
+        superArguments.add(parameters.get(a));
+      }
+    });
+
+    final var fieldAssignments = new ArrayList<Pair<Token, Parameter>>();
     final var fieldAssignmentVisitor = new FieldAssignmentVisitor();
-    ctx.fieldAssignment().forEach(a -> fieldAssignments.add(a.accept(fieldAssignmentVisitor)));
 
-    return new Constructor(parameters, superParameters, fieldAssignments, ctx.constructorname);
+    ctx.fieldAssignment().forEach(a -> {
+      final var pair = fieldAssignmentVisitor.visit(a);
+
+      if (!parameters.containsKey(pair.b.getText())) {
+        reportError("Parameter " + pair.b.getText() + " does not exist", pair.b);
+      } else {
+        fieldAssignments.add(new Pair<>(pair.a, parameters.get(pair.b.getText())));
+      }
+    });
+
+    return new Constructor(parameters, superArguments, fieldAssignments, ctx.constructorname);
   }
 
   /**
@@ -64,47 +86,40 @@ public class ConstructorVisitor extends jsfBaseVisitor<Constructor> {
    * @param program     whole program context
    */
   public void visit(final Constructor constructor, final Program program) {
-    checkSuperCall(constructor, program, owner);
-    checkFieldAssign(constructor, program, owner);
+    checkSuperCall(constructor, program);
+    checkFieldAssign(constructor, program);
   }
 
-  private void checkSuperCall(final Constructor constructor, final Program program, final String owner) {
+  private void checkSuperCall(final Constructor constructor, final Program program) {
     final String superClassName = program.getClasses().get(owner).getSuperName();
 
     if (superClassName == null) {
-      if (constructor.getSuperParameters().size() > 0) {
-        reportError("Passing more variables to constructor super call than it takes", constructor.getToken());
+      if (constructor.getSuperArguments().size() > 0) {
+        reportError("Passing more arguments to constructor super call than it takes", constructor.getToken());
       }
     } else {
       final var superParameters = program.getClasses().get(superClassName).getConstructor().getParameterList().values();
 
-      if (constructor.getSuperParameters().size() != superParameters.size()) {
+      if (constructor.getSuperArguments().size() != superParameters.size()) {
         reportError("Passing wrong number of arguments to super call of constructor", constructor.getToken());
       }
 
-      final var superIterator = superParameters.iterator();
-      final var parameterIterator = constructor.getSuperParameters().iterator();
+      final var parameterIterator = superParameters.iterator();
+      final var argumentIterator = constructor.getSuperArguments().iterator();
 
-      while (superIterator.hasNext() && parameterIterator.hasNext()) {
-        final Parameter superParam = superIterator.next();
-        final Parameter formalParam = parameterIterator.next();
+      while (parameterIterator.hasNext() && argumentIterator.hasNext()) {
+        final Parameter parameter = parameterIterator.next();
+        final Parameter argument = argumentIterator.next();
 
-        final Parameter actualParam = constructor.getParameterList().get(formalParam.getName());
-
-        if (actualParam == null) {
-          reportError("Parameter + " + formalParam.getName() + "doesnt exist in "
-              + "constructor of " + owner, formalParam.getToken());
-        } else {
-          if (superParam.getType() != actualParam.getType()) {
-            reportError("Type of parameter doesnt match type of super constructor: "
-                + actualParam.getType() + " != " + superParam.getType(), actualParam.getToken());
-          }
+        if (isNotValidSubtype(parameter.getType(), argument.getType())) {
+          reportError("Type of parameter doesnt match type of super constructor: "
+              + argument.getType() + " != " + parameter.getType(), argument.getToken());
         }
       }
     }
   }
 
-  private void checkFieldAssign(final Constructor constructor, final Program program, final String owner) {
+  private void checkFieldAssign(final Constructor constructor, final Program program) {
     final var fieldHasBeenAssigned = new HashMap<String, Boolean>();
 
     program.getClasses().get(owner).getFields().values().forEach(f -> fieldHasBeenAssigned.put(f.getName(), false));
@@ -117,14 +132,12 @@ public class ConstructorVisitor extends jsfBaseVisitor<Constructor> {
 
     for (final var assignment : constructor.getFieldAssignments()) {
       final Field field = program.getClasses().get(owner).getFields().get(assignment.a.getText());
-      final Parameter parameter = constructor.getParameterList().get(assignment.b.getText());
+      final Parameter parameter = assignment.b;
 
       if (field == null) {
         reportError("Field " + assignment.a.getText() + " does not exist", assignment.a);
-      } else if (parameter == null) {
-        reportError("Parameter " + assignment.b.getText() + " does not exist", assignment.b);
-      } else if (!field.getType().getSet().contains(parameter.getType())) {
-        reportError("Field " + assignment.a.getText() + " and parameter " + assignment.b.getText()
+      } else if (isNotValidSubtype(field.getType(), parameter.getType())) {
+        reportError("Field " + assignment.a.getText() + " and parameter " + parameter.getName()
             + " have different types: " + field.getType() + " != " + parameter.getType(), assignment.a);
       } else {
         fieldHasBeenAssigned.put(field.getName(), true);

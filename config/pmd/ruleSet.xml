@@ -28,6 +28,7 @@
         <exclude name="AvoidThrowingRawExceptionTypes"/>
         <exclude name="AvoidCatchingGenericException" />
         <exclude name="CyclomaticComplexity"/>
+        <exclude name="LoosePackageCoupling" />
     </rule>
 
     <rule ref="category/java/errorprone.xml">

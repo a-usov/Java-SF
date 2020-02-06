@@ -14,12 +14,12 @@ import java.util.HashSet;
 import java.util.Map;
 import java.util.Set;
 
-public final class TyperHelper {
+public final class TypeHelper {
 
   public static final Map<Type, Set<Type>> SUB_CLASSES = new HashMap<>();
   public static final Set<Type> UNIVERSE_SET = new HashSet<>();
 
-  private TyperHelper() {
+  private TypeHelper() {
   }
 
   static {
@@ -40,6 +40,8 @@ public final class TyperHelper {
 
     SUB_CLASSES.put(BasicType.BYTE, new HashSet<>(Collections.singletonList(BasicType.BYTE)));
 
+    SUB_CLASSES.put(BasicType.VOID, new HashSet<>(Collections.singletonList(BasicType.VOID)));
+
     UNIVERSE_SET.addAll(SUB_CLASSES.keySet());
   }
 
@@ -47,7 +49,7 @@ public final class TyperHelper {
    * Given a new class, put it into the static subtyping relation.
    *
    * @param newClass class to add
-   * @return boolean if adding was succesful
+   * @return boolean if adding was successful
    */
   public static boolean addClass(final Class newClass, final Program program) {
     final Set<Type> subclasses = new HashSet<>();

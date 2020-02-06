@@ -1,11 +1,11 @@
 package domain;
 
-import domain.type.Type;
+import domain.type.BooleanType;
 import org.antlr.v4.runtime.Token;
 
 public class Parameter {
   private final String name;
-  private final Type type;
+  private final BooleanType type;
   private final Token token;
 
   /**
@@ -14,14 +14,14 @@ public class Parameter {
    * @param name name of parameter
    * @param type type of parameter, currently as a string
    */
-  public Parameter(final String name, final Type type, final Token token) {
+  public Parameter(final String name, final BooleanType type, final Token token) {
     super();
     this.name = name;
     this.type = type;
     this.token = token;
   }
 
-  public Type getType() {
+  public BooleanType getType() {
     return type;
   }
 
