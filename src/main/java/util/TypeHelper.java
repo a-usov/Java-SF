@@ -26,10 +26,9 @@ public final class TypeHelper {
     SUB_CLASSES.put(BasicType.BOOLEAN, new HashSet<>(Collections.singletonList(BasicType.BOOLEAN)));
 
     SUB_CLASSES.put(BasicType.DOUBLE, new HashSet<>(Arrays.asList(BasicType.DOUBLE, BasicType.INT, BasicType.BYTE,
-            BasicType.FLOAT, BasicType.LONG, BasicType.SHORT)));
+            BasicType.FLOAT, BasicType.SHORT)));
 
-    SUB_CLASSES.put(BasicType.FLOAT, new HashSet<>(Arrays.asList(BasicType.FLOAT, BasicType.INT, BasicType.BYTE,
-            BasicType.LONG, BasicType.SHORT)));
+    SUB_CLASSES.put(BasicType.FLOAT, new HashSet<>(Arrays.asList(BasicType.FLOAT, BasicType.BYTE, BasicType.SHORT)));
 
     SUB_CLASSES.put(BasicType.LONG, new HashSet<>(Arrays.asList(BasicType.LONG, BasicType.INT, BasicType.BYTE,
             BasicType.SHORT)));

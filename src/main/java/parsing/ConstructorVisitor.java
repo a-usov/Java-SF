@@ -41,6 +41,14 @@ public class ConstructorVisitor extends jsfBaseVisitor<Constructor> {
         final var id = ctx.ID(i + 1);
 
         final var parameter = new Parameter(id.getText(), typeVisitor.visit(ctx.type(i)), id.getSymbol());
+
+        for (var t : parameter.getType().getTypes()) {
+          if (t.getName().equals(owner)) {
+            reportError("type of parameter in constructor cant be itself: " + parameter.getName()
+                , parameter.getToken());
+          }
+        }
+
         if (parameters.containsKey(parameter.getName())) {
           reportError("repeated formal parameter: " + parameter.getName(), parameter.getToken());
         } else {
@@ -55,7 +63,8 @@ public class ConstructorVisitor extends jsfBaseVisitor<Constructor> {
     final var superArguments = new ArrayList<Parameter>();
     superArgumentNames.forEach(a -> {
       if (!parameters.containsKey(a)) {
-        reportError("Parameter " + a + "doesnt exist in " + "constructor of " + owner, ctx.superDecl().start);
+        reportError("Parameter " + a + "doesnt exist in " + "constructor parameters of " + owner,
+            ctx.superDecl().start);
       } else {
         superArguments.add(parameters.get(a));
       }

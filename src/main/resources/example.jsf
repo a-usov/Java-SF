@@ -1,24 +1,20 @@
 class asd extends as {
 
-    (int or bool) b;
+    (qwe and as) b;
     qwe c;
 
-    asd(bool b, qwe c, double d) {
+    asd(as b, qwe c, float d) {
         super(d);
         this.b = b;
         this.c = c;
-    }
-
-    (int or qwe) m(qwe r) {
-        return r.m();
     }
 }
 
 class as {
 
-    double a;
+    float a;
 
-    as(double a) {
+    as(float a) {
         super();
         this.a = a;
     }
@@ -26,15 +22,11 @@ class as {
 
 class qwe {
 
-    int a;
+    short a;
 
-    qwe(int a) {
+    qwe(short a) {
         super();
         this.a = a;
-    }
-
-    int m() {
-        return 2;
     }
 }
 
