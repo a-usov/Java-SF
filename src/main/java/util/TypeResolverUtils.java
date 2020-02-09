@@ -52,43 +52,30 @@ public final class TypeResolverUtils {
    * @return  true if t2 is not a valid subtype of t1
    */
   public static boolean isNotValidSubtype(final BooleanType t1, final BooleanType t2) {
-    final var intersection = t1.getSet();
-    intersection.retainAll(t2.getSet());
-
-    return intersection.isEmpty();
+    return !t1.getSet().containsAll(t2.getSet());
   }
 
   /**
    * Given a Boolean type t, check if the type represented by the set t1 is a subtype by checking if set intersection
    * is empty. The set passed is not modified but copied.
    *
-   * @param t   Boolean type of super type
-   * @param t1  Set of types representing the type which is being checked
+   * @param t1   Boolean type of super type
+   * @param t2  Set of types representing the type which is being checked
    * @return    true if type represented by t1 is not a subtype of t
    */
-  public static boolean isNotValidSubtype(final BooleanType t, final Set<Type> t1) {
-    final var intersection = t.getSet();
-    final var t2 = new HashSet<>(t1);
-
-    intersection.retainAll(t2);
-
-    return !intersection.isEmpty();
+  public static boolean isNotValidSubtype(final BooleanType t1, final Set<Type> t2) {
+    return !t1.getSet().containsAll(t2);
   }
 
   /**
    * Given a set representing type t, and a set representing type t1, check if t1 is a subtype of t by checking if set
    * intersection is empty. The sets passed are not modified by copied.
-   * @param t   Set of types representing super type
-   * @param t1  Set of types representing the type being checked
+   * @param t1   Set of types representing super type
+   * @param t2  Set of types representing the type being checked
    * @return    true if type represented by t1 is not a subtype of t2
    */
-  public static boolean isNotValidSubtype(final Set<Type> t, final Set<Type> t1) {
-    final var intersection = new HashSet<>(t);
-    final var t2 = new HashSet<>(t1);
-
-    intersection.retainAll(t2);
-
-    return !intersection.isEmpty();
+  public static boolean isNotValidSubtype(final Set<Type> t1, final Set<Type> t2) {
+    return !t1.containsAll(t2);
   }
 
   /**
