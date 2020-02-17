@@ -3,13 +3,14 @@ package util;
 import com.google.common.primitives.Doubles;
 import com.google.common.primitives.Floats;
 import com.google.common.primitives.Ints;
+import com.google.common.primitives.Longs;
 import domain.type.BasicType;
 import domain.type.BooleanType;
 import domain.type.ClassType;
 import domain.type.Type;
 
+import java.lang.Byte;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -47,9 +48,9 @@ public final class TypeResolverUtils {
   /**
    * Given Boolean type t1, check if Boolean type t2 is a subtype by checking if set intersection is empty.
    *
-   * @param   t1 Boolean type of super type
-   * @param   t2 Boolean type which is checked if subtype of t1
-   * @return  true if t2 is not a valid subtype of t1
+   * @param t1 Boolean type of super type
+   * @param t2 Boolean type which is checked if subtype of t1
+   * @return true if t2 is not a valid subtype of t1
    */
   public static boolean isNotValidSubtype(final BooleanType t1, final BooleanType t2) {
     return !t1.getSet().containsAll(t2.getSet());
@@ -59,9 +60,9 @@ public final class TypeResolverUtils {
    * Given a Boolean type t, check if the type represented by the set t1 is a subtype by checking if set intersection
    * is empty. The set passed is not modified but copied.
    *
-   * @param t1   Boolean type of super type
-   * @param t2  Set of types representing the type which is being checked
-   * @return    true if type represented by t1 is not a subtype of t
+   * @param t1 Boolean type of super type
+   * @param t2 Set of types representing the type which is being checked
+   * @return true if type represented by t1 is not a subtype of t
    */
   public static boolean isNotValidSubtype(final BooleanType t1, final Set<Type> t2) {
     return !t1.getSet().containsAll(t2);
@@ -70,9 +71,10 @@ public final class TypeResolverUtils {
   /**
    * Given a set representing type t, and a set representing type t1, check if t1 is a subtype of t by checking if set
    * intersection is empty. The sets passed are not modified by copied.
-   * @param t1   Set of types representing super type
-   * @param t2  Set of types representing the type being checked
-   * @return    true if type represented by t1 is not a subtype of t2
+   *
+   * @param t1 Set of types representing super type
+   * @param t2 Set of types representing the type being checked
+   * @return true if type represented by t1 is not a subtype of t2
    */
   public static boolean isNotValidSubtype(final Set<Type> t1, final Set<Type> t2) {
     return !t1.containsAll(t2);
@@ -86,8 +88,14 @@ public final class TypeResolverUtils {
    */
   @SuppressWarnings("UnstableApiUsage")
   public static Type getFromValue(final String value) {
-    if (Ints.tryParse(value) != null) {
+    if (tryByte(value) != null) {
+      return BasicType.BYTE;
+    } else if (tryShort(value) != null) {
+      return BasicType.SHORT;
+    } else if (Ints.tryParse(value) != null) {
       return BasicType.INT;
+    } else if (Longs.tryParse(value) != null) {
+      return BasicType.LONG;
     } else if (Floats.tryParse(value) != null) {
       return BasicType.FLOAT;
     } else if (Doubles.tryParse(value) != null) {
@@ -125,6 +133,22 @@ public final class TypeResolverUtils {
     final var startCol = ctx.getCharPositionInLine();
 
     throw new RuntimeException(startLine + ":" + startCol + " " + message);
+  }
+
+  private static Byte tryByte(final String value) {
+    try {
+      return Byte.valueOf(value);
+    } catch (NumberFormatException e) {
+      return null;
+    }
+  }
+
+  private static Short tryShort(final String value) {
+    try {
+      return Short.valueOf(value);
+    } catch (NumberFormatException e) {
+      return null;
+    }
   }
 
 }

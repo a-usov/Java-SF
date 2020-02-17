@@ -3,6 +3,8 @@ package parsing;
 import static util.TypeResolverUtils.getFromValue;
 import static util.TypeResolverUtils.isNotValidSubtype;
 
+import com.google.common.collect.Sets;
+import domain.MethodParameter;
 import domain.Parameter;
 import domain.Program;
 import domain.type.BasicType;
@@ -15,17 +17,19 @@ import java.util.concurrent.atomic.AtomicBoolean;
 
 import jsf.jsfBaseVisitor;
 import jsf.jsfParser.DecimalContext;
+import jsf.jsfParser.FalseContext;
 import jsf.jsfParser.ExpressionContext;
 import jsf.jsfParser.FieldContext;
 import jsf.jsfParser.MethodContext;
 import jsf.jsfParser.NumContext;
 import jsf.jsfParser.ObjectContext;
+import jsf.jsfParser.TrueContext;
 import jsf.jsfParser.VarContext;
 
 public class ExpressionVisitor extends jsfBaseVisitor<Set<Type>> {
 
   private final Program program;
-  private final Parameter parameter;
+  private final MethodParameter parameter;
 
   /**
    * Create an expression visitor, done on second round analysis.
@@ -33,7 +37,7 @@ public class ExpressionVisitor extends jsfBaseVisitor<Set<Type>> {
    * @param program   whole program context
    * @param parameter the parameter of the method the expression is in
    */
-  public ExpressionVisitor(final Program program, final Parameter parameter) {
+  public ExpressionVisitor(final Program program, final MethodParameter parameter) {
     super();
     this.program = program;
     this.parameter = parameter;
@@ -46,6 +50,7 @@ public class ExpressionVisitor extends jsfBaseVisitor<Set<Type>> {
     if (ctx.e2 != null) {
       final var types2 = ctx.e2.accept(this);
 
+      // TODO most likely needs fixed
       types.retainAll(types2);
 
       final var hasNumber = new AtomicBoolean(false);
@@ -67,16 +72,22 @@ public class ExpressionVisitor extends jsfBaseVisitor<Set<Type>> {
 
   @Override
   public Set<Type> visitNum(final NumContext ctx) {
-    final var set = new HashSet<Type>();
-    set.add(getFromValue(ctx.NUMBER().getText()));
-    return set;
+    return Sets.newHashSet(getFromValue(ctx.NUMBER().getText()));
   }
 
   @Override
   public Set<Type> visitDecimal(final DecimalContext ctx) {
-    final var set = new HashSet<Type>();
-    set.add(getFromValue(ctx.DECIMAL().getText()));
-    return set;
+    return Sets.newHashSet(getFromValue(ctx.DECIMAL().getText()));
+  }
+
+  @Override
+  public Set<Type> visitTrue(final TrueContext ctx) {
+    return Sets.newHashSet(BasicType.BOOLEAN);
+  }
+
+  @Override
+  public Set<Type> visitFalse(final FalseContext ctx) {
+    return Sets.newHashSet(BasicType.BOOLEAN);
   }
 
   @Override
@@ -84,7 +95,12 @@ public class ExpressionVisitor extends jsfBaseVisitor<Set<Type>> {
     if (!ctx.ID().getText().equals(parameter.getName())) {
       throw new RuntimeException("Referring to parameter that is not defined");
     }
-    return parameter.getType().getSet();
+
+    if (parameter.getType().a != null) {
+      return parameter.getType().a.getSet();
+    } else {
+      return parameter.getType().b.getTypes(program);
+    }
   }
 
   @Override
@@ -160,7 +176,12 @@ public class ExpressionVisitor extends jsfBaseVisitor<Set<Type>> {
             hasMethod.set(true);
             // TODO ADD METHOD TYPE IMPROVEMENT
             returnTypes.addAll(method.getReturnType().getSet());
-            argumentTypes.addAll(method.getParameter().getType().getSet());
+
+            if (method.getParameter().getType().a != null) {
+              argumentTypes.addAll(method.getParameter().getType().a.getSet());
+            } else {
+              argumentTypes.addAll(method.getParameter().getType().b.getTypes(program));
+            }
           }
         }
       });
@@ -168,7 +189,8 @@ public class ExpressionVisitor extends jsfBaseVisitor<Set<Type>> {
       if (! hasMethod.get()) {
         throw new RuntimeException("None of the possible types have this method");
       } else if (isNotValidSubtype(argumentTypes, methodArguments))  {
-        throw new RuntimeException("None of the possible methods take this argument");
+        throw new RuntimeException("Parameter type of method " + argumentTypes + " does not match argument "
+            + methodArguments);
       } else {
         return returnTypes;
       }

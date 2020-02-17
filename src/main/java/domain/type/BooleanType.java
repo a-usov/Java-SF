@@ -1,6 +1,7 @@
 package domain.type;
 
 import java.util.HashSet;
+import java.util.Objects;
 import java.util.Set;
 
 import util.TypeHelper;
@@ -58,7 +59,7 @@ public class BooleanType {
 
     if (this.isLeafNode()) {
       if (!TypeHelper.SUB_CLASSES.containsKey(this.getType())) {
-        return new HashSet<>();
+        throw new RuntimeException("Trying to use class that does not exist: " + this.getType().getName());
       }
       result = new HashSet<>(TypeHelper.SUB_CLASSES.get(this.getType()));
 
@@ -93,7 +94,7 @@ public class BooleanType {
   }
 
   /**
-   * Gets all the unique concrete types in the boolean expressions, this ignores NOT's and connectives.
+   * Gets all the unique concrete types in the boolean expressions, this ignores connectives.
    *
    * @return set of all types included in the expression
    */
@@ -107,7 +108,9 @@ public class BooleanType {
 
   private void typeGetHelper(final Set<Type> set) {
     if (this.isLeafNode()) {
-      set.add(this.getType());
+      if (!this.isNot()) {
+        set.add(this.getType());
+      }
     } else {
       this.getLeft().typeGetHelper(set);
       this.getRight().typeGetHelper(set);
@@ -145,6 +148,24 @@ public class BooleanType {
     } else {
       return connective + ": " + left + ", " + right;
     }
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    BooleanType that = (BooleanType) o;
+    return leafNode == that.leafNode &&
+        connective == that.connective &&
+        Objects.equals(left, that.left) &&
+        Objects.equals(right, that.right) &&
+        Objects.equals(type, that.type) &&
+        Objects.equals(not, that.not);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(leafNode, connective, left, right, type, not);
   }
 
   public enum BooleanConnective {

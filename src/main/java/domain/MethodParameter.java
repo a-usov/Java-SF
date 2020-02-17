@@ -1,13 +1,15 @@
 package domain;
 
 import domain.type.BooleanType;
+import domain.type.MethodType;
 import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.misc.Pair;
 
 import java.util.Objects;
 
-public class Parameter {
+public class MethodParameter {
   private final String name;
-  private final BooleanType type;
+  private final Pair<BooleanType, MethodType> type;
   private final Token token;
 
   /**
@@ -16,14 +18,14 @@ public class Parameter {
    * @param name name of parameter
    * @param type type of parameter, currently as a string
    */
-  public Parameter(final String name, final BooleanType type, final Token token) {
+  public MethodParameter(final String name, final Pair<BooleanType, MethodType> type, final Token token) {
     super();
     this.name = name;
     this.type = type;
     this.token = token;
   }
 
-  public BooleanType getType() {
+  public Pair<BooleanType, MethodType> getType() {
     return type;
   }
 
@@ -39,7 +41,7 @@ public class Parameter {
   public boolean equals(Object o) {
     if (this == o) return true;
     if (o == null || getClass() != o.getClass()) return false;
-    Parameter parameter = (Parameter) o;
+    MethodParameter parameter = (MethodParameter) o;
     return Objects.equals(type, parameter.type);
   }
 

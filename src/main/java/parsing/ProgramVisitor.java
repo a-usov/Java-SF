@@ -28,7 +28,7 @@ public class ProgramVisitor extends jsfBaseVisitor<Program> {
       }
     });
 
-    return new Program(classes);
+    return new Program(classes, ctx.expression());
   }
 
   /**
@@ -43,7 +43,7 @@ public class ProgramVisitor extends jsfBaseVisitor<Program> {
     } while (hasChanged);
 
     for (final var c : program.getClasses().values()) {
-      if (!c.isResolved()) {
+      if (c.isNotResolved()) {
         // TODO make error message nicer
         throw new RuntimeException("Cannot resolve the types");
       }
@@ -56,6 +56,7 @@ public class ProgramVisitor extends jsfBaseVisitor<Program> {
               + " does not exist", c.getToken());
         } else {
           final var superClass = program.getClasses().get(c.getSuperName());
+
           for (final var field : superClass.getFields().values()) {
             if (c.getFields().get(field.getName()) != null) {
               reportError("Overwriting field of super class", c.getFields().get(field.getName()).getToken());
@@ -63,8 +64,15 @@ public class ProgramVisitor extends jsfBaseVisitor<Program> {
               c.addField(field);
             }
           }
-        }
 
+          for (final var method : superClass.getMethods().values()) {
+            if (c.getMethods().get(method.getName()) != null) {
+              reportError("Overwriting field of super class", c.getMethods().get(method.getName()).getToken());
+            } else {
+              c.addMethod(method);
+            }
+          }
+        }
       }
     }
 
@@ -74,6 +82,10 @@ public class ProgramVisitor extends jsfBaseVisitor<Program> {
 
     final var classVisitor = new ClassVisitor();
     program.getClasses().values().forEach(c -> classVisitor.visit(c, program));
+
+    // TODO check null handled correctly
+    var expressionVisitor = new ExpressionVisitor(program, null);
+    expressionVisitor.visit(program.getExpression());
   }
 
   private void generateRelation(final Collection<Class> classes, final Program program) {
@@ -92,16 +104,23 @@ public class ProgramVisitor extends jsfBaseVisitor<Program> {
 
   private boolean resolve(final Program program) {
     var hasChanged = false;
-    var allResolved = true;
 
     for (final var c : program.getClasses().values()) {
-      if (!c.isResolved()) {
+      if (c.isNotResolved()) {
+        var allResolved = true;
+
         for (final var field : c.getFields().values()) {
           for (final var type : field.getType().getTypes()) {
             if (type instanceof ClassType) {
-              if (program.getClasses().get(type.getName()).isResolved()) {
-                hasChanged = true;
-              } else {
+              if (type.equals(c.getType())){
+                return false;
+              }
+
+              if (!program.getClasses().containsKey(type.getName())) {
+                reportError("Class " + type.getName() + " does not exist", field.getToken());
+              }
+
+              if (program.getClasses().get(type.getName()).isNotResolved()) {
                 allResolved = false;
               }
             }
@@ -110,6 +129,7 @@ public class ProgramVisitor extends jsfBaseVisitor<Program> {
 
         if (allResolved) {
           c.setResolved(true);
+          hasChanged = true;
         }
       }
     }

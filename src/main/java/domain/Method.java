@@ -9,7 +9,7 @@ public class Method {
   // TODO - Encapsulate return and parameter type
   private BooleanType returnType;
   private final String name;
-  private final Parameter parameter;
+  private final MethodParameter parameter;
   private final ExpressionContext expression;
   private final Token token;
 
@@ -21,7 +21,7 @@ public class Method {
    * @param parameter  parameter that method takes
    * @param ctx        the expression context within method that we store to type check later
    */
-  public Method(final BooleanType returnType, final String name, final Parameter parameter,
+  public Method(final BooleanType returnType, final String name, final MethodParameter parameter,
                 final ExpressionContext ctx, final Token token) {
     this.returnType = returnType;
     this.name = name;
@@ -34,7 +34,7 @@ public class Method {
     return name;
   }
 
-  public Parameter getParameter() {
+  public MethodParameter getParameter() {
     return parameter;
   }
 

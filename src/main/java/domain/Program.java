@@ -1,18 +1,25 @@
 package domain;
 
 import java.util.Map;
+import jsf.jsfParser.ExpressionContext;
 
 public class Program {
 
   private final Map<String, Class> classes;
+  private final ExpressionContext expression;
 
-  public Program(final Map<String, Class> classes) {
+  public Program(final Map<String, Class> classes, ExpressionContext expression) {
     super();
     this.classes = classes;
+    this.expression = expression;
   }
 
   public Map<String, Class> getClasses() {
     return classes;
+  }
+
+  public ExpressionContext getExpression() {
+    return expression;
   }
 
   @Override

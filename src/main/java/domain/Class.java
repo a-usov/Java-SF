@@ -56,6 +56,10 @@ public class Class {
     return methods;
   }
 
+  public void addMethod(final Method method) {
+    this.getMethods().put(method.getName(), method);
+  }
+
   public String getSuperName() {
     return superName;
   }
@@ -68,8 +72,8 @@ public class Class {
     return token;
   }
 
-  public boolean isResolved() {
-    return resolved;
+  public boolean isNotResolved() {
+    return !resolved;
   }
 
   public void setResolved(final boolean resolved) {

@@ -4,6 +4,7 @@ import static util.TypeResolverUtils.isNotValidSubtype;
 import static util.TypeResolverUtils.reportError;
 
 import domain.Constructor;
+import domain.Field;
 import domain.Parameter;
 import domain.Program;
 
@@ -12,6 +13,7 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.stream.IntStream;
 
+import domain.type.ClassType;
 import jsf.jsfBaseVisitor;
 import jsf.jsfParser.ConstructorDeclContext;
 import org.antlr.v4.runtime.Token;
@@ -34,6 +36,8 @@ public class ConstructorVisitor extends jsfBaseVisitor<Constructor> {
 
     final var typeVisitor = new TypeVisitor();
 
+    // Constructor Parameters --------------------------------------------------------
+
     final var parameters = new LinkedHashMap<String, Parameter>();
 
     if (ctx.type().size() > 0) {
@@ -44,8 +48,7 @@ public class ConstructorVisitor extends jsfBaseVisitor<Constructor> {
 
         for (var t : parameter.getType().getTypes()) {
           if (t.getName().equals(owner)) {
-            reportError("type of parameter in constructor cant be itself: " + parameter.getName()
-                , parameter.getToken());
+            reportError("type of parameter in constructor cant be itself", parameter.getToken());
           }
         }
 
@@ -57,18 +60,20 @@ public class ConstructorVisitor extends jsfBaseVisitor<Constructor> {
       });
     }
 
-    final var superVisitor = new SuperVisitor();
-    final var superArgumentNames = superVisitor.visit(ctx.superDecl());
+    // Super call arguments ---------------------------------------------
+
+    final var superArgumentNames = new SuperVisitor().visit(ctx.superDecl());
 
     final var superArguments = new ArrayList<Parameter>();
     superArgumentNames.forEach(a -> {
       if (!parameters.containsKey(a)) {
-        reportError("Parameter " + a + "doesnt exist in " + "constructor parameters of " + owner,
-            ctx.superDecl().start);
+        reportError(a + "doesnt exist in " + "constructor parameters of " + owner, ctx.superDecl().start);
       } else {
         superArguments.add(parameters.get(a));
       }
     });
+
+    // Field assignments -----------------------------------------------
 
     final var fieldAssignments = new ArrayList<Pair<Token, Parameter>>();
     final var fieldAssignmentVisitor = new FieldAssignmentVisitor();
@@ -120,21 +125,20 @@ public class ConstructorVisitor extends jsfBaseVisitor<Constructor> {
 
         if (isNotValidSubtype(parameter.getType(), argument.getType())) {
           reportError("Type of parameter doesnt match type of super constructor: "
-              + argument.getType() + " != " + parameter.getType(), argument.getToken());
+              + argument.getType().getSet() + " != " + parameter.getType().getSet(), argument.getToken());
         }
       }
     }
   }
 
   private void checkFieldAssign(final Constructor constructor, final Program program) {
-    final var fieldHasBeenAssigned = new HashMap<String, Boolean>();
+    final var fieldAssigned = new HashMap<Field, Boolean>();
 
-    program.getClasses().get(owner).getFields().values().forEach(f -> fieldHasBeenAssigned.put(f.getName(), false));
+    program.getClasses().get(owner).getFields().values().forEach(f -> fieldAssigned.put(f, false));
 
     final var superClassName = program.getClasses().get(owner).getSuperName();
     if (superClassName != null) {
-      program.getClasses().get(superClassName).getFields().values()
-          .forEach(f -> fieldHasBeenAssigned.put(f.getName(), true));
+      program.getClasses().get(superClassName).getFields().values().forEach(f -> fieldAssigned.put(f, true));
     }
 
     for (final var assignment : constructor.getFieldAssignments()) {
@@ -144,17 +148,16 @@ public class ConstructorVisitor extends jsfBaseVisitor<Constructor> {
       if (field == null) {
         reportError("Field " + assignment.a.getText() + " does not exist", assignment.a);
       } else if (isNotValidSubtype(field.getType(), parameter.getType())) {
-        reportError("Field " + assignment.a.getText() + " and parameter " + parameter.getName()
-            + " have different types: " + field.getType() + " != " + parameter.getType(), assignment.a);
+        reportError("Field " + assignment.a.getText() + " and parameter " + parameter.getName() +
+            " have different types: " + field.getType().getSet() + " != " + parameter.getType().getSet(), assignment.a);
       } else {
-        fieldHasBeenAssigned.put(field.getName(), true);
+        fieldAssigned.put(field, true);
       }
     }
 
-    for (final var field : fieldHasBeenAssigned.entrySet()) {
+    for (final var field : fieldAssigned.entrySet()) {
       if (!field.getValue()) {
-        reportError("Field + " + field.getKey() + " has not been set,",
-            program.getClasses().get(owner).getFields().get(field.getKey()).getToken());
+        reportError("Field + " + field.getKey() + " has not been set,", field.getKey().getToken());
       }
     }
 

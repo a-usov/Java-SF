@@ -2,6 +2,7 @@ package util;
 
 import domain.Class;
 import domain.Field;
+import domain.Method;
 import domain.Program;
 import domain.type.BasicType;
 import domain.type.ClassType;
@@ -68,16 +69,31 @@ public final class TypeHelper {
             }
           }
 
-          isValid = canAdd(existingClass, field);
+          isValid = canAddField(existingClass, field);
         }
+
+        if (isValid) {
+          for (final var method : newClass.getMethods().values()) {
+            isValid = canAddMethod(existingClass, method);
+          }
+        }
+
         if (isValid) {
           subclasses.add(existing);
         }
 
+
         isValid = true;
         for (final var field : existingClass.getFields().values()) {
-          isValid = canAdd(newClass, field);
+          isValid = canAddField(newClass, field);
         }
+
+        if (isValid) {
+          for (final var method : existingClass.getMethods().values()) {
+            isValid = canAddMethod(newClass, method);
+          }
+        }
+
         if (isValid) {
           SUB_CLASSES.get(existing).add(newClass.getType());
         }
@@ -89,7 +105,7 @@ public final class TypeHelper {
     return true;
   }
 
-  private static boolean canAdd(final Class c, final Field field) {
+  private static boolean canAddField(final Class c, final Field field) {
     if (c.getFields().containsKey(field.getName())) {
       final var newSet = new HashSet<>(c.getFields().get(field.getName()).getType().getSet());
 
@@ -102,5 +118,19 @@ public final class TypeHelper {
       return false;
     }
     return true;
+  }
+
+  private static boolean canAddMethod(final Class c, final Method method) {
+    if (c.getMethods().containsKey(method.getName())) {
+      var existingMethod = c.getMethods().get(method.getName());
+
+      if (! existingMethod.getReturnType().equals(method.getReturnType())) {
+       return false;
+      }
+
+      return existingMethod.getParameter().equals(method.getParameter());
+    } else {
+      return false;
+    }
   }
 }

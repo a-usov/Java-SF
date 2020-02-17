@@ -34,7 +34,7 @@ fieldAssignment
         ;
 
 methodDecl
-        :       returntype=type name=ID LPAR (paramtype=type paramname=ID)? RPAR LBRAC
+        :       returntype=type name=ID LPAR (paramtype=methodType paramname=ID)? RPAR LBRAC
                     RETURN expression SEMI
                 RBRAC
         ;
@@ -47,7 +47,10 @@ expression
 primExpression
         :       NUMBER                                                                  # num
         |       DECIMAL                                                                 # decimal
+        |       TRUE                                                                    # true
+        |       FALSE                                                                   # false
         |       ID                                                                      # var
+        |       THIS                                                                    # this
         |       primExpression DOT ID                                                   # field
         |       primExpression DOT ID LPAR (expression)? RPAR                           # method
         |       NEW ID LPAR (expression (COMMA expression)*)? RPAR                      # object
@@ -56,13 +59,19 @@ primExpression
 type
         :       basicType                                                               # basic
         |       ID                                                                      # class
-        |       NOT ID                                                                  # notClass
+        |       NOT classlbl=type                                                       # notClass
         |       LPAR type1=type bool=(AND | OR) type2=type RPAR                         # boolean
         ;
 
 basicType
         :       BYTE | INT | LONG | FLOAT | DOUBLE | CHAR | BOOL
         ;
+
+methodType
+        : type                                                                          # normal
+        | LPAR (NOT)? ID COLON param=type ARROW returnType=type RPAR                    # methodtype
+        ;
+
 
 BYTE    :       'byte'                      ;
 INT     :       'int'                       ;
@@ -71,6 +80,9 @@ FLOAT   :       'float'                     ;
 DOUBLE  :       'double'                    ;
 CHAR    :       'char'                      ;
 BOOL    :       'bool'                      ;
+
+TRUE    :       'true'                      ;
+FALSE   :       'false'                     ;
 
 AND     :       'and'                       ;
 OR      :       'or'                        ;
@@ -95,6 +107,8 @@ MULT    :       '*'                         ;
 COMMA   :       ','                         ;
 DOT     :       '.'                         ;
 SEMI    :       ';'                         ;
+COLON   :       ':'                         ;
+ARROW   :       '->'                        ;
 
 ID      :       LETTER (LETTER | DIGIT)*    ;
 NUMBER  :       DIGIT (DIGIT)*              ;
