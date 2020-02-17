@@ -4,12 +4,13 @@ import static util.TypeResolverUtils.isNotValidSubtype;
 import static util.TypeResolverUtils.reportError;
 
 import domain.Method;
-import domain.Parameter;
+import domain.MethodParameter;
 import domain.Program;
 import domain.type.BasicType;
 import domain.type.BooleanType;
 import jsf.jsfBaseVisitor;
 import jsf.jsfParser.MethodDeclContext;
+import org.antlr.v4.runtime.misc.Pair;
 
 public class MethodVisitor extends jsfBaseVisitor<Method> {
 
@@ -19,12 +20,14 @@ public class MethodVisitor extends jsfBaseVisitor<Method> {
 
     final var returnType = typeVisitor.visit(ctx.returntype);
 
-    Parameter parameter;
+    MethodParameter parameter;
     if (ctx.paramname != null && ctx.paramtype != null) {
       final var name = ctx.paramname.getText();
-      parameter = new Parameter(name, typeVisitor.visit(ctx.paramtype), ctx.paramname);
+
+      var type = new MethodTypeVisitor().visit(ctx.paramtype);
+      parameter = new MethodParameter(name, type, ctx.paramname);
     } else {
-      parameter = new Parameter("", new BooleanType(BasicType.VOID, false), ctx.paramname);
+      parameter = new MethodParameter("", new Pair<>(new BooleanType(BasicType.VOID, false), null), ctx.paramname);
     }
 
     final var name = ctx.name.getText();
@@ -43,8 +46,9 @@ public class MethodVisitor extends jsfBaseVisitor<Method> {
     final var expressionTypes = method.getExpression().accept(expressionVisitor);
 
     if (isNotValidSubtype(method.getReturnType().getSet(), expressionTypes)) {
+      // TODO Improve message
       reportError("Return type of expression of method " + method.getName() + " does not match: "
-              + expressionTypes + " != " + method.getReturnType(), method.getToken());
+              + expressionTypes + " != " + method.getReturnType().getSet(), method.getToken());
     }
   }
 }

@@ -19,7 +19,7 @@ public class TypeVisitor extends jsfBaseVisitor<BooleanType> {
 
   @Override
   public BooleanType visitNotClass(final jsfParser.NotClassContext ctx) {
-    return new BooleanType(getFromTypeName(ctx.getText()), true);
+    return new BooleanType(getFromTypeName(ctx.classlbl.getText()), true);
   }
 
   @Override

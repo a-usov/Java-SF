@@ -7,8 +7,10 @@ import domain.Field;
 import domain.Method;
 import domain.Program;
 import domain.type.ClassType;
+
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
+
 import jsf.jsfBaseVisitor;
 import jsf.jsfParser.ClassDeclContext;
 
@@ -39,8 +41,7 @@ public class ClassVisitor extends jsfBaseVisitor<Class> {
       }
     });
 
-    final var constructorVisitor = new ConstructorVisitor(name);
-    final var constructor = ctx.constructorDecl().accept(constructorVisitor);
+    final var constructor = new ConstructorVisitor(name).visit(ctx.constructorDecl());
 
     final var methodVisitor = new MethodVisitor();
     ctx.methodDecl().forEach(methodCtx -> {
@@ -48,7 +49,6 @@ public class ClassVisitor extends jsfBaseVisitor<Class> {
       if (methods.containsKey(m.getName())) {
         reportError("repeated method name: " + m.getName(), m.getToken());
       } else {
-        // TODO CHECK FOR CLASS TYPE TO RESOLVE
         methods.put(m.getName(), m);
       }
     });
@@ -63,8 +63,7 @@ public class ClassVisitor extends jsfBaseVisitor<Class> {
    * @param program    the whole program structure
    */
   public void visit(final Class visitClass, final Program program) {
-    final var constructorVisitor = new ConstructorVisitor(visitClass.getName());
-    constructorVisitor.visit(visitClass.getConstructor(), program);
+    new ConstructorVisitor(visitClass.getName()).visit(visitClass.getConstructor(), program);
 
     final var methodVisitor = new MethodVisitor();
     visitClass.getMethods().values().forEach(m -> methodVisitor.visit(m, program));

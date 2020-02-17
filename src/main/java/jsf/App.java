@@ -35,12 +35,12 @@ public final class App {
       final var visitor = new ProgramVisitor();
       final var program = visitor.visit(tree);
 
-      System.out.println(program);
+      //System.out.println(program);
 
       visitor.visit(program);
-    } catch (IOException e) {
+    } catch (IOException | RuntimeException e) {
       if (LOGGER.isLoggable(Level.SEVERE)) {
-        LOGGER.severe("Exception occurred: " + e);
+        LOGGER.severe("Exception occurred: " + e.getMessage());
       }
     }
   }

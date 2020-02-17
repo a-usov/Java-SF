@@ -1,33 +1,47 @@
-class asd extends as {
+class Polygon {
 
-    (qwe and as) b;
-    qwe c;
-
-    asd(as b, qwe c, float d) {
-        super(d);
-        this.b = b;
-        this.c = c;
-    }
-}
-
-class as {
-
-    float a;
-
-    as(float a) {
+    Polygon() {
         super();
-        this.a = a;
     }
 }
 
-class qwe {
+class Square extends Polygon {
+    double width;
 
-    short a;
-
-    qwe(short a) {
+    Square(double a) {
         super();
-        this.a = a;
+        this.width = a;
+    }
+
+    double area(int width) {
+        return 2;
     }
 }
 
-a
+class Triangle extends Polygon {
+    double height;
+    double width;
+
+    Triangle(double height, double width) {
+        super();
+        this.width = width;
+        this.height = height;
+    }
+
+    double area(int width) {
+        return 4;
+    }
+}
+
+class Diagonal {
+
+    Diagonal() {
+        super();
+    }
+
+    double diagonal(Square shape) {
+        return shape.width * 1.4142;
+    }
+}
+
+new Diagonal().diagonal(new Square(2))

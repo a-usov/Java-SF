@@ -3,6 +3,8 @@ package domain;
 import domain.type.BooleanType;
 import org.antlr.v4.runtime.Token;
 
+import java.util.Objects;
+
 public class Parameter {
   private final String name;
   private final BooleanType type;
@@ -31,6 +33,19 @@ public class Parameter {
 
   public Token getToken() {
     return token;
+  }
+
+  @Override
+  public boolean equals(Object o) {
+    if (this == o) return true;
+    if (o == null || getClass() != o.getClass()) return false;
+    Parameter parameter = (Parameter) o;
+    return Objects.equals(type, parameter.type);
+  }
+
+  @Override
+  public int hashCode() {
+    return Objects.hash(name, type);
   }
 
   @Override
