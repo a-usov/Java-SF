@@ -1,21 +1,131 @@
-\documentclass[10pt,a4paper,twocolumn]{article}
-
-\usepackage[cm]{fullpage}
-\usepackage{newtxtext}
-\usepackage{newtxmath}
-\usepackage[hyphens]{url}
-\usepackage{minted}
-\usepackage[english]{babel}
-\usepackage{cite}
-
-\title{JSF}
-\author{Artem Usov}
-\date{February 2020}
+\documentclass[runningheads]{llncs}
+\usepackage{graphicx}
+% \renewcommand\UrlFont{\color{blue}\rmfamily}
 
 \begin{document}
 
+\title{SFJ: An implementation of Semantic Featherweight Java}
+%\titlerunning{Abbreviated paper title}
+
+\author{Artem Usov \and Ornela Dardha\orcidID{0000-0001-9927-7875}}
+
+%\authorrunning{F. Author et al.}
+
+\institute{School of Computing Science, University of Glasgow, United Kingdom \\
+    \email{\{artem.usov, ornela.dardha\}@@glasgow.ac.uk}}
+
 \maketitle
 
+\begin{abstract}
+    The abstract should briefly summarize the contents of the paper in 15--250 words.
+
+    \keywords{nominal and structural subtyping  \and Featherweight Java 
+    \and object-oriented languages \and semantic subtyping \and type theory.}
+\end{abstract}
+
+
 \section{Introduction}
+
+A typing system for a programming language is a set of deduction rules that allow 
+
+
+\begin{equation}
+    \tau ::= \alpha \mid \mu
+\end{equation}
+
+
+
+Since we want our types to represent sets of values, we restrict our types to finite trees whose 
+leaves are constants with no cycles. For example a recursive type $\alpha = [a : \alpha]$ would
+be an infinite tree \textbf{new} $C$(\textbf{new} $C$($\cdots{}$)). Similarly the types $\alpha = 
+[b: \beta]$, $\beta = [a = \alpha]$ would also be impossible to instantiate. 
+
+Therefore, to not allow this, when processing the AST of a program, we do not allow the type of 
+the class we are defining to be a field and we mark any classes with only basic types in it's fields
+as \textit{resolved} and otherwise if it contains a class type, we mark it as \textit{unresolved}. 
+After processing the whole AST, we perform the following algorithm to decide whether the type 
+definitions in the program are valid.
+
+\begin{verbatim}
+boolean resolutionOccured = false
+do 
+    for each class that is unresolved:
+        boolean resolved = true
+
+        for each field that is a class type:
+            if class type is not resolved 
+                resolved = false
+        
+        if resolved == true
+            set class to be resolved
+            resolutionOccured = true
+while resolutionOccured == true
+
+if not all classes are resolved
+    program contains invalid type definition
+\end{verbatim}
+
+
+\subsubsection{Sample Heading (Third Level)}
+Only two levels of headings should be numbered. Lower level headings remain unnumbered; they are 
+formatted as run-in headings.
+
+\paragraph{Sample Heading (Fourth Level)}
+The contribution should contain no more than four levels of headings. Table~\ref{tab1} gives a 
+summary of all heading levels.
+
+\begin{table}
+    \caption{Table captions should be placed above the tables.}
+    \label{tab1}
+    \begin{tabular}{|l|l|l|}
+        \hline
+        Heading level     & Example                                          & Font size and style \\
+        \hline
+        Title (centered)  & {\Large\bfseries Lecture Notes}                  & 14 point, bold      \\
+        1st-level heading & {\large\bfseries 1 Introduction}                 & 12 point, bold      \\
+        2nd-level heading & {\bfseries 2.1 Printing Area}                    & 10 point, bold      \\
+        3rd-level heading & {\bfseries Run-in Heading in Bold.} Text follows & 10 point, bold      \\
+        4th-level heading & {\itshape Lowest Level Heading.} Text follows    & 10 point, italic    \\
+        \hline
+    \end{tabular}
+\end{table}
+
+
+\noindent Displayed equations are centered and set on a separateline.
+
+\begin{equation}
+    x + y = z
+\end{equation}
+Please try to avoid rasterized images for line-art diagrams and schemas. Whenever possible, use 
+vector graphics instead.
+
+%\begin{figure}
+%   \includegraphics[width=\textwidth]{fig1.eps}
+%  \caption{A figure caption is always placed below the illustration.
+%     Please note that short captions are centered, while long ones are
+%     justified by the macro package automatically.} \label{fig1}
+%\end{figure}
+
+\begin{theorem}
+    This is a sample theorem. The run-in heading is set in bold, while
+    the following text appears in italics. Definitions, lemmas,
+    propositions, and corollaries are styled the same way.
+\end{theorem}
+%
+% the environments 'definition', 'lemma', 'proposition', 'corollary',
+% 'remark', and 'example' are defined in the LLNCS documentclass as well.
+%
+\begin{proof}
+    Proofs, examples, and remarks have the initial word in italics,
+    while the following text appears in normal font.
+\end{proof}
+For citations of references, we prefer the use of square brackets
+and consecutive numbers. Citations using labels or the author/year
+convention are also acceptable. The following bibliography provides
+a sample reference list with entries for journal
+articles~\cite{Dardha2017}.
+
+\bibliographystyle{splncs04}
+\bibliography{paper}
 
 \end{document}
