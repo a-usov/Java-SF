@@ -1,5 +1,6 @@
 \documentclass[runningheads]{llncs}
 \usepackage{graphicx}
+\usepackage{amsmath}
 % \renewcommand\UrlFont{\color{blue}\rmfamily}
 
 \begin{document}
@@ -49,22 +50,89 @@ definitions in the program are valid.
 \begin{verbatim}
 boolean resolutionOccured = false
 do 
-    for each class that is unresolved:
+    for class that is unresolved:
         boolean resolved = true
 
-        for each field that is a class type:
+        for field that contains a class type:
             if class type is not resolved 
                 resolved = false
         
-        if resolved == true
+        if resolved is true
             set class to be resolved
             resolutionOccured = true
-while resolutionOccured == true
+while resolutionOccured is true
 
-if not all classes are resolved
+if all classes are not resolved
     program contains invalid type definition
 \end{verbatim}
 
+Given that we now know that all the types in the program are valid, we can create the subtyping 
+relation which will be a map of types to a set of its subtypes. For every program, we assume the 
+initial subtyping relation for all of our basic types. We would like to highlight that Int is not
+a subtype of Float as it cannot represent the whole domain of Int accurately therefore the domain is 
+not fully contained in Float. Similarly so for Double and Long.
+
+\begin{flalign*}
+    Boolean &= \left\{Boolean \right\} &\\
+    Double  &= \left\{Double, Float, Int, Short, Byte\right\} &\\
+    Float &= \left\{Float, Short, Byte\right\} &\\
+    Long &= \left\{Long, Int, Short, Byte\right\} &\\
+    Int &= \left\{Int, Short, Byte\right\} &\\
+    Short &= \left\{Short, Byte\right\} &\\
+    Byte &= \left\{Byte\right\} & 
+\end{flalign*}
+
+Knowing that all our types are finite trees with leaves as constants and given this initial
+relation, we can now confidently create a subtyping relation for all class types using the following
+algorithm.
+
+\begin{verbatim}
+function generateRelation(classes):
+    List<class> untyped = []
+
+    for class in classes:
+        if addClass(class) is false:
+            untyped.add(class)
+    
+    if untyped is not []:
+        generateRelation(untyped)
+
+function addClass(class):
+    for existing class type in relation:
+        if tryAddSubtype(class, existingClass) is false:
+            return false
+
+        tryAddSubtype(existingClass, class)        
+
+        add class to its own subtype relation
+
+function tryAddSubtype(class, other):
+    boolean flag = true
+
+    for field in class:
+        if field contains type not in relation:
+            return false
+
+        if other does not have field:
+            flag = false
+        else:
+            if other.field.types not fully contains field.types:
+                flag = false 
+
+
+    for method in class:
+        if method contains type not in relation:
+            return false
+
+        if other does not have method:
+            flag = false
+        else:
+            if other.method.types not fully contains method.types:
+                flag = false
+
+    if flag == true:
+        add class to other subtype relation
+\end{verbatim}
 
 \subsubsection{Sample Heading (Third Level)}
 Only two levels of headings should be numbered. Lower level headings remain unnumbered; they are 
