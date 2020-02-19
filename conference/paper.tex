@@ -2,7 +2,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%
 %PACKAGES
 %%%%%%%%%%%%%%%%%%%%%%%%
-\usepackage[latin1]{inputenc}
+\usepackage[utf8]{inputenc}
 \usepackage[english]{babel}
 
 \usepackage{amsmath}
@@ -14,35 +14,127 @@
 \usepackage{proof-dashed}
 \usepackage{graphicx}
 \usepackage{listings}
+\usepackage{hyperref}
+\usepackage{stmaryrd}
 
 
 % Non standard
-\usepackage{varacca}
+%\usepackage{varacca}
 \input semmacros
-% \renewcommand\UrlFont{\color{blue}\rmfamily}
 
 \begin{document}
 
-\title{SFJ: An implementation of Semantic Featherweight Java}
+\title{SFJ: An implementation of Semantic Featherweight Java\thanks{Research supported by the UK EPSRC grant EP/K034413/1, ``From Data Types to Session Types: A Basis for Concurrency and Distribution (ABCD)'', and by the EU HORIZON 2020 MSCA RISE project 778233 ``BehAPI: Behavioural Application Program Interfaces''.}}
 \titlerunning{SFJ}
 
 \author{Artem Usov \and Ornela Dardha\orcidID{0000-0001-9927-7875}}
 \authorrunning{A. Usov and O. Dardha}
 
 \institute{School of Computing Science, University of Glasgow, United Kingdom \\
-    \email{\{artem.usov, ornela.dardha\}@@glasgow.ac.uk}}
+    \email{\{artem.usov, ornela.dardha\}@glasgow.ac.uk}}
 
 \maketitle
 
 \begin{abstract}
-    The abstract should briefly summarize the contents of the paper in 15--250 words.
+Subtyping is a key notion in programming languages, as it allows more flexibility in coding.
+There are two approaches to defining subtyping relations: the \emph{syntactic} and the \emph{semantic} approach.
+In the latter, one starts by defining a model of the programming language at hand and an interpretation of its types as subsets of such model.
+Then, subtyping is defined as \emph{set inclusion of types} denoting sets.
+An orthogonal issue, typical of object-oriented languages, is the \emph{nominal} and \emph{structural} subtyping.
+Dardha \emph{et al.} \cite{Dardha2013,Dardha2017} combined structural subtyping and boolean types, on one hand, with nominal subtyping, on the other, in Featherweight Java (FJ), by thus exploiting the benefits of both approaches.
 
-    \keywords{nominal and structural subtyping  \and Featherweight Java 
-    \and object-oriented languages \and semantic subtyping \and type theory.}
+However, these benefits were only presented and exemplified at a theoretical level and not exploited practically. 
+At last, in this work we have implemented SFJ---Semantic Featherweight Java, which features structural subtyping and boolean types as well as nominal subtyping, typical of FJ itself.
+The benefits of SFJ, also illustrated in the accompanied video, show how static typechecking of boolean types and semantic subtyping gives higher guarantees of program correctness, more flexibility and compactness of program writing.
+\keywords{Nominal subtyping \and Structural subtyping  \and Semantic Featherweight Java \and Object-oriented languages \and Boolean types \and Type theory.}
 \end{abstract}
 
 
 \section{Introduction}
+There are two approaches to defining subtyping relations: the \emph{syntactic} and the \emph{semantic} approach.
+In the latter, one starts by defining a model of the programming language at hand and an interpretation of its types as subsets of such model.
+The syntactic subtyping is more mainstream in programming languages design and implementation, and the relation is given by means of a set of formal deductive subtyping rules.
+The semantic subtyping is less know and the relation is given by inclusion of sets denoting types. One starts from a formal model of the programming language at hand and defines an interpretation, or semantics, of types as subsets of this model; subtyping naturally is defined as inclusion of these sets, hence the semantic adjective attached to it.
+Orthogonally, especially for object-oriented languages, there are two approaches to defining subtyping relation: the \emph{nominal} and the \emph{structural} approach.
+The nominal subtyping relation is based on \emph{declarations} by the developer and is \emph{name}-based, hance the adjective nominal: $A$ is a subtype of $B$ if and only if it is declared to be so, that is if the class $A$ extends (or implements) the class (or interface) $B$.
+The structural subtyping relation instead is based on the \emph{structure} of a class, its fields and methods: a class $A$ is a subtype of a class $B$ if and only if the fields and methods of $A$ are a superset of the fields and methods of $B$, and their types in $A$ are subtypes of the types in $B$.
+At this point it is not surprising that the nominal subtyping aligns well with the syntactic approach and hence is more well-known than the structural subtyping which aligns well with the semantic approach.
+
+Dardha \emph{et al.} \cite{Dardha2013,Dardha2017} define semantic subtyping for \emph{Featherweight Java} (FJ) \cite{featherweight}, which is the functional fragment of the Java language.
+This approach to defining subtyping enriches FJ with boolean connectives and naturally allows for structural subtyping in the language.
+However, the nominal subtyping, which one would  commonly expect to be part of FJ, can be achieved though use of semantic subtyping and structural subtyping as shown in the case studies in Dardha \emph{et al.} \cite[\S 8.4]{Dardha2017}.
+
+\begin{example}[The Polygons]
+We will use the \emph{Polygons} as our running example, both in the paper and in the tool video.
+Consider the set of polygons, such as triangles, rectangles, rumbles given by a class hierarchy.
+Our task is to define a method \emph{diagonal} that takes a polygon and returns the length of its longest diagonal. This method makes sense only if the polygon passed to it has at least four sides, hence triangles are excluded.
+In Java this could be implemented in the following ways:
+$$
+\begin{array}{l}
+\synclass Polygon \ \{ \cdots\}
+\\
+\syndecl{Triangle}{Polygon} {\cdots}
+\\
+\syndecl{Other\_Polygons}{Polygon} {
+\\
+	\qquad \mathbf{real}\ diagonal(Other\_Polygons \ p)\ \{\ldots \}
+	\\
+	\hspace{3.5cm} \ldots
+	\\
+}
+\\
+\syndecl{Rectangle}{Other\_Polygons}{\cdots}
+\\
+\syndecl{Rumble}{Other\_Polygons} {\cdots}
+\end{array}
+$$
+Or by means of an interface:
+$$
+\begin{array}{l}
+public \ \syninterface Diagonal\ \{
+	\\
+	\qquad \mathbf{real}\ diagonal(Polygon \ p);
+	\\
+\}
+\\
+\synclass Polygon \ \{\cdots\}
+\\
+\syndecl{Triangle}{Polygon} {\cdots}
+\\
+\synidecl{Rectangle}{Polygon} \synimpl Diagonal \ \{\cdots\}
+\\
+\synidecl{Rumble}{Polygon} \synimpl Diagonal \ \{\cdots\}
+\\
+\hspace{4.5cm} \ldots
+\end{array}
+$$
+Now, suppose that our class hierarchy is such that \emph{Polygon} is the parent class and all other geometric figure classes that extend \emph{Polygon}, which is exactly how one would naturally define the set of polygons. If we think of the class hierarchy as given and part of legacy code, then again the natural way to solve this in Java is by defining the method \emph{diagonal} in the class \emph{Polygon} and using an \textbf{instanceof}, for example inside a \textbf{try-catch} that throws an exception at run time if the argument passed to the method is a triangle.
+
+In our framework we propose a different approach which allows the class hierarchy to be defined naturally as above and does not require changes to it, where this maybe is not viable, and yet it does not require exceptions at run time, but mere static typechecking.
+
+Our framework combines boolean types with semantic subtyping for a more elegant solution: it is enough to define a method \emph{diagonal} that has an argument of type \emph{Polygon} and not \emph{Triangle} thus allowing the typechecker to check at compile time the restrictions on types:
+$$
+\begin{array}{l}
+\syndecl{Polygon}{Object} {\cdots}
+\\
+\syndecl{Triangle}{Polygon} {\cdots}
+\\
+\syndecl{Rectangle}{Polygon} {\cdots}
+\\
+\syndecl{Rumble}{Polygon} {\cdots}
+\\
+\hspace{2.5cm} \ldots
+\\
+\syndecl{Diagonal}{Object} {
+	\\
+	\qquad \mathbf{real}\ diagonal(\textit{Polygon} \text{ and not}  \textit{Triangle} \ p)\{\ldots\}
+	\\
+}
+\end{array}
+$$
+Finally,  we can call the method \emph{diagonal} on an argument of type \emph{Polygon}: if the polygon is not a \emph{Triangle}, then the method returns the length of its longest diagonal; otherwise, if the polygon is a triangle, then there will be a type error at compile time.
+\end{example}
+
 
 A typing system for a programming language is a set of deduction rules that allow 
 
@@ -50,7 +142,7 @@ A typing system for a programming language is a set of deduction rules that allo
     \tau ::= \alpha \mid \mu
 \end{equation}
 
-\section{Semantic Subtyping for Featherweight Java}
+\section{Background}
 
 \section{SFJ: Design and Implementation}
 
@@ -157,8 +249,15 @@ a sample reference list with entries for journal
 articles~\cite{Dardha2017}.
 
 \section{Related Work and Conclusion}
+The first use of the semantic approach goes back to 15 years ago, as in \cite{Aiken,Damm}. Hosoya and Pierce have also adopted this approach in \cite{XML1,XML2,XML3} to define XDuce, an XML-oriented language designed specifically to transform XML documents in other XML documents satisfying certain properties. The values of this language are fragments of XML documents; types are interpreted as sets of documents, more precisely as sets of values. The subtyping relation is established as inclusion of these sets. The type-system contains boolean types, product types and recursive types. There are no function types and no functions in the language.
+
+Castagna et al. in \cite{gentle,Cas05,FCB08} extend the XDuce language with first-class functions and arrow types and define and implement a higher-order language named $\mathbb{C}$Duce adopting the semantic approach to subtyping. The starting point of their framework is a higher-order $\lambda-$calculus with pairs and projections. The set of types is extended with intersection, union and negation types interpreted in a set-theoretic way.
+
+The semantic approach can also be applied to the $\pi-$calculus \cite{milner,sangiorgi}. Castagna, Varacca and De Nicola in \cite{Cpi} have used this technique to define the $\mathbb{C}\pi$ language, a variant of the asynchronous $\pi-$calculus, where channel types are augmented with boolean connectives interpreted in an obvious way.
+
 
 %% References
+\newpage
 \bibliographystyle{splncs04}
 \bibliography{paper}
 
