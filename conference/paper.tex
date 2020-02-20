@@ -171,7 +171,7 @@ Method {\it length} has type $\mathbf{string} \rightarrow \mathbf{int}$ in $A$. 
 which can be simplified as $(\mathbf{string} \synvee \mathbf{int}) \rightarrow \mathbf{int}$.
 
 The technical developments behind semantic subtyping and its properties are not easy, however, they are completely transparent to the programmer.
-Due to space limit we will remove theoretical details from this submission,as they are not necessary to understand the implementation of SFJ which is the focus of this paper. We refer the reader to the relevant work \cite{Dardha2013,Dardha2017} and will include the background on semantic subtyping in a possible full paper.
+Due to space limit we will remove theoretical details from this submission, as they are not necessary to understand the design and implementation of SFJ, which is the focus of this paper. We refer the reader to the relevant work \cite{Dardha2013,Dardha2017} and we will include the background on semantic subtyping in a possible full paper.
 
 
 \section{SFJ: Design and Implementation}
@@ -280,12 +280,16 @@ articles~\cite{Dardha2017}.
 
 \section{Related Work and Conclusion}
 \label{sec:conclusion}
-The first use of the semantic approach goes back to 15 years ago, as in \cite{Aiken,Damm}. Hosoya and Pierce have also adopted this approach in \cite{XML1,XML2,XML3} to define XDuce, an XML-oriented language designed specifically to transform XML documents in other XML documents satisfying certain properties. The values of this language are fragments of XML documents; types are interpreted as sets of documents, more precisely as sets of values. The subtyping relation is established as inclusion of these sets. The type-system contains boolean types, product types and recursive types. There are no function types and no functions in the language.
+Semantic subtyping approach goes back to more than two decades ago \cite{Aiken,Damm}.
+Notable lines of work include:
+Hosoya and Pierce \cite{XML1,XML2,XML3} who define XDuce, an XML-oriented language designed specifically to transform XML documents in other XML documents satisfying certain properties.
+Castagna \emph{et al.} \cite{gentle,Cas05,FCB08} extend XDuce with first-class functions and arrow types and implement it as $\mathbb{C}$Duce. The starting point of their framework is a higher-order $\lambda-$calculus with pairs and projections.
+Castagna \emph{et al.} \cite{Cpi} define $\mathbb{C}\pi$, a variant of the asynchronous $\pi-$calculus \cite{sangiorgi}, where channel types are augmented with boolean connectives.
+Ancona and Lagorio~\cite{AL10} define subtyping for infinite types coinductively by using union and object type constructors, where types are interpreted as sets of value of the language.
+Bonsangue \emph{et al.}~\cite{BRABR14} study a coalgebraic approach to coinductive types and define a set-theoretic interpretation of coinductive types with union types.
+Pearce \cite{Pearce19} defines semantic subtyping for rewriting rules in the Whiley Rewrite Language and for a flow-typing calculus  \cite{Pearce13}.
 
-Castagna et al. in \cite{gentle,Cas05,FCB08} extend the XDuce language with first-class functions and arrow types and define and implement a higher-order language named $\mathbb{C}$Duce adopting the semantic approach to subtyping. The starting point of their framework is a higher-order $\lambda-$calculus with pairs and projections. The set of types is extended with intersection, union and negation types interpreted in a set-theoretic way.
-
-The semantic approach can also be applied to the $\pi-$calculus \cite{milner,sangiorgi}. Castagna, Varacca and De Nicola in \cite{Cpi} have used this technique to define the $\mathbb{C}\pi$ language, a variant of the asynchronous $\pi-$calculus, where channel types are augmented with boolean connectives interpreted in an obvious way.
-
+To conclude, in this paper we presented the design and implementation of SFJ, an extension of Featherweight Java with boolean types and semantic subtyping, which combined allow for both structural and nominal subtyping in FJ as well as restore standard Java constructs for e.g., lists and features for e.g., overloading which were not present in FJ. 
 
 %% References
 \newpage
