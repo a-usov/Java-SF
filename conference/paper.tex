@@ -64,9 +64,9 @@ The nominal subtyping relation is based on \emph{declarations} by the developer 
 The structural subtyping relation instead is based on the \emph{structure} of a class, its fields and methods: a class $A$ is a subtype of a class $B$ if and only if the fields and methods of $A$ are a superset of the fields and methods of $B$, and their types in $A$ are subtypes of the types in $B$.
 At this point it is not surprising that the nominal subtyping aligns well with the syntactic approach and hence is more well-known than the structural subtyping which aligns well with the semantic approach.
 
-Dardha \emph{et al.} \cite{Dardha2013,Dardha2017} define semantic subtyping for \emph{Featherweight Java} (FJ) \cite{featherweight}, which is the functional fragment of the Java language.
-This approach to defining subtyping enriches FJ with boolean connectives and naturally allows for structural subtyping in the language.
-However, nominal subtyping, which one would  commonly expect to be part of FJ, can be achieved though use of semantic subtyping and structural subtyping as shown in the extensive case studies in Dardha \emph{et al.} \cite[\S 8.4]{Dardha2017}.
+Dardha \emph{et al.} \cite{Dardha2013,Dardha2017} define boolean types and semantic subtyping for \emph{Featherweight Java} (FJ) \cite{featherweight}, which is the functional fragment of the Java language.
+This approach to defining subtyping naturally allows for structural subtyping in FJ.
+On the other hand, nominal subtyping, typical of FJ, can be obtained in the framework exploiting boolean types and semantic subtyping, as shown in the extensive case studies in Dardha \emph{et al.} \cite[\S 8.4]{Dardha2017}.
 
 \begin{example}[The Polygons]
 We will use the \emph{Polygons} as our running example, to illustrate the benefits of the approach by Dardha \emph{et al.} \cite{Dardha2013,Dardha2017}, both in the paper and in the tool video.
@@ -140,21 +140,39 @@ We can now call \emph{diagonal} on an argument of type \emph{Polygon}: if the po
 \end{example}
 The combination of boolean types and semantic subtyping gives a more elegant solution, as illustrate by the \emph{Polygons}---of course a toy example used only as a proof of concept of the approach---however, this approach is not yet practical as there are no boolean types or semantic subtyping in Java, hence its benefits unfortunately remained theoretical.
 
-After a few years, finally we can now exploit the benefits of this approach at a practical level: in this paper we present SFJ---Semantic Featherweight Java \autoref{sec:design}, an implementation of Featherweight Java with integrated boolean types and semantic subtyping as well as nominal subtyping, the latter more natural in FJ.
-In SFJ the programmer has a larger, yet simple, and more expressive set of types, by using \textbf{and}, \textbf{not}, \textbf{or} boolean connectives. This added expressivity does not however introduce added complexity, but rather the opposite is true as the programmer has an easier, more compact and more elegant way of programming. Moreover, as demonstrated in Dardha \emph{et al.} \cite[\S 8.4]{Dardha2017}, the added expressivity allows for standard programming constructs and features in Java, for e.g., lists, to be easily encoded in our framework, and the programmer can choose between semantic or nominal subtyping, making SFJ a conservative extension of FJ.
+After a few years, finally we can now exploit the benefits of this approach at a practical level: in this paper we present SFJ---Semantic Featherweight Java \autoref{sec:design}, an implementation of Featherweight Java with integrated boolean types and semantic subtyping.
+In SFJ the programmer has a larger and more expressive set of types, by using \textbf{and}, \textbf{not}, \textbf{or} boolean connectives. This added expressivity does not however introduce added complexity, but rather the opposite is true as the programmer has an easier, more compact and more elegant way of programming. Moreover, as demonstrated in Dardha \emph{et al.} \cite[\S 8.4]{Dardha2017}, the added expressivity allows for standard programming constructs and features in Java, for e.g., lists, or overloading classes (via multimethods below), to be easily encoded in our framework. Another benefit of semantic subtyping is that it can allow a natural integration of structural and nominal subtyping which the programmer has the option to choose, making SFJ a conservative extension of FJ.
 
-The technical developments behind semantic subtyping and its properties \autoref{sec:background} are not easy, however, they are completely transparent to the programmer who only needs to know boolean types and the difference between semantic and nominal subtyping and which to choose based on their goals. 
+\paragraph{On multimethods}
+Since FJ is a core language, some features of the full Java are removed: overloading methods is one of them.
+In our framework, leveraging the expressivity of boolean connectives and semantic subtyping, many of these features, and language constructs, e.g., lists, are restored: overloading methods is one of them. We can thus model \emph{multimethods}, \cite{BC97}, which according to the authors is ``\emph{very clean and easy to understand [...] it would be the best solution for a brand new language}".
+As an example Dardha \emph{et al.}  \cite{Dardha2013,Dardha2017}, consider the following class declarations:
+$$
+\begin{array}{ll}
+\syndecl{A}{\mathit{Object}} {
+&
+\qquad
+\syndecl{B}{A} {
+\\
+	%\qquad\quad \ldots
+%&
+	%\qquad\qquad\quad \ldots
+%\\
+	\qquad\quad \mathbf{int}\ \mathit{length}\ (\mathbf{string}\ s)\{\ \ldots\ \}\qquad
+&
+	\qquad\qquad\quad \mathbf{int}\ \mathit{length}\ (\mathbf{int}\ n)\{\ \ldots\ \}
+\\
+}
+&
+\qquad }
+\end{array}
+$$
+Method {\it length} has type $\mathbf{string} \rightarrow \mathbf{int}$ in $A$. However, in $B$ it has type $(\mathbf{string} \rightarrow \mathbf{int}) \synwedge (\mathbf{int} \rightarrow \mathbf{int})$,
+which can be simplified as $(\mathbf{string} \synvee \mathbf{int}) \rightarrow \mathbf{int}$.
 
+The technical developments behind semantic subtyping and its properties are not easy, however, they are completely transparent to the programmer.
+Due to space limit we will remove theoretical details from this submission,as they are not necessary to understand the implementation of SFJ which is the focus of this paper. We refer the reader to the relevant work \cite{Dardha2013,Dardha2017} and will include the background on semantic subtyping in a possible full paper.
 
-\section{Background}
-\label{sec:background}
-
-
-A typing system for a programming language is a set of deduction rules that allow 
-
-\begin{equation}
-    \tau ::= \alpha \mid \mu
-\end{equation}
 
 \section{SFJ: Design and Implementation}
 \label{sec:design}
