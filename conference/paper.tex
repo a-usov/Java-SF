@@ -17,6 +17,10 @@
 \usepackage{hyperref}
 \usepackage{stmaryrd}
 
+\addto\extrasenglish{%
+  \renewcommand{\sectionautorefname}{\S}%
+}
+
 
 % Non standard
 %\usepackage{varacca}
@@ -62,12 +66,12 @@ At this point it is not surprising that the nominal subtyping aligns well with t
 
 Dardha \emph{et al.} \cite{Dardha2013,Dardha2017} define semantic subtyping for \emph{Featherweight Java} (FJ) \cite{featherweight}, which is the functional fragment of the Java language.
 This approach to defining subtyping enriches FJ with boolean connectives and naturally allows for structural subtyping in the language.
-However, the nominal subtyping, which one would  commonly expect to be part of FJ, can be achieved though use of semantic subtyping and structural subtyping as shown in the case studies in Dardha \emph{et al.} \cite[\S 8.4]{Dardha2017}.
+However, nominal subtyping, which one would  commonly expect to be part of FJ, can be achieved though use of semantic subtyping and structural subtyping as shown in the extensive case studies in Dardha \emph{et al.} \cite[\S 8.4]{Dardha2017}.
 
 \begin{example}[The Polygons]
-We will use the \emph{Polygons} as our running example, both in the paper and in the tool video.
+We will use the \emph{Polygons} as our running example, to illustrate the benefits of the approach by Dardha \emph{et al.} \cite{Dardha2013,Dardha2017}, both in the paper and in the tool video.
 Consider the set of polygons, such as triangles, rectangles, rumbles given by a class hierarchy.
-Our task is to define a method \emph{diagonal} that takes a polygon and returns the length of its longest diagonal. This method makes sense only if the polygon passed to it has at least four sides, hence triangles are excluded.
+We want to define a method \emph{diagonal} that takes a polygon and returns the length of its longest diagonal. This method makes sense only if the polygon passed to it has at least four sides, hence triangles are excluded.
 In Java this could be implemented in the following ways:
 $$
 \begin{array}{l}
@@ -108,11 +112,11 @@ public \ \syninterface Diagonal\ \{
 \hspace{4.5cm} \ldots
 \end{array}
 $$
-Now, suppose that our class hierarchy is such that \emph{Polygon} is the parent class and all other geometric figure classes that extend \emph{Polygon}, which is exactly how one would naturally define the set of polygons. If we think of the class hierarchy as given and part of legacy code, then again the natural way to solve this in Java is by defining the method \emph{diagonal} in the class \emph{Polygon} and using an \textbf{instanceof}, for example inside a \textbf{try-catch} that throws an exception at run time if the argument passed to the method is a triangle.
 
-In our framework we propose a different approach which allows the class hierarchy to be defined naturally as above and does not require changes to it, where this maybe is not viable, and yet it does not require exceptions at run time, but mere static typechecking.
+Now, suppose that our class hierarchy is such that \emph{Polygon} is the parent class and all other geometric figure classes extend \emph{Polygon}, which is exactly how one would naturally define the set of polygons. If we think of the class hierarchy as given and part of legacy code, which cannot be changed, then again the natural way to solve this in Java is by defining the method \emph{diagonal} in the class \emph{Polygon} and using an \textbf{instanceof}, for example inside a \textbf{try-catch} that throws an exception at run time, if the argument passed to the method is a triangle.
 
-Our framework combines boolean types with semantic subtyping for a more elegant solution: it is enough to define a method \emph{diagonal} that has an argument of type \emph{Polygon} and not \emph{Triangle} thus allowing the typechecker to check at compile time the restrictions on types:
+The approach proposed by Dardha \emph{et al.} \cite{Dardha2013,Dardha2017} allows for the class hierarchy to be defined in such a natural way without needing to change it, but on the other hand it does not require handling exceptions at run time,  rather just static typechecking.
+To achieve this, the framework combines boolean types with semantic subtyping: it is enough to define a method \emph{diagonal} that has an argument of type \emph{Polygon} and not \emph{Triangle} thus allowing the typechecker to check at compile time the restrictions on types:
 $$
 \begin{array}{l}
 \syndecl{Polygon}{Object} {\cdots}
@@ -127,13 +131,23 @@ $$
 \\
 \syndecl{Diagonal}{Object} {
 	\\
-	\qquad \mathbf{real}\ diagonal(\textit{Polygon} \text{ and not}  \textit{Triangle} \ p)\{\ldots\}
+	\qquad \mathbf{real}\ diagonal(\textit{Polygon} \textbf{ and not }  \textit{Triangle} \ p)\{\ldots\}
 	\\
 }
 \end{array}
 $$
-Finally,  we can call the method \emph{diagonal} on an argument of type \emph{Polygon}: if the polygon is not a \emph{Triangle}, then the method returns the length of its longest diagonal; otherwise, if the polygon is a triangle, then there will be a type error at compile time.
+We can now call \emph{diagonal} on an argument of type \emph{Polygon}: if the polygon is \textbf{not} a \emph{Triangle}, then the method returns the length of its longest diagonal; otherwise, if the polygon is a triangle, then there will be a type error at compile time.
 \end{example}
+The combination of boolean types and semantic subtyping gives a more elegant solution, as illustrate by the \emph{Polygons}---of course a toy example used only as a proof of concept of the approach---however, this approach is not yet practical as there are no boolean types or semantic subtyping in Java, hence its benefits unfortunately remained theoretical.
+
+After a few years, finally we can now exploit the benefits of this approach at a practical level: in this paper we present SFJ---Semantic Featherweight Java \autoref{sec:design}, an implementation of Featherweight Java with integrated boolean types and semantic subtyping as well as nominal subtyping, the latter more natural in FJ.
+In SFJ the programmer has a larger, yet simple, and more expressive set of types, by using \textbf{and}, \textbf{not}, \textbf{or} boolean connectives. This added expressivity does not however introduce added complexity, but rather the opposite is true as the programmer has an easier, more compact and more elegant way of programming. Moreover, as demonstrated in Dardha \emph{et al.} \cite[\S 8.4]{Dardha2017}, the added expressivity allows for standard programming constructs and features in Java, for e.g., lists, to be easily encoded in our framework, and the programmer can choose between semantic or nominal subtyping, making SFJ a conservative extension of FJ.
+
+The technical developments behind semantic subtyping and its properties \autoref{sec:background} are not easy, however, they are completely transparent to the programmer who only needs to know boolean types and the difference between semantic and nominal subtyping and which to choose based on their goals. 
+
+
+\section{Background}
+\label{sec:background}
 
 
 A typing system for a programming language is a set of deduction rules that allow 
@@ -142,10 +156,8 @@ A typing system for a programming language is a set of deduction rules that allo
     \tau ::= \alpha \mid \mu
 \end{equation}
 
-\section{Background}
-
 \section{SFJ: Design and Implementation}
-
+\label{sec:design}
 Since we want our types to represent sets of values, we restrict our types to finite trees whose 
 leaves are constants with no cycles. For example a recursive type $\alpha = [a : \alpha]$ would
 be an infinite tree \textbf{new} $C$(\textbf{new} $C$($\cdots{}$)). Similarly the types $\alpha = 
@@ -249,6 +261,7 @@ a sample reference list with entries for journal
 articles~\cite{Dardha2017}.
 
 \section{Related Work and Conclusion}
+\label{sec:conclusion}
 The first use of the semantic approach goes back to 15 years ago, as in \cite{Aiken,Damm}. Hosoya and Pierce have also adopted this approach in \cite{XML1,XML2,XML3} to define XDuce, an XML-oriented language designed specifically to transform XML documents in other XML documents satisfying certain properties. The values of this language are fragments of XML documents; types are interpreted as sets of documents, more precisely as sets of values. The subtyping relation is established as inclusion of these sets. The type-system contains boolean types, product types and recursive types. There are no function types and no functions in the language.
 
 Castagna et al. in \cite{gentle,Cas05,FCB08} extend the XDuce language with first-class functions and arrow types and define and implement a higher-order language named $\mathbb{C}$Duce adopting the semantic approach to subtyping. The starting point of their framework is a higher-order $\lambda-$calculus with pairs and projections. The set of types is extended with intersection, union and negation types interpreted in a set-theoretic way.
