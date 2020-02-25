@@ -179,15 +179,14 @@ Due to space limit we will remove theoretical details from this submission, as t
 
 \section{SFJ: Design and Implementation}
 \label{sec:design}
-The key notion in semantic subtyping is denoting types as sets of values. Since we want these types
-to be able to be finitely representable, we restrict our types to finite trees whose
-leaves are constants with no cycles. For example a recursive type $\alpha = [a : \alpha]$ would
-be an infinite tree \textbf{new} $C$(\textbf{new} $C$($\cdots{}$)). Similarly the types $\alpha =
-[b: \beta]$, $\beta = [a = \alpha]$ would also be impossible to instantiate.
+The key notion in semantic subtyping is denoting types as sets of values. 
+Since we want these types to be able to be finitely representable, we restrict our types to finite trees whose leaves are constants with no cycles. 
+For example a recursive type $\alpha = [a : \alpha]$ would be an infinite tree \textbf{new} $C$(\textbf{new} $C$($\cdots{}$)). 
+Similarly the types $\alpha = [b: \beta]$, $\beta = [a = \alpha]$ would also be impossible to instantiate.
 
-Therefore, when processing the abstract syntax tree (AST) of a program, we do not allow the type of
-the class we are defining to be the type of its own field. Secondly we mark any classes with only
-basic types \textit{(bool, int, float ...)} for the types of its fields as \textit{resolved} and otherwise, if it contains a class type, we mark it as \textit{unresolved}. After processing the whole AST, we perform the following algorithm to decide whether the type definitions in the program are valid.
+Therefore, when processing the abstract syntax tree (AST) of a program, we do not allow the type of the class we are defining to be the type of its own field. 
+Secondly we mark any classes with only basic types \textit{(bool, int, float ...)} for the types of its fields as \textit{resolved} and otherwise, if it contains a class type, we mark it as \textit{unresolved}. 
+After processing the whole AST, we perform the following algorithm to decide whether the type definitions in the program are valid.
 \begin{verbatim}
 do
     boolean resolutionOccured = false
@@ -205,17 +204,13 @@ if all classes are not resolved:
     program contains invalid type definition
 \end{verbatim}
 
-If the types in the program are finite trees finite trees whose leaves are constants with no cycles,
-then at each iteration of the algorithm, either all the types are going to be resolved, or we are
-going to be able to resolve at least one type. If we do not resolve at least one type and not all 
-types are resolved, we know we have encountered a cycle in the type definition. 
+If the types in the program are finite trees finite trees whose leaves are constants with no cycles, then at each iteration of the algorithm, either all the types are going to be resolved, or we are going to be able to resolve at least one type. 
+If we do not resolve at least one type and not all types are resolved, we know we have encountered a cycle in the type definition. 
 
-Given that we now know that all the types in the program are valid, we can create the subtyping
-relation which will be a map of types to a set of its subtypes. For every program, we assume an
-initial subtyping relation for all of our basic types. We would like to highlight that \textit{Int}
-is not a subtype of \textit{Float} as it cannot represent the whole domain of \textit{Int} accurately
-and therefore the domain is not fully contained, however this is not the case for \textit{Double} 
-and \textit{Int}. Similarly so \textit{Long} is not a subtype of \textit{Double}.
+Given that we now know that all the types in the program are valid, we can create the subtyping relation which will be a map of types to a set of its subtypes. 
+For every program, we assume an initial subtyping relation for all of our basic types. 
+We would like to highlight that \textit{Int} is not a subtype of \textit{Float} as it cannot represent the whole domain of \textit{Int} accurately and therefore the domain is not fully contained, however this is not the case for \textit{Double} and \textit{Int}. 
+Similarly so \textit{Long} is not a subtype of \textit{Double}.
 \begin{flalign*}
     Boolean &= \left\{Boolean \right\} &\\
     Double  &= \left\{Double, Float, Int, Short, Byte\right\} &\\
@@ -226,9 +221,7 @@ and \textit{Int}. Similarly so \textit{Long} is not a subtype of \textit{Double}
     Byte &= \left\{Byte\right\} &
 \end{flalign*}
 
-Knowing that all our types are finite trees with leaves as constants and given this initial
-relation, we can create a subtyping relation for all class types using the following
-algorithm.
+Knowing that all our types are finite trees with leaves as constants and given this initial relation, we can create a subtyping relation for all class types using the following algorithm.
 
 \begin{verbatim}
 function generateRelation(classes):
@@ -280,42 +273,30 @@ Given method \textit{diagonal} from the example, we can see that the result of t
 \begin{flalign*}
     Polygon \textbf{ and not } Triangle = \left\{Polygon, Rectangle, Rumble \right\} 
 \end{flalign*}
-Therefore if we try to pass an argument of type $Triangle$ to this method, the type
-if not fully contained within the computed set, so it does not type check.
+Therefore if we try to pass an argument of type $Triangle$ to this method, the type if not fully contained within the computed set, so it does not type check.
 
-The above subtyping algorithm will find all nominal subtypes, as nominal subtypes inherit all fields
-and methods of their super class, so are always guaranteed to be a superset. Similarly, we can check
-every pair of types if one is a superset of the other, i.e.\ they share common fields and
-methods, and if so, we know it is a structural subtype of the other. For example, the Empty type,
-$empty = []$, will have all other classes as structural subtypes. The above algorithm will 
-without differentiating, find all nominal and structural subtypes as we always consider all other
-classes in the program to be potential subtype candidates.
+The above subtyping algorithm will find all nominal subtypes, as nominal subtypes inherit all fields and methods of their super class, so are always guaranteed to be a superset. 
+Similarly, we can check every pair of types if one is a superset of the other, i.e.\ they share common fields and methods, and if so, we know it is a structural subtype of the other. 
+For example, the Empty type, $empty = []$, will have all other classes as structural subtypes. 
+The above algorithm will without differentiating, find all nominal and structural subtypes as we always consider all other classes in the program to be potential subtype candidates.
 
-The argument against structural subtyping comes up here, as a type $coord = [x:int, y:int, z:int]$ will be structurally similar to a type $colour = [x:int, y:int, z:int]$. While they can be used 
-interchangeable in our type system, the meaning of the types are completely different so it means
-we ignore possible wrong behaviour in our program. We however argue that it is no more unsafe than
-nominal subtyping in Java where an overridden method can be defined to perform the opposite
-logic to what the super class expects. Therefore both methods leave an expectation on the programmer
-to check what they are doing is correct. 
+The argument against structural subtyping comes up here, as a type $coord = [x:int, y:int, z:int]$ will be structurally similar to a type $colour = [x:int, y:int, z:int]$. 
+While they can be used interchangeable in our type system, the meaning of the types are completely different so it means we ignore possible wrong behaviour in our program. 
+We however argue that it is no more unsafe than nominal subtyping in Java where an overridden method can be defined to perform the opposite logic to what the super class expects. 
+Therefore both methods leave an expectation on the programmer to check what they are doing is correct. 
 
-Furthermore, we have extended FJ with method types, demonstrated below to show another possible
-implementation of the Polygons example, where we only implement the \textit{diagonal} method on 
-polygons that support it, and not in the Triangle class. 
+Furthermore, we have extended FJ with method types, demonstrated below to show another possible implementation of the Polygons example, where we only implement the \textit{diagonal} method on polygons that support it, and not in the Triangle class. 
 $$
 \syndecl{Diagonal}{Object} {
 	\mathbf{int}\ diagonal(\textit{(getDiagonal: void$\rightarrow$int)}  \ p)\{\ldots\}
 }
 $$
 
-While we do not generate a relation for each method in all classes as this is computationally 
-unnecessary, we can on encountering a method type generate the set of classes which implement this
-method and combine their subtype relations using the \textit{or} operator. We can then use the same set inclusion to see if the argument passed to this function type checks. 
+While we do not generate a relation for each method in all classes as this is computationally unnecessary, we can on encountering a method type generate the set of classes which implement this method and combine their subtype relations using the \textit{or} operator. 
+We can then use the same set inclusion to see if the argument passed to this function type checks. 
 
-In the implementation of SFJ, we are liberal in the use of fields and method which might not be 
-implemented for all types in the subtyping relation rather than restricting only it to those which
-we know are shared by all types. Improper use of this allows for run-time exceptions however it
-more closely follows the idea of giving the programmer tools to create more expressive programs
-at the cost of checking program correctness such as with the use of structural subtypes. 
+In the implementation of SFJ, we are liberal in the use of fields and method which might not be implemented for all types in the subtyping relation rather than restricting only it to those which we know are shared by all types.
+Improper use of this allows for run-time exceptions however it more closely follows the idea of giving the programmer tools to create more expressive programs at the cost of checking program correctness such as with the use of structural subtypes. 
 
 
 \section{Related Work and Conclusion}
