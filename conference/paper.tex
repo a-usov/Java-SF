@@ -293,7 +293,7 @@ $$
 }
 $$
 
-We instead only implement the \emph{diagonal} method on polygons that support it. We can then specify to only accept classes that implement the method \emph{diagonal}. If we pass an argument of type \emph{Triangle}, it is not in the computed set of subtypes, so we get a type checking error at compile time.
+We instead only implement the \emph{getDiagonal} method on polygons that support it. We can then specify to only accept classes that implement the method \emph{getDiagonal}. If we pass an argument of type \emph{Triangle}, it is not in the computed set of subtypes, so we get a type checking error at compile time.
 We do not have to generate a relation for all methods in all classes as this is computationally unnecessary and instead
 only generate the set of subtypes on encountering a method type.
 
