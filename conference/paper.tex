@@ -53,7 +53,7 @@ An orthogonal issue, typical of object-oriented languages, is the \emph{nominal}
 Dardha \emph{et al.} \cite{Dardha2013,Dardha2017} combined structural subtyping and boolean types, on one hand, with nominal subtyping, on the other, in Featherweight Java (FJ), by thus exploiting the benefits of both approaches.
 
 However, these benefits were illustrated only at a theoretical level but not exploited practically.
-In this paper, we present SFJ---Semantic Featherweight Java, an implementation of FJ with features structural subtyping and boolean types as well as nominal subtyping.
+In this paper, we present SFJ---Semantic Featherweight Java, an implementation of FJ which features structural subtyping and boolean types as well as nominal subtyping.
 The benefits of SFJ, also illustrated in the accompanied video, show how static type checking of boolean types and semantic subtyping gives higher guarantees of program correctness, more flexibility and compactness of program writing.
 %\keywords{Nominal subtyping \and Structural subtyping  \and Semantic Featherweight Java \and Object-oriented languages \and Boolean types \and Type theory.}
 \end{abstract}
@@ -61,12 +61,12 @@ The benefits of SFJ, also illustrated in the accompanied video, show how static 
 
 \section{Introduction}
 There are two approaches to defining subtyping relations: the \emph{syntactic} and the \emph{semantic} approach.
-The syntactic subtyping is more mainstream in programming languages and is defined by means of a set of formal deductive subtyping rules.
-The semantic subtyping is less know and is defined as inclusion of sets denoting types. Starting from a formal model of the  language, we define an interpretation of types as subsets of this model, typically, subsets of values in the language. Then, subtyping is defined as inclusion of these subsets.
+Syntactic subtyping is more mainstream in programming languages and is defined by means of a set of formal deductive subtyping rules.
+Semantic subtyping is less know and is defined as inclusion of sets denoting types. Starting from a formal model of the  language, we define an interpretation of types as subsets of this model, typically, subsets of values in the language. Then, subtyping is defined as inclusion of these subsets.
 
 Orthogonally, for object-oriented languages there are two approaches to defining subtyping relations: the \emph{nominal} and the \emph{structural} approach.
-The nominal subtyping is based on {declarations} by the developer and is {name}-based: $A$ is a subtype of $B$ if and only if it is declared to be so, that is if the class $A$ extends (or implements) the class (or interface) $B$.
-The structural subtyping instead is based on the \emph{structure} of a class, its fields and methods: a class $A$ is a subtype of a class $B$ if and only if the fields and methods of $A$ are a superset of the fields and methods of $B$, and their types in $A$ are subtypes of the types in $B$.
+Nominal subtyping is based on {declarations} by the developer and is {name}-based: $A$ is a subtype of $B$ if and only if it is declared to be so, that is if the class $A$ extends (or implements) the class (or interface) $B$.
+Structural subtyping instead is based on the \emph{structure} of a class, its fields and methods: a class $A$ is a subtype of a class $B$ if and only if the fields and methods of $A$ are a superset of the fields and methods of $B$, and their types in $A$ are subtypes of the types in $B$.
 At this point it is not surprising that the nominal subtyping aligns well with the syntactic approach and in fact is more well-known than the structural subtyping which in turn aligns well with the semantic approach.
 
 Dardha \emph{et al.} \cite{Dardha2013,Dardha2017} define semantic subtyping for \emph{Featherweight Java} (FJ) \cite{featherweight} with \emph{boolean types}.
@@ -76,13 +76,13 @@ Unfortunately, these benefits were only presented at a theoretical level and not
 In this paper, we present SFJ---\emph{Semantic Featherweight Java} \autoref{sec:design}, an implementation of FJ with integrated boolean types and semantic subtyping.
 In SFJ the developer has a larger and more expressive set of types, by using boolean connectives \textbf{and}, \textbf{not}, \textbf{or}. On the other hand, this added expressivity does not introduce added complexity, but rather the opposite is true, as the developer has an easier, more compact and more elegant way of programming.
 SFJ integrates both structural and nominal subtyping, and the developer can choose which one to use.
-Finally, as discussed in Dardha \emph{et al.} \cite[\S 8.4]{Dardha2017}, we can easily encode in SFJ standard programming constructs and features of Java, such as lists, or overloading classes (via multimethods, see below), which are missing in FJ, making SFJ a more complete and closer to Java programming language.
+Finally, as discussed in Dardha \emph{et al.} \cite[\S 8.4]{Dardha2017}, we can easily encode in SFJ standard programming constructs and features of Java, such as lists, or overloading classes (via multimethods, see below), which are missing in FJ, making SFJ more complete and closer to Java.
 
 \begin{example}[Polygons]
 \label{polygons}
 This will be our running example both in the paper and in the tool video \cite{UD20} to illustrate the benefits of boolean types and semantic subtyping developed by Dardha \emph{et al.} \cite{Dardha2013,Dardha2017} and implemented as SFJ.
 
-Consider the set of polygons, such as triangles, rectangles, rumbles given by a class hierarchy.
+Consider the set of polygons, such as triangles, rectangles and rhombuses given by a class hierarchy.
 We want to define a method \emph{diagonal} that takes a polygon and returns the length of its longest diagonal. This method makes sense only if the polygon passed to it has at least four sides, hence triangles are excluded.
 In Java this could be implemented in the following ways:
 $$
@@ -128,7 +128,7 @@ $$
 Now, suppose that our class hierarchy is such that \emph{Polygon} is the parent class and all other geometric figure classes extend \emph{Polygon}, which is how one would naturally define the set of polygons.
 If we think of the class hierarchy as given and part of legacy code, which cannot be changed, then again a natural way to implement this in Java is by defining the method \emph{diagonal} in the class \emph{Polygon} and using an \textbf{instanceof}, for e.g., inside a \textbf{try-catch} that throws an exception at run time, if the argument passed to the method is a triangle.
 
-We propose a more elegant solution, by combining boolean types and semantic subtyping, where only static typechecking is required and implement this in SFJ \cite{UD20}: it is enough to define a method \emph{diagonal} that has an argument of type \emph{Polygon} \textbf{and not} \emph{Triangle} thus allowing the typechecker to check at compile time the restrictions on types:
+We propose a more elegant solution, by combining boolean types and semantic subtyping, where only static typechecking is required and implement this in SFJ \cite{UD20}: it is enough to define a method \emph{diagonal} that has an argument of type \emph{Polygon} \textbf{and not} \emph{Triangle}, thus allowing the typechecker to check at compile time the restrictions on types:
 $$
 \begin{array}{l}
 \syndecl{Polygon}{Object} {\ldots}
@@ -221,7 +221,7 @@ do
     boolean resolutionOccured = false
     for class that is unresolved:
         boolean resolved = true
-        for field that contains a class type:
+        for field in class that contains a class type:
             if class type is not resolved
                 resolved = false
         if resolved is true:
@@ -247,7 +247,7 @@ As a first step, we start with basic types.
     &Boolean = \left\{Boolean \right\} 
 \end{flalign*}
 %
-Note that \emph{Int} is not a subtype of \emph{Float} as the latter cannot represent the whole set of \emph{Int} values accurately and therefore \emph{Int} is not fully set-contained, however this is not the case for \emph{Int} and \emph{Double}. 
+Note that \emph{Int} is not a subtype of \emph{Float} as a 32-bit \emph{float} cannot represent the whole set of 32-bit \emph{integer} values accurately and therefore \emph{Int} is not fully set-contained, however this is not the case for \emph{Int} and \emph{Double}. 
 Similarly, \emph{Long} is not a subtype of \emph{Double}.
 Finally, the following algorithm defines the subtyping relation for all class types.
 \begin{verbatim}
@@ -290,7 +290,7 @@ function checkSuperSet(class, other):
 Let us illustrate the subtyping relation algorithm with our \emph{Polygons} example \autoref{polygons}.
 The algorithm generates the following subtyping relation, which also includes the subtyping relation for basic types defined in the first step.
 \begin{flalign*}
-    &Polygon = \left\{Polygon, Triangle, Rectangle, Rumble \right\} && Triangle  = \left\{Triangle\right\}\\ 
+    &Polygon = \left\{Polygon, Triangle, Rectangle, Rhombus \right\} && Triangle  = \left\{Triangle\right\}\\ 
     &Rectangle = \left\{Rectangle\right\} &&
     Diagonal = \left\{Diagonal\right\} 
 \end{flalign*}
@@ -298,31 +298,33 @@ Recall method \emph{diagonal} in class \emph{Diagonal}, we can see that the resu
 \begin{flalign*}
     Polygon \textbf{ and not } Triangle = \left\{Polygon, Rectangle, Rhombus \right\} 
 \end{flalign*}
-If we pass to \emph{diagonal} an argument of type \emph{Triangle}, as it is not contained in the computed set of subtypes, we get a typechecking error at compile type \cite{UD20}.
+If we pass to \emph{diagonal} an argument of type \emph{Triangle}, as it is not contained in the computed set of subtypes, we get a type checking error at compile time \cite{UD20}.
 
 The subtyping algorithm finds all nominal and structural subtypes.
 It will find all nominal subtypes, as nominal subtypes inherit all fields and methods of their super class, so are always guaranteed to be a superset. 
-Similarly, given two types, the algorithm can check if one is a superset of the other, i.e.,\ they share common fields and methods, and if so, they are related by structural subtyping. 
+Similarly, given all pairs of types, the algorithm checks if one is a superset of the other, i.e.,\ they share common fields and methods, and if so, they are related by structural subtyping. 
 %For e.g., the Empty type, $empty = []$, will have all classes as structural subtypes. 
 %The above algorithm will without differentiating, find all nominal and structural subtypes as we always consider all other classes in the program to be potential subtype candidates.
-Consider two structurally equivalent types $coord = [x:int, y:int, z:int]$ and $colour = [x:int, y:int, z:int]$. 
-While they can be used interchangeably in our type system, the meaning of the types is completely different, meaning we ignore possible wrong behaviour in our program. 
+
+However, it can be argued that structural subtyping is counterproductive in writing logically correct programs.
+Consider two structurally equivalent types $coordinate = [x:int, y:int, z:int]$ and $colour = [x:int, y:int, z:int]$. 
+While they can be used interchangeably in our type system, the meaning of the types is completely different, meaning we ignore what should be a type check error in our program. 
 We however argue that it is no more unsafe than nominal subtyping in Java where an overridden method can be defined to perform the opposite logic to what the super class expects. 
 Therefore both methods leave an expectation on the programmer to check what they are doing is correct. 
 
-Furthermore, we have extended FJ with method types, demonstrated below to show another possible implementation of the Polygons example, where we only implement the \textit{diagonal} method on polygons that support it, and not in the Triangle class. 
+Furthermore, we have extended FJ with method types, demonstrated below to show another possible implementation of the Polygons example \autoref{polygons}.
 $$
 \syndecl{Diagonal}{Object} {
 	\mathbf{int}\ diagonal(\textit{(getDiagonal: void$\rightarrow$int)}  \ p)\{\ldots\}
 }
 $$
 
-While we do not generate a relation for each method in all classes as this is computationally unnecessary, we can on encountering a method type generate the set of classes which implement this method and combine their subtype relations using the \textit{or} operator. 
-We can then use the same set inclusion to see if the argument passed to this function type checks. 
+We instead only implement the \emph{diagonal} method on polygons that support it. We can then specify to only accept classes that implement the method \emph{diagonal}. If we pass an argument of type \emph{Triangle}, it is not in the computed set of subtypes, so we get a type checking error at compile time.
+We do not have to generate a relation for all methods in all classes as this is computationally unnecessary and instead
+only generate the set of subtypes on encountering a method type.
 
-In the implementation of SFJ, we are liberal in the use of fields and method which might not be implemented for all types in the subtyping relation rather than restricting only it to those which we know are shared by all types.
-Improper use of this allows for run-time exceptions however it more closely follows the idea of giving the programmer tools to create more expressive programs at the cost of checking program correctness such as with the use of structural subtypes. 
-
+%In the implementation of SFJ, we are liberal in the use of fields and method which might not be implemented for all types in the subtyping relation rather than restricting only it to those which we know are shared by all types.
+%Improper use of this allows for run-time exceptions however it more closely follows the idea of giving the programmer tools to create more expressive programs at the cost of checking program correctness such as with the use of structural subtypes. 
 
 \section{Related Work and Conclusion}
 \label{sec:conclusion}
