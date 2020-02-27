@@ -308,7 +308,7 @@ Similarly, given all pairs of types, the algorithm checks if one is a superset o
 
 However, it can be argued that structural subtyping is counterproductive in writing logically correct programs.
 Consider two structurally equivalent types $coordinate = [x:int, y:int, z:int]$ and $colour = [x:int, y:int, z:int]$. 
-While they can be used interchangeably in our type system, the meaning of the types is completely different, meaning we ignore what should be a type check error in our program. 
+While they can be used interchangeably in our type system, the meaning of the types is completely different, meaning we ignore what should likely be a type check error in our program. 
 We however argue that it is no more unsafe than nominal subtyping in Java where an overridden method can be defined to perform the opposite logic to what the super class expects. 
 Therefore both methods leave an expectation on the programmer to check what they are doing is correct. 
 
@@ -332,6 +332,7 @@ Semantic subtyping approach goes back to more than two decades ago \cite{Aiken,D
 Notable lines of work include:
 Hosoya and Pierce \cite{XML1,XML2,XML3} who define XDuce, an XML-oriented language designed specifically to transform XML documents in other XML documents satisfying certain properties.
 Castagna \emph{et al.} \cite{gentle,Cas05,FCB08} extend XDuce with first-class functions and arrow types and implement it as $\mathbb{C}$Duce. The starting point of their framework is a higher-order $\lambda-$calculus with pairs and projections.
+Muehlboeck and Tate \cite{Muehlboeck2018} define a syntactic framework with boolean connectives which has been implemented in the Ceylon programming language \cite{Ceylon2016}.
 Castagna \emph{et al.} \cite{Cpi} define $\mathbb{C}\pi$, a variant of the asynchronous $\pi-$calculus \cite{sangiorgi}, where channel types are augmented with boolean connectives.
 Ancona and Lagorio~\cite{AL10} define subtyping for infinite types coinductively by using union and object type constructors, where types are interpreted as sets of value of the language.
 Bonsangue \emph{et al.}~\cite{BRABR14} study a coalgebraic approach to coinductive types and define a set-theoretic interpretation of coinductive types with union types.
