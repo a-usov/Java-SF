@@ -298,15 +298,15 @@ Recall method \emph{diagonal} in class \emph{Diagonal}, we can see that the resu
 \begin{flalign*}
     Polygon \textbf{ and not } Triangle = \left\{Polygon, Rectangle, Rhombus \right\} 
 \end{flalign*}
-Therefore, if we pass to this method an argument of type \emph{Triangle}, as it is not contained in the computed set of subtypes, we get a typechecking error at compile type \cite{UD20}.
+If we pass to \emph{diagonal} an argument of type \emph{Triangle}, as it is not contained in the computed set of subtypes, we get a typechecking error at compile type \cite{UD20}.
 
-The above subtyping algorithm will find all nominal subtypes, as nominal subtypes inherit all fields and methods of their super class, so are always guaranteed to be a superset. 
-Similarly, we can check every pair of types if one is a superset of the other, i.e.\ they share common fields and methods, and if so, we know it is a structural subtype of the other. 
-For example, the Empty type, $empty = []$, will have all classes as structural subtypes. 
-The above algorithm will without differentiating, find all nominal and structural subtypes as we always consider all other classes in the program to be potential subtype candidates.
-
-The argument against structural subtyping comes up here, as a type $coord = [x:int, y:int, z:int]$ will be structurally similar to a type $colour = [x:int, y:int, z:int]$. 
-While they can be used interchangeable in our type system, the meaning of the types are completely different so it means we ignore possible wrong behaviour in our program. 
+The subtyping algorithm finds all nominal and structural subtypes.
+It will find all nominal subtypes, as nominal subtypes inherit all fields and methods of their super class, so are always guaranteed to be a superset. 
+Similarly, given two types, the algorithm can check if one is a superset of the other, i.e.,\ they share common fields and methods, and if so, they are related by structural subtyping. 
+%For e.g., the Empty type, $empty = []$, will have all classes as structural subtypes. 
+%The above algorithm will without differentiating, find all nominal and structural subtypes as we always consider all other classes in the program to be potential subtype candidates.
+Consider two structurally equivalent types $coord = [x:int, y:int, z:int]$ and $colour = [x:int, y:int, z:int]$. 
+While they can be used interchangeably in our type system, the meaning of the types is completely different, meaning we ignore possible wrong behaviour in our program. 
 We however argue that it is no more unsafe than nominal subtyping in Java where an overridden method can be defined to perform the opposite logic to what the super class expects. 
 Therefore both methods leave an expectation on the programmer to check what they are doing is correct. 
 
