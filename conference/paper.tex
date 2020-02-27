@@ -76,7 +76,7 @@ Unfortunately, these benefits were only presented at a theoretical level and not
 In this paper, we present SFJ---\emph{Semantic Featherweight Java} \autoref{sec:design}, an implementation of FJ with integrated boolean types and semantic subtyping.
 In SFJ the developer has a larger and more expressive set of types, by using boolean connectives \textbf{and}, \textbf{not}, \textbf{or}. On the other hand, this added expressivity does not introduce added complexity, but rather the opposite is true, as the developer has an easier, more compact and more elegant way of programming.
 SFJ integrates both structural and nominal subtyping, and the developer can choose which one to use.
-Finally, as discussed in Dardha \emph{et al.} \cite[\S 8.4]{Dardha2017}, we can easily encode in SFJ standard programming constructs and features of Java, such as lists, or overloading classes (via multimethods, see below), which are missing in FJ, making SFJ more complete and closer to Java.
+Finally, as discussed in Dardha \emph{et al.} \cite[\S 8.4]{Dardha2017}, we can easily encode in SFJ standard programming constructs and features of Java, such as lists, or overloading classes via multimethods \cite{BC97}, which are missing in FJ, making SFJ more complete and closer to Java.
 
 \begin{example}[Polygons]
 \label{polygons}
@@ -150,32 +150,6 @@ $$
 $$
 We can now call \emph{diagonal} on an argument of type \emph{Polygon}: if the polygon is \textbf{not} a \emph{Triangle}, then the method returns the length of its longest diagonal; otherwise, if the polygon is a triangle, then there will be a type error at compile time.
 \end{example}
-\emph{On multimethods}
-Since FJ is a core language, some features of the full Java are removed: overloading methods is one of them.
-In our framework, leveraging the expressivity of boolean connectives and semantic subtyping, many of these features, and language constructs, e.g., lists, are restored: overloading methods is one of them. We can thus model \emph{multimethods}, \cite{BC97}, which according to the authors is ``\emph{very clean and easy to understand [...] it would be the best solution for a brand new language}".
-As an example Dardha \emph{et al.}  \cite{Dardha2013,Dardha2017}, consider the following class declarations:
-$$
-\begin{array}{ll}
-\syndecl{A}{\mathit{Object}} {
-&
-\qquad
-\syndecl{B}{A} {
-\\
-	%\qquad\quad \ldots
-%&
-	%\qquad\qquad\quad \ldots
-%\\
-	\qquad\quad \mathbf{int}\ \mathit{length}\ (\mathbf{string}\ s)\{\ \ldots\ \}\qquad
-&
-	\qquad\qquad\quad \mathbf{int}\ \mathit{length}\ (\mathbf{int}\ n)\{\ \ldots\ \}
-\\
-}
-&
-\qquad }
-\end{array}
-$$
-Method {\it length} has type $\mathbf{string} \rightarrow \mathbf{int}$ in $A$. However, in $B$ it has type $(\mathbf{string} \rightarrow \mathbf{int}) \synwedge (\mathbf{int} \rightarrow \mathbf{int})$,
-which can be simplified as $(\mathbf{string} \synvee \mathbf{int}) \rightarrow \mathbf{int}$.
 
 The technical developments behind semantic subtyping and its properties are not easy, however, they are completely transparent to the developer.
 Due to space limit we will remove theoretical details from this submission, as they are not necessary to understand the design and implementation of SFJ, which is the focus of this paper. We refer the reader to the relevant work \cite{Dardha2013,Dardha2017} and we will include the background on semantic subtyping in a possible full paper.
