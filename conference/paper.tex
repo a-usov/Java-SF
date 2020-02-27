@@ -79,6 +79,7 @@ SFJ integrates both structural and nominal subtyping, and the developer can choo
 Finally, as discussed in Dardha \emph{et al.} \cite[\S 8.4]{Dardha2017}, we can easily encode in SFJ standard programming constructs and features of Java, such as lists, or overloading classes (via multimethods, see below), which are missing in FJ, making SFJ a more complete and closer to Java programming language.
 
 \begin{example}[Polygons]
+\label{polygons}
 This will be our running example both in the paper and in the tool video \cite{UD20} to illustrate the benefits of boolean types and semantic subtyping developed by Dardha \emph{et al.} \cite{Dardha2013,Dardha2017} and implemented as SFJ.
 
 Consider the set of polygons, such as triangles, rectangles, rumbles given by a class hierarchy.
@@ -182,7 +183,7 @@ Due to space limit we will remove theoretical details from this submission, as t
 
 \section{SFJ: Design and Implementation}
 \label{sec:design}
-The syntax of types is given by the following grammar \cite{}:
+The syntax of types is given by the following grammar \cite{Dardha2013,Dardha2017}:
 $$
 \begin{array}{llll}
 \tau & ::= & \alpha \ |\ \mu
@@ -202,7 +203,7 @@ Type $\btypes$ denotes the \emph{basic} types, such as integers, booleans, etc.
 {Record} types $[\wt{l:\tau}]$, where $\wt l$ is a sequence of disjoint labels are used to type objects.
 Arrow types $\alpha \to \alpha$ are used to type methods.
 The boolean types using $\synwedge$ and $\synneg$ have their expected meanings and $\synvee$ is obtained by their combination.\\
-The syntax of terms is given by the following grammar and is based on the standard syntax of terms in FJ \cite{}:
+The syntax of terms is given by the following grammar and is based on the standard syntax of terms in FJ \cite{featherweight,Dardha2013,Dardha2017}:
 \begin{align*}
 & \mbox{\textit{Class declaration}} & L \; ::= \; & \syndecl{C}{C}{\wt{\alpha \ a};\ K; \ \wt{M}\ }\\
 & \mbox{\textit{Constructor}} & K \;::=\; & C\ (\wt{\alpha\ x})\ \{\ \synsuper(\wt{x});\ \wt{\synthis.a}=\wt{x}; \}\\
@@ -210,12 +211,11 @@ The syntax of terms is given by the following grammar and is based on the standa
 & \mbox{\textit{Expressions}} & e \; ::=\; & x\ |\  c\ |\ e.a\ |\ e.m(e) \ | \ \synnew C(\wt{e})
 \end{align*}
 Since we want to use types $\tau$ in practice in SFJ, we restrict them to finite trees whose leaves are constants with no cycles.
-For e.g., a recursive type $\alpha = [a : \alpha]$ would be an infinite tree \textbf{new} $C$(\textbf{new} $C$($\cdots{}$)), hence we cannot instate it.
+For e.g., a recursive type $\alpha = [a : \alpha]$ denotes an infinite program tree \textbf{new} $C$(\textbf{new} $C$($\cdots{}$)), hence we avoid it as it is inhabitable.
 %Similarly the types $\alpha = [b: \beta]$, $\beta = [a = \alpha]$ would also be impossible to instantiate.
-
-Therefore, when processing the abstract syntax tree (AST) of a program in SFJ, we do not allow the type of the class we are defining to be a type of its own field. 
-Secondly, we mark any classes with fields only of basic types as \emph{resolved} and otherwise, if it contains a record type, we mark it as \emph{unresolved}. 
-After processing the whole AST, we perform the following algorithm to decide whether the type definitions in the program are valid.
+When processing the abstract syntax tree (AST) of a program in SFJ, we forbid fields to have the same type as the type of the class they are defined in. 
+Secondly, we mark any classes containing fields typed with only basic types as \emph{resolved} otherwise, as \emph{unresolved}. 
+This is captured by the following algorithm, which checks if the type definitions in the program are valid.
 \begin{verbatim}
 do
     boolean resolutionOccured = false
@@ -232,26 +232,24 @@ while resolutionOccured is true
 if all classes are not resolved:
     program contains invalid type definition
 \end{verbatim}
-
-If the types in the program are finite trees finite trees whose leaves are constants with no cycles, then at each iteration of the algorithm, either all the types are going to be resolved, or we are going to be able to resolve at least one type. 
-If we do not resolve at least one type and not all types are resolved, we know we have encountered a cycle in the type definition. 
-
-Given that we now know that all the types in the program are valid, we can create the subtyping relation which will be a map of types to a set of its subtypes. 
-For every program, we assume an initial subtyping relation for all of our basic types. 
-We would like to highlight that \emph{Int} is not a subtype of \emph{Float} as it cannot represent the whole domain of \emph{Int} accurately and therefore the domain is not fully contained, however this is not the case for \emph{Double} and \emph{Int}. 
-Similarly so \emph{Long} is not a subtype of \emph{Double}.
+%If the types in the program are finite trees whose leaves are constants with no cycles, then at each iteration of the algorithm, either all the types are going to be resolved, or we are going to be able to resolve at least one type. 
+%If we do not resolve at least one type and not all types are resolved, we know we have encountered a cycle in the type definition. 
+%
+Now, we can define the subtyping relation.
+Building upon the types-as-sets-of-values approach of the semantic subtyping for FJ \cite{Dardha2013,Dardha2017}, in our implementation of SFJ we keep track of this relation by defining a map from a type to the set of its subtypes, with the property that the set of values of a subtype is included in the set of values of the type.
+As a first step, we start with basic types.
+\setlength{\abovedisplayskip}{5pt}
+\setlength{\belowdisplayskip}{5pt}
 \begin{flalign*}
-    Boolean &= \left\{Boolean \right\} &\\
-    Double  &= \left\{Double, Float, Int, Short, Byte\right\} &\\
-    Float &= \left\{Float, Short, Byte\right\} &\\
-    Long &= \left\{Long, Int, Short, Byte\right\} &\\
-    Int &= \left\{Int, Short, Byte\right\} &\\
-    Short &= \left\{Short, Byte\right\} &\\
-    Byte &= \left\{Byte\right\} &
+    &Double  = \left\{Double, Float, Int, Short, Byte\right\} &&Float = \left\{Float, Short, Byte\right\}\\
+    &Long = \left\{Long, Int, Short, Byte\right\}  &&Int = \left\{Int, Short, Byte\right\}\\
+    &Short = \left\{Short, Byte\right\} && Byte = \left\{Byte\right\}\\
+    &Boolean = \left\{Boolean \right\} 
 \end{flalign*}
-
-Knowing that all our types are finite trees with leaves as constants and given this initial relation, we can create a subtyping relation for all class types using the following algorithm.
-
+%
+Note that \emph{Int} is not a subtype of \emph{Float} as the latter cannot represent the whole set of \emph{Int} values accurately and therefore \emph{Int} is not fully set-contained, however this is not the case for \emph{Int} and \emph{Double}. 
+Similarly, \emph{Long} is not a subtype of \emph{Double}.
+Finally, the following algorithm defines the subtyping relation for all class types.
 \begin{verbatim}
 function generateRelation(classes):
     List<class> untyped = []
@@ -289,20 +287,18 @@ function checkSuperSet(class, other):
     if flag == true:
         add class to other subtype relation
 \end{verbatim}
-
-Continuing with the \emph{Polygons} example, the algorithm would generate the following relation, including all base relations we defined before.
+Let us illustrate the subtyping relation algorithm with our \emph{Polygons} example \autoref{polygons}.
+The algorithm generates the following subtyping relation, which also includes the subtyping relation for basic types defined in the first step.
 \begin{flalign*}
-    Polygon &= \left\{Polygon, Triangle, Rectangle, Rumble \right\} &&\\
-    Triangle  &= \left\{Triangle\right\}  
-    Rectangle = \left\{Rectangle\right\} 
+    &Polygon = \left\{Polygon, Triangle, Rectangle, Rumble \right\} && Triangle  = \left\{Triangle\right\}\\ 
+    &Rectangle = \left\{Rectangle\right\} &&
     Diagonal = \left\{Diagonal\right\} 
 \end{flalign*}
-
-Given method \emph{diagonal} from the example, we can see that the result of the set operation on its parameter type would be 
+Recall method \emph{diagonal} in class \emph{Diagonal}, we can see that the result of the set operation on its parameter type gives the following set of polygons: 
 \begin{flalign*}
     Polygon \textbf{ and not } Triangle = \left\{Polygon, Rectangle, Rhombus \right\} 
 \end{flalign*}
-Therefore if we try to pass an argument of type \emph{Triangle} to this method, the type if not fully contained within the computed set, so it does not type check.
+Therefore, if we pass to this method an argument of type \emph{Triangle}, as it is not contained in the computed set of subtypes, we get a typechecking error at compile type \cite{UD20}.
 
 The above subtyping algorithm will find all nominal subtypes, as nominal subtypes inherit all fields and methods of their super class, so are always guaranteed to be a superset. 
 Similarly, we can check every pair of types if one is a superset of the other, i.e.\ they share common fields and methods, and if so, we know it is a structural subtype of the other. 
