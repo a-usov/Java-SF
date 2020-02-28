@@ -84,7 +84,7 @@ Finally, as discussed in Dardha \emph{et al.} \cite[\S 8.4]{Dardha2017}, thanks 
 \label{polygons}
 This will be our running example both in the paper and in the tool video \cite{UD20} to illustrate the benefits of boolean types and semantic subtyping developed by Dardha \emph{et al.} \cite{Dardha2013,Dardha2017} and implemented as SFJ.
 
-Consider the set of polygons, such as triangles, rectangles and rhombuses given by a class hierarchy.
+Consider the set of polygons, such as triangles, squares and rhombuses given by a class hierarchy.
 We want to define a method \emph{diagonal} that takes a polygon and returns the length of its longest diagonal. This method makes sense only if the polygon passed to it has at least four sides, hence triangles are excluded.
 In Java this could be implemented in the following ways:
 $$
@@ -101,7 +101,7 @@ $$
 	\\
 }
 \\
-\syndecl{Rectangle}{Other\_Polygons}{\ldots}
+\syndecl{Square}{Other\_Polygons}{\ldots}
 \\
 \syndecl{Rhombus}{Other\_Polygons} {\ldots}
 \end{array}
@@ -119,7 +119,7 @@ public \ \syninterface Diagonal\ \{
 \\
 \syndecl{Triangle}{Polygon} {\ldots}
 \\
-\synidecl{Rectangle}{Polygon} \synimpl Diagonal \ \{\ldots\}
+\synidecl{Square}{Polygon} \synimpl Diagonal \ \{\ldots\}
 \\
 \synidecl{Rhombus}{Polygon} \synimpl Diagonal \ \{\ldots\}
 \\
@@ -137,7 +137,7 @@ $$
 \\
 \syndecl{Triangle}{Polygon} {\ldots}
 \\
-\syndecl{Rectangle}{Polygon} {\ldots}
+\syndecl{Square}{Polygon} {\ldots}
 \\
 \syndecl{Rhombus}{Polygon} {\ldots}
 \\
@@ -267,13 +267,13 @@ function checkSuperSet(class, other):
 Let us illustrate the subtyping algorithm with our \emph{Polygons} example \autoref{polygons}.
 The algorithm generates the following subtyping relation, which also includes the subtyping relation for basic types defined in the first step.
 \begin{flalign*}
-    &Polygon = \left\{Polygon, Triangle, Rectangle, Rhombus \right\} && Triangle  = \left\{Triangle\right\}\\ 
-    &Rectangle = \left\{Rectangle\right\} &&
+    &Polygon = \left\{Polygon, Triangle, Square, Rhombus \right\} && Triangle  = \left\{Triangle\right\}\\ 
+    &Square = \left\{Square\right\} &&
     Diagonal = \left\{Diagonal\right\} 
 \end{flalign*}
 Recall method \emph{diagonal} in class \emph{Diagonal}, we can see that the result of the set operation on its parameter type gives the following set of polygons: 
 \begin{flalign*}
-    Polygon \textbf{ and not } Triangle = \left\{Polygon, Rectangle, Rhombus \right\} 
+    Polygon \textbf{ and not } Triangle = \left\{Polygon, Square, Rhombus \right\} 
 \end{flalign*}
 If we pass to \emph{diagonal} an argument of type \emph{Triangle}, as it is not contained in the computed set of subtypes, we get a typechecking error at compile time \cite{UD20}.
 
