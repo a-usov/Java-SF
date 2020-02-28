@@ -283,12 +283,12 @@ Similarly, given all pairs of types, the algorithm checks if one is a superset o
 For e.g., type $empty = []$, will have all classes as structural subtypes. 
 %The above algorithm will without differentiating, find all nominal and structural subtypes as we always consider all other classes in the program to be potential subtype candidates.
 
-Note that both approaches to subtyping have their drawbacks, hence their integration is the key to overcoming them, and in SFJ the developer can choose which approach to use for a given task.
+Note that both approaches to subtyping have their drawbacks.
 %However, it can be argued that structural subtyping is counterproductive in writing logically correct programs.
-Consider two structurally equivalent types $coordinate = [x:int, y:int]$ and $colour = [x:int, y:int]$. 
-While they can be used interchangeably in our type system, their ``meaning'' is completely different.
-On the other hand, with nominal subtyping in Java one can define an overridden method to perform the opposite logic to what the super class expects. 
-Therefore both approaches leave an expectation on the programmer to check what they are doing is correct. 
+Consider two structurally equivalent record types $coordinate = [x:int, y:int, z:int]$ and $colour = [x:int, y:int, z:int]$. 
+While structurally they can be used interchangeably in our type system, their ``meaning'' is completely different.
+On the other hand, with nominal subtyping in Java one can define an overridden method to perform the opposite logic to what the super class is expecting. 
+Therefore, both approaches leave an expectation on the developer to check what they are doing is correct, hence the integration of both in SFJ is the key to overcoming these drawbacks, as one can choose which approach to use for a given task.
 
 Furthermore, we have extended FJ with method types, demonstrated below to show another possible implementation of the Polygons example \autoref{polygons}.
 $$
