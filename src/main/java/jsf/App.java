@@ -25,7 +25,7 @@ public final class App {
     try {
       // TODO change this to get input from args
       final var inputStream = CharStreams.fromPath(
-              Paths.get(System.getProperty("user.dir"), "src/main/resources/example.jsf"));
+          Paths.get(System.getProperty("user.dir"), "src/main/resources/example.jsf"));
 
       final var lexer = new jsfLexer(inputStream);
       final var commonTokenStream = new CommonTokenStream(lexer);

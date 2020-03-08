@@ -8,12 +8,9 @@ import domain.type.BasicType;
 import domain.type.BooleanType;
 import domain.type.ClassType;
 import domain.type.Type;
-
-import java.lang.Byte;
 import java.util.Arrays;
 import java.util.Optional;
 import java.util.Set;
-
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.Token;
 

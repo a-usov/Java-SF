@@ -2,10 +2,9 @@ package domain;
 
 import domain.type.BooleanType;
 import domain.type.MethodType;
+import java.util.Objects;
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Pair;
-
-import java.util.Objects;
 
 public class MethodParameter {
   private final String name;
@@ -39,8 +38,12 @@ public class MethodParameter {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
     MethodParameter parameter = (MethodParameter) o;
     return Objects.equals(type, parameter.type);
   }

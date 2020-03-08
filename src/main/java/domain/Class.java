@@ -1,9 +1,7 @@
 package domain;
 
 import domain.type.ClassType;
-
 import java.util.Map;
-
 import org.antlr.v4.runtime.Token;
 
 public class Class {
@@ -13,7 +11,7 @@ public class Class {
   private final Constructor constructor;
   private final Map<String, Method> methods;
   private final String superName;
-  
+
   private final Token token;
   private boolean resolved;
 

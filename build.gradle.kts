@@ -1,7 +1,7 @@
 plugins {
     java
     application
-    id ("com.github.spotbugs") version "3.0.0"
+    id ("com.github.spotbugs") version "4.0.1"
     checkstyle
     pmd
     antlr
@@ -41,7 +41,7 @@ pmd {
 }
 
 spotbugs {
-    effort = "max"
-    excludeFilter = File("config/spotbugs/excludefilter.xml")
-    toolVersion = "4.0.0-RC1"
+    setEffort("max")
+    setProperty("toolVersion", "4.0.1")
+    setProperty("excludeFilter", File("config/spotbugs/excludefilter.xml"))
 }
