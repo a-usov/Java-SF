@@ -140,12 +140,13 @@ public class ExpressionVisitor extends jsfBaseVisitor<Set<Type>> {
             }
           }
 
-          currentClass = currentClass.getSuperName().equals("") ? null : program.getClasses().get(currentClass.getSuperName());
+          currentClass = currentClass.getSuperName() == null ? null : program.getClasses().get(currentClass.getSuperName());
         } while (currentClass != null);
       }
     });
 
     if (returnTypes.isEmpty()) {
+      // TODO improve message
       reportError("None of the possible types have this method", ctx.start);
     }
 

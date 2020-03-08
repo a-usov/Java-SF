@@ -1,5 +1,6 @@
 package parsing;
 
+import domain.type.BasicType;
 import domain.type.BooleanType;
 import domain.type.MethodType;
 import jsf.jsfBaseVisitor;
@@ -18,7 +19,13 @@ public class MethodTypeVisitor extends jsfBaseVisitor<Pair<BooleanType, MethodTy
   @Override
   public Pair<BooleanType, MethodType> visitMethodtype(MethodtypeContext ctx) {
     var typeVisitor = new TypeVisitor();
-    var param = typeVisitor.visit(ctx.param);
+
+    BooleanType param;
+    if (ctx.proper != null) {
+      param = typeVisitor.visit(ctx.proper);
+    } else {
+      param = new BooleanType(BasicType.VOID, false);
+    }
     var returnType = typeVisitor.visit(ctx.returnType);
 
     boolean isNot = ctx.NOT() != null;

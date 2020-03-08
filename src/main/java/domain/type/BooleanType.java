@@ -158,8 +158,7 @@ public class BooleanType {
       return false;
     }
     BooleanType that = (BooleanType) o;
-    return leafNode == that.leafNode && connective == that.connective && Objects.equals(left, that.left)
-        && Objects.equals(right, that.right) && Objects.equals(type, that.type) && Objects.equals(not, that.not);
+    return this.getSet().equals(that.getSet());
   }
 
   @Override

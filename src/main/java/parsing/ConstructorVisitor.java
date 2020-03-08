@@ -102,8 +102,10 @@ public class ConstructorVisitor extends jsfBaseVisitor<Constructor> {
   private void checkSuperCall(final Constructor constructor, final Program program) {
     final var superClassName = program.getClasses().get(owner).getSuperName();
 
-    if (superClassName == null && constructor.getSuperArguments().size() > 0) {
-      reportError("Passing more arguments to constructor super call than it takes", constructor.getToken());
+    if (superClassName == null) {
+      if (constructor.getSuperArguments().size() > 0) {
+        reportError("Passing more arguments to constructor super call than it takes", constructor.getToken());
+      }
     } else {
       final var superParameters = program.getClasses().get(superClassName).getConstructor().getParameterList().values();
 
