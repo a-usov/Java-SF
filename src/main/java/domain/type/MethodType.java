@@ -49,7 +49,7 @@ public class MethodType {
    * @return Set of all types that satisfy the constraint of method type
    */
   public Set<Type> getTypes(Program program) {
-    // TODO make this static or something
+    // TODO maybe cache results somehow
     var set = new HashSet<Type>();
 
     for (var c : program.getClasses().values()) {
@@ -59,11 +59,10 @@ public class MethodType {
         if (method.getReturnType().equals(this.getReturnType())) {
           if (method.getParameter().getType().a != null && method.getParameter().getType().a.equals(this.getParameter())) {
             set.add(c.getType());
+          } else if (method.getParameter().getType().b != null && method.getParameter().getType().b.getTypes(program).equals(this.getParameter().getSet())) {
+            // TODO check if this logic is correct and if it could lead to circularities
+            set.add(c.getType());
           }
-          // TODO FIX THIS
-          //  if (method.getParameter().getType().a == null && method.getParameter().getType().b.equals(this)) {
-          //    set.add(c.getType());
-          //  }
         }
       }
     }

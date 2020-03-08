@@ -48,7 +48,7 @@ public class ProgramVisitor extends jsfBaseVisitor<Program> {
     }
 
     for (final var c : program.getClasses().values()) {
-      var superClass = c.getSuperName().equals("") ? null : program.getClasses().get(c.getSuperName());
+      var superClass = c.getSuperName() == null ? null : program.getClasses().get(c.getSuperName());
 
       while (superClass != null) {
         if (program.getClasses().get(superClass.getName()) == null) {
@@ -69,7 +69,7 @@ public class ProgramVisitor extends jsfBaseVisitor<Program> {
           }
         }
 
-        superClass = superClass.getSuperName().equals("") ? null : program.getClasses().get(superClass.getSuperName());
+        superClass = superClass.getSuperName() == null ? null : program.getClasses().get(superClass.getSuperName());
       }
     }
 

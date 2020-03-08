@@ -88,7 +88,7 @@ public final class TypeHelper {
           }
         }
 
-        if (isValid) {
+        if (isValid || (newClass.getSuperName() != null && newClass.getSuperName().equals(existingClass.getName()))) {
           SUB_CLASSES.get(existing).add(newClass.getType());
         }
       }

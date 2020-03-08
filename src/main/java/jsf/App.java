@@ -38,9 +38,9 @@ public final class App {
       //System.out.println(program);
 
       visitor.visit(program);
-    } catch (IOException | RuntimeException e) {
+    } catch (IOException e) {
       if (LOGGER.isLoggable(Level.SEVERE)) {
-        LOGGER.severe("Exception occurred: " + e.getMessage());
+        LOGGER.severe("Exception occurred: " + e);
       }
     }
   }

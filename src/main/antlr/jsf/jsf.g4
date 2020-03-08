@@ -69,7 +69,7 @@ basicType
 
 methodType
         : type                                                                          # normal
-        | LPAR (NOT)? ID COLON param=type ARROW returnType=type RPAR                    # methodtype
+        | LPAR (NOT)? ID COLON (proper=type | voidtype=VOID) ARROW returnType=type RPAR     # methodtype
         ;
 
 
@@ -80,6 +80,7 @@ FLOAT   :       'float'                     ;
 DOUBLE  :       'double'                    ;
 CHAR    :       'char'                      ;
 BOOL    :       'bool'                      ;
+VOID    :       'void'                      ;
 
 TRUE    :       'true'                      ;
 FALSE   :       'false'                     ;

@@ -1,47 +1,51 @@
-class Polygon {
+class Rectangle {
+    int width;
 
-Polygon() {
-super();
-}
-}
+    Rectangle(int w) {
+        super();
+        this.width = w;
+    }
 
-class Square extends Polygon {
-double width;
-
-Square(double a) {
-super();
-this.width = a;
+    int getArea(int a) {
+        return this.width;
+    }
 }
 
-double area(int width) {
-return 2;
-}
+class Square extends Rectangle {
+
+    Square(int w) {
+        super(w);
+    }
+
+    int getArea(bool a) {
+        return 2;
+    }
+
+    double calculate((getPrice: void -> double) p) {
+        return this.width * p.getPrice();
+    }
 }
 
-class Triangle extends Polygon {
-double height;
-double width;
+class Shop {
+    Price item;
 
-Triangle(double height, double width) {
-super();
-this.width = width;
-this.height = height;
+    Shop(Price item) {
+        super();
+        this.item = item;
+    }
 }
 
-double area(int width) {
-return 4;
-}
+class Price {
+    double price;
+
+    Price(double p) {
+        super();
+        this.price = p;
+    }
+
+    double getPrice() {
+        return this.price;
+    }
 }
 
-class Diagonal {
-
-Diagonal() {
-super();
-}
-
-double diagonal(Square shape) {
-return shape.width * 1.4142;
-}
-}
-
-new Diagonal().diagonal(new Square(2))
+new Square(2).calculate(new Price(2.0))
