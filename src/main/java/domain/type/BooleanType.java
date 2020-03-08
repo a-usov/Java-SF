@@ -3,7 +3,6 @@ package domain.type;
 import java.util.HashSet;
 import java.util.Objects;
 import java.util.Set;
-
 import util.TypeHelper;
 
 public class BooleanType {
@@ -152,15 +151,15 @@ public class BooleanType {
 
   @Override
   public boolean equals(Object o) {
-    if (this == o) return true;
-    if (o == null || getClass() != o.getClass()) return false;
+    if (this == o) {
+      return true;
+    }
+    if (o == null || getClass() != o.getClass()) {
+      return false;
+    }
     BooleanType that = (BooleanType) o;
-    return leafNode == that.leafNode &&
-        connective == that.connective &&
-        Objects.equals(left, that.left) &&
-        Objects.equals(right, that.right) &&
-        Objects.equals(type, that.type) &&
-        Objects.equals(not, that.not);
+    return leafNode == that.leafNode && connective == that.connective && Objects.equals(left, that.left)
+        && Objects.equals(right, that.right) && Objects.equals(type, that.type) && Objects.equals(not, that.not);
   }
 
   @Override

@@ -7,10 +7,8 @@ import domain.Field;
 import domain.Method;
 import domain.Program;
 import domain.type.ClassType;
-
 import java.util.HashMap;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import jsf.jsfBaseVisitor;
 import jsf.jsfParser.ClassDeclContext;
 
@@ -59,13 +57,13 @@ public class ClassVisitor extends jsfBaseVisitor<Class> {
   /**
    * Visit method for second round contextual checking.
    *
-   * @param visitClass current class we are visiting
-   * @param program    the whole program structure
+   * @param c       current class we are visiting
+   * @param program the whole program structure
    */
-  public void visit(final Class visitClass, final Program program) {
-    new ConstructorVisitor(visitClass.getName()).visit(visitClass.getConstructor(), program);
+  public void visit(final Class c, final Program program) {
+    new ConstructorVisitor(c.getName()).visit(c.getConstructor(), program);
 
     final var methodVisitor = new MethodVisitor();
-    visitClass.getMethods().values().forEach(m -> methodVisitor.visit(m, program));
+    c.getMethods().values().forEach(m -> methodVisitor.visit(m, program, c.getType()));
   }
 }

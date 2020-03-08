@@ -2,7 +2,6 @@ package domain;
 
 import java.util.List;
 import java.util.Map;
-
 import org.antlr.v4.runtime.Token;
 import org.antlr.v4.runtime.misc.Pair;
 
@@ -15,9 +14,9 @@ public class Constructor {
   /**
    * Creates a constructor that holds the parameters, parameters passed to super() and assignments.
    *
-   * @param parameters        List of parameters passed to constructor
-   * @param superArguments    List of parameters passed to super constructor
-   * @param fieldAssignments  List of Pairs of field and value parameter assigned to field
+   * @param parameters       List of parameters passed to constructor
+   * @param superArguments   List of parameters passed to super constructor
+   * @param fieldAssignments List of Pairs of field and value parameter assigned to field
    */
   public Constructor(final Map<String, Parameter> parameters, final List<Parameter> superArguments,
                      final List<Pair<Token, Parameter>> fieldAssignments, final Token token) {

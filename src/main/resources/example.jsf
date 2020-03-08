@@ -1,47 +1,47 @@
 class Polygon {
 
-    Polygon() {
-        super();
-    }
+Polygon() {
+super();
+}
 }
 
 class Square extends Polygon {
-    double width;
+double width;
 
-    Square(double a) {
-        super();
-        this.width = a;
-    }
+Square(double a) {
+super();
+this.width = a;
+}
 
-    double area(int width) {
-        return 2;
-    }
+double area(int width) {
+return 2;
+}
 }
 
 class Triangle extends Polygon {
-    double height;
-    double width;
+double height;
+double width;
 
-    Triangle(double height, double width) {
-        super();
-        this.width = width;
-        this.height = height;
-    }
+Triangle(double height, double width) {
+super();
+this.width = width;
+this.height = height;
+}
 
-    double area(int width) {
-        return 4;
-    }
+double area(int width) {
+return 4;
+}
 }
 
 class Diagonal {
 
-    Diagonal() {
-        super();
-    }
+Diagonal() {
+super();
+}
 
-    double diagonal(Square shape) {
-        return shape.width * 1.4142;
-    }
+double diagonal(Square shape) {
+return shape.width * 1.4142;
+}
 }
 
 new Diagonal().diagonal(new Square(2))

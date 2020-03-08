@@ -7,32 +7,23 @@ import domain.Program;
 import domain.type.BasicType;
 import domain.type.ClassType;
 import domain.type.Type;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.Map;
-import java.util.Set;
+import java.util.*;
 
 public final class TypeHelper {
 
   public static final Map<Type, Set<Type>> SUB_CLASSES = new HashMap<>();
   public static final Set<Type> UNIVERSE_SET = new HashSet<>();
 
-  private TypeHelper() {
-  }
-
   static {
     SUB_CLASSES.put(BasicType.BOOLEAN, new HashSet<>(Collections.singletonList(BasicType.BOOLEAN)));
 
     SUB_CLASSES.put(BasicType.DOUBLE, new HashSet<>(Arrays.asList(BasicType.DOUBLE, BasicType.INT, BasicType.BYTE,
-            BasicType.FLOAT, BasicType.SHORT)));
+        BasicType.FLOAT, BasicType.SHORT)));
 
     SUB_CLASSES.put(BasicType.FLOAT, new HashSet<>(Arrays.asList(BasicType.FLOAT, BasicType.BYTE, BasicType.SHORT)));
 
     SUB_CLASSES.put(BasicType.LONG, new HashSet<>(Arrays.asList(BasicType.LONG, BasicType.INT, BasicType.BYTE,
-            BasicType.SHORT)));
+        BasicType.SHORT)));
 
     SUB_CLASSES.put(BasicType.INT, new HashSet<>(Arrays.asList(BasicType.INT, BasicType.BYTE, BasicType.SHORT)));
 
@@ -43,6 +34,9 @@ public final class TypeHelper {
     SUB_CLASSES.put(BasicType.VOID, new HashSet<>(Collections.singletonList(BasicType.VOID)));
 
     UNIVERSE_SET.addAll(SUB_CLASSES.keySet());
+  }
+
+  private TypeHelper() {
   }
 
   /**
@@ -124,8 +118,8 @@ public final class TypeHelper {
     if (c.getMethods().containsKey(method.getName())) {
       var existingMethod = c.getMethods().get(method.getName());
 
-      if (! existingMethod.getReturnType().equals(method.getReturnType())) {
-       return false;
+      if (!existingMethod.getReturnType().equals(method.getReturnType())) {
+        return false;
       }
 
       return existingMethod.getParameter().equals(method.getParameter());

@@ -6,12 +6,12 @@ import org.antlr.v4.runtime.Token;
 
 public class Method {
 
-  // TODO - Encapsulate return and parameter type
-  private BooleanType returnType;
   private final String name;
   private final MethodParameter parameter;
   private final ExpressionContext expression;
   private final Token token;
+  // TODO - Encapsulate return and parameter type
+  private BooleanType returnType;
 
   /**
    * Creates a method, with a return type, name and single parameter.

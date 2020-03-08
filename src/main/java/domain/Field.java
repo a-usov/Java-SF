@@ -5,8 +5,8 @@ import org.antlr.v4.runtime.Token;
 
 public class Field {
   private final String name;
-  private BooleanType type;
   private final Token token;
+  private BooleanType type;
 
   /**
    * Object representing a field in a class.

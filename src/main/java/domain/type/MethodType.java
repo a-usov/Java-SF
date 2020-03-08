@@ -1,10 +1,9 @@
 package domain.type;
 
 import domain.Program;
-import util.TypeHelper;
-
 import java.util.HashSet;
 import java.util.Set;
+import util.TypeHelper;
 
 public class MethodType {
   private final String name;
@@ -12,6 +11,14 @@ public class MethodType {
   private final BooleanType returnType;
   private final boolean isNot;
 
+  /**
+   * A method constraint type, it has input->return types and a name, and may be NOT.
+   *
+   * @param name       name of method
+   * @param parameter  input type of method
+   * @param returnType return type of method
+   * @param isNot      whether constraint is NOT'ed
+   */
   public MethodType(String name, BooleanType parameter, BooleanType returnType, boolean isNot) {
     this.name = name;
     this.parameter = parameter;
@@ -35,6 +42,12 @@ public class MethodType {
     return isNot;
   }
 
+  /**
+   * Given a method constraint, find all the class types that satisfy this constraint.
+   *
+   * @param program current program
+   * @return Set of all types that satisfy the constraint of method type
+   */
   public Set<Type> getTypes(Program program) {
     // TODO make this static or something
     var set = new HashSet<Type>();
@@ -44,13 +57,13 @@ public class MethodType {
         var method = c.getMethods().get(this.getName());
 
         if (method.getReturnType().equals(this.getReturnType())) {
-          if (method.getParameter().getType().a != null && method.getParameter().getType().a.equals(this.getParameter())){
+          if (method.getParameter().getType().a != null && method.getParameter().getType().a.equals(this.getParameter())) {
             set.add(c.getType());
           }
           // TODO FIX THIS
-//          if (method.getParameter().getType().a == null && method.getParameter().getType().b.equals(this)) {
-//            set.add(c.getType());
-//          }
+          //  if (method.getParameter().getType().a == null && method.getParameter().getType().b.equals(this)) {
+          //    set.add(c.getType());
+          //  }
         }
       }
     }
