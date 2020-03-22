@@ -32,7 +32,7 @@
 \begin{document}
 
 \title{SFJ: An implementation of Semantic Featherweight Java
-%\thanks{Research supported by the UK EPSRC grant EP/K034413/1, ``From Data Types to Session Types: A Basis for Concurrency and Distribution (ABCD)'', and by the EU HORIZON 2020 MSCA RISE project 778233 ``BehAPI: Behavioural Application Program Interfaces''.}
+    %\thanks{Research supported by the UK EPSRC grant EP/K034413/1, ``From Data Types to Session Types: A Basis for Concurrency and Distribution (ABCD)'', and by the EU HORIZON 2020 MSCA RISE project 778233 ``BehAPI: Behavioural Application Program Interfaces''.}
 }
 \titlerunning{SFJ}
 
@@ -45,19 +45,19 @@
 \maketitle
 
 \begin{abstract}
-{Subtyping} is a key notion in programming languages, as it allows more flexibility in coding.
-There are two approaches to defining subtyping relations: the \emph{syntactic} and the \emph{semantic} approach.
-%
-In semantic subtyping, one defines a model of the language and an interpretation of types as subsets of this model.
-Subtyping is defined as inclusion of subsets denoting types.
-%
-An orthogonal subtyping question, typical of object-oriented languages, is the \emph{nominal} vs. \emph{structural} subtyping.
-Dardha \emph{et al.} \cite{Dardha2013,Dardha2017} defined boolean types and semantic subtyping for Featherweight Java (FJ) and integrated both structural and nominal subtyping, thus exploiting the benefits of both approaches.
-However, these benefits were illustrated only at a theoretical level, but not exploited practically.
+    {Subtyping} is a key notion in programming languages, as it allows more flexibility in coding.
+    There are two approaches to defining subtyping relations: the \emph{syntactic} and the \emph{semantic} approach.
+    %
+    In semantic subtyping, one defines a model of the language and an interpretation of types as subsets of this model.
+    Subtyping is defined as inclusion of subsets denoting types.
+    %
+    An orthogonal subtyping question, typical of object-oriented languages, is the \emph{nominal} vs. \emph{structural} subtyping.
+    Dardha \emph{et al.} \cite{Dardha2013,Dardha2017} defined boolean types and semantic subtyping for Featherweight Java (FJ) and integrated both structural and nominal subtyping, thus exploiting the benefits of both approaches.
+    However, these benefits were illustrated only at a theoretical level, but not exploited practically.
 
-In this paper, we present SFJ---Semantic Featherweight Java, an implementation of FJ which features boolean types and structural subtyping as well as nominal subtyping.
-The benefits of SFJ, also illustrated in the accompanying video \cite{UD20}, show how static typechecking of boolean types and semantic subtyping gives higher guarantees of program correctness, more flexibility and compactness of program writing.
-%\keywords{Nominal subtyping \and Structural subtyping  \and Semantic Featherweight Java \and Object-oriented languages \and Boolean types \and Type theory.}
+    In this paper, we present SFJ---Semantic Featherweight Java, an implementation of FJ which features boolean types and structural subtyping as well as nominal subtyping.
+    The benefits of SFJ, illustrated in the paper and the video (with audio/subtitles) \cite{UD20}, show how static typechecking of boolean types and semantic subtyping gives higher guarantees of program correctness, more flexibility and compactness of program writing.
+    %\keywords{Nominal subtyping \and Structural subtyping  \and Semantic Featherweight Java \and Object-oriented languages \and Boolean types \and Type theory.}
 \end{abstract}
 
 
@@ -81,77 +81,80 @@ SFJ integrates both structural and nominal subtyping, and the developer can choo
 Finally, as discussed in Dardha \emph{et al.} \cite[\S 8.4]{Dardha2017}, thanks to semantic subtyping, we can easily encode in SFJ standard programming constructs and features of Java, such as lists, or overloading classes via multimethods \cite{BC97}, which are missing in FJ, thus making SFJ a more complete language closer to Java.
 
 \begin{example}[Polygons]
-\label{polygons}
-This will be our running example both in the paper and in the tool video \cite{UD20} to illustrate the benefits of boolean types and semantic subtyping developed by Dardha \emph{et al.} \cite{Dardha2013,Dardha2017} and implemented as SFJ.
+    \label{polygons}
+    This will be our running example both in the paper and in the tool video \cite{UD20} to illustrate the benefits of boolean types and semantic subtyping developed by Dardha \emph{et al.} \cite{Dardha2013,Dardha2017} and implemented as SFJ.
 
-Consider the set of polygons, such as triangles, squares and rhombuses given by a class hierarchy.
-We want to define a method \emph{diagonal} that takes a polygon and returns the length of its longest diagonal. This method makes sense only if the polygon passed to it has at least four sides, hence triangles are excluded.
-In Java this could be implemented in the following ways:
-$$
-\begin{array}{l}
-\synclass Polygon \ \{ \ldots\}
-\\
-\syndecl{Triangle}{Polygon} {\ldots}
-\\
-\syndecl{Other\_Polygons}{Polygon} {
-\\
-	\qquad \mathbf{real}\ diagonal(Other\_Polygons \ p)\ \{\ldots \}
-	\\
-	\hspace{3.5cm} \ldots
-	\\
-}
-\\
-\syndecl{Square}{Other\_Polygons}{\ldots}
-\\
-\syndecl{Rhombus}{Other\_Polygons} {\ldots}
-\end{array}
-$$
-Or by means of an interface \emph{Diagonal}:
-$$
-\begin{array}{l}
-public \ \syninterface Diagonal\ \{
-	\\
-	\qquad \mathbf{real}\ diagonal(Polygon \ p);
-	\\
-\}
-\\
-\synclass Polygon \ \{\ldots\}
-\\
-\syndecl{Triangle}{Polygon} {\ldots}
-\\
-\synidecl{Square}{Polygon} \synimpl Diagonal \ \{\ldots\}
-\\
-\synidecl{Rhombus}{Polygon} \synimpl Diagonal \ \{\ldots\}
-\\
-\hspace{4.5cm} \ldots
-\end{array}
-$$
+    Consider the set of polygons, such as triangles, squares and rhombuses given by a class hierarchy.
+    We want to define a method \emph{diagonal} that takes a polygon and returns the length of its longest diagonal. This method makes sense only if the polygon passed to it has at least four sides, hence triangles are excluded.
+    In Java this could be implemented in the following ways:
+    $$
+        \begin{array}{l}
+            \synclass Polygon \ \{ \ldots\}
+            \\
+            \syndecl{Triangle}{Polygon} {\ldots}
+            \\
+            \syndecl{Other\_Polygons}{Polygon} {
+                \\
+                \qquad \mathbf{double}\ diagonal(Other\_Polygons \ shape)\ \{\ldots \}
+                \\
+                \hspace{3.5cm} \ldots
+                \\
+            }
+            \\
+            \syndecl{Square}{Other\_Polygons}{\ldots}
+            \\
+            \syndecl{Rhombus}{Other\_Polygons} {\ldots}
+        \end{array}
+    $$
+    Or by means of an interface \emph{Diagonal}:
+    $$
+        \begin{array}{l}
+            public \ \syninterface Diagonal\ \{
+            \\
+            \qquad \mathbf{double}\ diagonal(Polygon \ shape);
+            \\
+            \}
+            \\
+            \synclass Polygon \ \{\ldots\}
+            \\
+            \syndecl{Triangle}{Polygon} {\ldots}
+            \\
+            \synidecl{Square}{Polygon} \synimpl Diagonal \ \{\ldots\}
+            \\
+            \synidecl{Rhombus}{Polygon} \synimpl Diagonal \ \{\ldots\}
+            \\
+            \hspace{4.5cm} \ldots
+        \end{array}
+    $$
 
-Now, suppose that our class hierarchy is such that \emph{Polygon} is the parent class and all other geometric figure classes extend \emph{Polygon}, which is how one would naturally define the set of polygons.
-If we think of the class hierarchy as given and part of legacy code, which cannot be changed, then again a natural way to implement this in Java is by defining the method \emph{diagonal} in the class \emph{Polygon} and using an \textbf{instanceof}, for e.g., inside a \textbf{try-catch} which throws an exception at runtime, if the argument passed to the method is a triangle.
+    Now, suppose that our class hierarchy is such that \emph{Polygon} is the parent class and all other geometric figure classes extend \emph{Polygon}, which is how one would naturally define the set of polygons.
+    If we think of the class hierarchy as given and part of legacy code, which cannot be changed, then again a natural way to implement this in Java is by defining the method \emph{diagonal} in the class \emph{Polygon} and using an \textbf{instanceof}, for e.g., inside a \textbf{try-catch} which throws an exception at runtime, if the argument passed to the method is a triangle.
 
-We propose a more elegant solution, by combining boolean types and semantic subtyping, where only static typechecking is required and implement this in SFJ \cite{UD20}: it is enough to define a method \emph{diagonal} that has an argument of type \emph{Polygon} \textbf{and not} \emph{Triangle}, thus allowing the typechecker to check at compile time the restrictions on types:
-$$
-\begin{array}{l}
-\syndecl{Polygon}{Object} {\ldots}
-\\
-\syndecl{Triangle}{Polygon} {\ldots}
-\\
-\syndecl{Square}{Polygon} {\ldots}
-\\
-\syndecl{Rhombus}{Polygon} {\ldots}
-\\
-\hspace{2.5cm} \ldots
-\\
-\syndecl{Diagonal}{Object} {
-	\\
-	\qquad \mathbf{real}\ diagonal(\textit{Polygon} \textbf{ and not }  \textit{Triangle} \ p)\{\ldots\}
-	\\
-}
-\end{array}
-$$
-We can now call \emph{diagonal} on an argument of type \emph{Polygon}: if the polygon is \textbf{not} a \emph{Triangle}, then the method returns the length of its longest diagonal; otherwise, if the polygon is a triangle, then there will be a type error at compile time.
+    We propose a more elegant solution, by combining boolean types and semantic subtyping, where only static typechecking is required and implement this in SFJ \cite{UD20}: it is enough to define a method \emph{diagonal} that has an argument of type \emph{Polygon} \textbf{and not} \emph{Triangle}, thus allowing the typechecker to check at compile time the restrictions on types:
+    $$
+        \begin{array}{l}
+            \synclass Polygon \ \{\ldots\}
+            \\
+            \syndecl{Triangle}{Polygon} {\ldots}
+            \\
+            \syndecl{Square}{Polygon} {\ldots}
+            \\
+            \syndecl{Rhombus}{Polygon} {\ldots}
+            \\
+            \hspace{2.5cm} \ldots
+            \\
+            \synclass Diagonal \ \{
+            \\
+            %\qquad Diagonal ( )\   \{\ super();\ \}
+            \hspace{2.5cm} \ldots \\
+            \qquad \mathbf{double}\ diagonal((\textit{Polygon} \textbf{ and not }  \textit{Triangle}) \ shape)\{\ldots\}
+            \\
+            \}
+        \end{array}
+    $$
+    We can now call \emph{diagonal} on an argument of type \emph{Polygon}: if the polygon is \textbf{not} a \emph{Triangle}, then the method returns the length of its longest diagonal; otherwise, if the polygon is a triangle, then there will be a type error at compile time.
 \end{example}
+
 
 The technical developments behind semantic subtyping and its properties are complex, however, they are completely transparent to the developer.
 Due to space limit we will remove most theoretical details from this submission, as they are not necessary to understand the design and implementation of SFJ, which is the focus of this paper. We refer the reader to the relevant work \cite{Dardha2013,Dardha2017} and we will include a more complete background on semantic subtyping in a possible full paper.
@@ -162,31 +165,31 @@ Due to space limit we will remove most theoretical details from this submission,
 The syntax of types is given by the following grammar \cite{Dardha2013,Dardha2017}:
 
 $$
-\begin{array}{llll}
-\tau & ::= & \alpha \ |\ \mu
-& \mbox{{\em Type term}}
-\\
-\alpha & ::=  & \zero \ |\ \btypes \ |\ [\wt{l:\tau}] \ |\ \alpha \ \bf{and}\ \alpha \ |\ \bf{not}\ \alpha
-\qquad
-& \mbox{{\em Object type} ($\alpha $-type)}
-\\
-\mu & ::=  & \alpha \to \alpha \ |\ \mu \ \bf{and}\ \mu \ |\ \bf{not}\ \mu
-& \mbox{{\em Method type} ($\mu $-type)}
-\end{array}
+    \begin{array}{llll}
+        \tau   & ::=                                       & \alpha \ |\ \mu
+               & \mbox{{\em Type term}}
+        \\
+        \alpha & ::=                                       & \zero \ |\ \btypes \ |\ [\wt{l:\tau}] \ |\ \alpha \ \bf{and}\ \alpha \ |\ \bf{not}\ \alpha
+        \qquad
+               & \mbox{{\em Object type} ($\alpha $-type)}
+        \\
+        \mu    & ::=                                       & \alpha \to \alpha \ |\ \mu \ \bf{and}\ \mu \ |\ \bf{not}\ \mu
+               & \mbox{{\em Method type} ($\mu $-type)}
+    \end{array}
 $$
 
 $\alpha$-types are used to type fields and $\mu$-types are used to type methods.
 Type $\zero$ is the empty type.
 Type $\btypes$ denotes the \emph{basic} types, such as integers, booleans, etc.
-{Record} types $[\wt{l:\tau}]$, where $\wt l$ is a sequence of disjoint labels are used to type objects.
+    {Record} types $[\wt{l:\tau}]$, where $\wt l$ is a sequence of disjoint labels are used to type objects.
 Arrow types $\alpha \to \alpha$ are used to type methods.
 The boolean types using $\bf{and}$ and $\bf{not}$ have their expected set-theoretic meanings, and $\bf{or}$ is obtained by their combination.\\
 The syntax of terms is given by the following grammar and is based on the standard syntax of terms in FJ \cite{featherweight,Dardha2013,Dardha2017}:
 \begin{align*}
-& \mbox{\textit{Class declaration}} & L \; ::= \; & \syndecl{C}{C}{\wt{\alpha \ a};\ K; \ \wt{M}\ }\\
-& \mbox{\textit{Constructor}} & K \;::=\; & C\ (\wt{\alpha\ x})\ \{\ \synsuper(\wt{x});\ \wt{\synthis.a}=\wt{x}; \}\\
-& \mbox{\textit{Method declaration}} & M \; ::= \; & \alpha \ m\ (\alpha \ x)\ \{\ \synret e; \} \\
-& \mbox{\textit{Expressions}} & e \; ::=\; & x\ |\  c\ |\ e.a\ |\ e.m(e) \ | \ \synnew C(\wt{e})
+     & \mbox{\textit{Class declaration}}  & L \; ::= \; & \syndecl{C}{C}{\wt{\alpha \ a};\ K; \ \wt{M}\ }                         \\
+     & \mbox{\textit{Constructor}}        & K \;::=\;   & C\ (\wt{\alpha\ x})\ \{\ \synsuper(\wt{x});\ \wt{\synthis.a}=\wt{x}; \} \\
+     & \mbox{\textit{Method declaration}} & M \; ::= \; & \alpha \ m\ (\alpha \ x)\ \{\ \synret e; \}                             \\
+     & \mbox{\textit{Expressions}}        & e \; ::=\;  & x\ |\  c\ |\ e.a\ |\ e.m(e) \ | \ \synnew C(\wt{e})
 \end{align*}
 Since we want to use types $\tau$ in practice in SFJ, we restrict them to finite trees whose leaves are constants with no cycles.
 For e.g., a recursive type $\alpha = [a : \alpha]$ denotes an infinite program tree \textbf{new} $C$(\textbf{new} $C$($\cdots{}$)), hence we avoid it as it is inhabitable.
@@ -219,12 +222,11 @@ As a first step, we start with basic types.
 \setlength{\abovedisplayskip}{5pt}
 \setlength{\belowdisplayskip}{5pt}
 \begin{flalign*}
-    &Double  = \left\{Double, Float, Int, Short, Byte\right\} &&Float = \left\{Float, Short, Byte\right\}\\
-    &Long = \left\{Long, Int, Short, Byte\right\}  &&Int = \left\{Int, Short, Byte\right\}\\
-    &Short = \left\{Short, Byte\right\} && Byte = \left\{Byte\right\}\\
-    &Boolean = \left\{Boolean \right\}
+    &Double  = \left\{Double, Float, Int, Short, Byte\right\} && Float = \left\{Float, Short, Byte\right\}\\
+    &Long = \left\{Long, Int, Short, Byte\right\}  && Int = \left\{Int, Short, Byte\right\}\\
+    &Short = \left\{Short, Byte\right\} \qquad Byte = \left\{Byte\right\} && Boolean = \left\{Boolean \right\}
 \end{flalign*}
-%
+
 Note that \emph{Int} is not a subtype of \emph{Float} as a 32-bit \emph{float} cannot represent the whole set of 32-bit \emph{integer} values accurately and therefore \emph{Int} is not fully set-contained, however this is not the case for \emph{Int} and \emph{Double}.
 Similarly, \emph{Long} is not a subtype of \emph{Double}.
 
@@ -266,12 +268,13 @@ function checkSuperSet(class, other):
     if flag == true:
         add class to other subtype relation
 \end{verbatim}
-Let us illustrate the subtyping algorithm with our \emph{Polygons} example \autoref{polygons}.
+Let us illustrate the subtyping algorithm with our \emph{Polygons} \autoref{polygons}.
 The algorithm generates the following subtyping relation, which also includes the subtyping relation for basic types defined in the first step.
 \begin{flalign*}
-    &Polygon = \left\{Polygon, Triangle, Square, Rhombus \right\} && Triangle  = \left\{Triangle\right\}\\
-    &Square = \left\{Square\right\} &&
+    &Polygon = \left\{Polygon, Triangle, Square, Rhombus \right\} \qquad Triangle = \left\{Triangle\right\}\\
+    &Square = \left\{Square\right\} \qquad  Rhombus  = \left\{Rhombus\right\} \qquad
     Diagonal = \left\{Diagonal\right\}
+    >>>>>>> c2071d9f146f39da75304752181339c4518fa178
 \end{flalign*}
 Recall method \emph{diagonal} in class \emph{Diagonal}, we can see that the result of the set operation on its parameter type gives the following set of polygons:
 \begin{flalign*}
@@ -280,23 +283,23 @@ Recall method \emph{diagonal} in class \emph{Diagonal}, we can see that the resu
 If we pass to \emph{diagonal} an argument of type \emph{Triangle}, as it is not contained in the computed set of subtypes, we get a typechecking error at compile time \cite{UD20}.
 
 The subtyping algorithm finds all nominal and structural subtypes.
-It will find all nominal subtypes, as nominal subtypes inherit all fields and methods of their super class, so are always guaranteed to be a superset.
+It finds all nominal subtypes as they inherit all fields and methods of their super class, so are always guaranteed to be a superset.
 Similarly, given all pairs of types, the algorithm checks if one is a superset of the other, i.e.,\ they share common fields and methods, and if so, they are related by structural subtyping.
 For e.g., type $empty = []$, will have all classes as structural subtypes.
 %The above algorithm will without differentiating, find all nominal and structural subtypes as we always consider all other classes in the program to be potential subtype candidates.
 
 Note that both approaches to subtyping have their drawbacks.
 %However, it can be argued that structural subtyping is counterproductive in writing logically correct programs.
-Consider two structurally equivalent record types $coordinate = [x:int, y:int, z:int]$ and $colour = [x:int, y:int, z:int]$.
+Consider two structurally equivalent class/record types $coordinate = [x:int, y:int, z:int]$ and $colour = [x:int, y:int, z:int]$.
 While structurally they can be used interchangeably in our type system, their ``meaning'' is completely different.
 On the other hand, with nominal subtyping in Java one can define an overridden method to perform the opposite logic to what the super class is expecting.
 Therefore, both approaches leave an expectation on the developer to check what they are doing is correct, hence the integration of both in SFJ is the key to overcoming these drawbacks, as one can choose which approach to use for a given task.
 
-Furthermore, we have extended FJ with method types, demonstrated below to show another possible implementation of the Polygons example \autoref{polygons}.
+Furthermore, we have extended FJ with method types, demonstrated below to show another possible implementation of the \emph{Polygons} \autoref{polygons}.
 $$
-\syndecl{Diagonal}{Object} {
-	\mathbf{int}\ diagonal(\textit{(getDiagonal: void$\rightarrow$int)}  \ p)\{\ldots\}
-}
+    \synclass Diagonal \ \{
+    \mathbf{int}\ diagonal(\textit{(getDiagonal: void$\rightarrow$int)}  \ shape)\{\ldots\}
+    \}
 $$
 
 We instead only implement the \emph{getDiagonal} method on polygons that support it. We can then specify to only accept classes that implement the method \emph{getDiagonal}. If we pass an argument of type \emph{Triangle}, it is not in the computed set of subtypes, so we get a typechecking error at compile time.
