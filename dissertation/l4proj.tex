@@ -1,238 +1,231 @@
 \documentclass{l4proj}
 
-    
-%
-% put any additional packages here
-%
+\input{semmacros}
 
 \begin{document}
 
-%==============================================================================
-%% METADATA
+%===================================================================================================
+
 \title{Boolean types and semantic subtyping for Featherweight Java}
 \author{Artem Usov}
 \date{January 18, 2020}
 
 \maketitle
 
-%==============================================================================
-%% ABSTRACT
+%===================================================================================================
+
 \begin{abstract}
     Every abstract follows a similar pattern. Motivate; set aims; describe work; explain results.
     \vskip 0.5em
-    ``XYZ is bad. This project investigated ABC to determine if it was better. 
+    ``XYZ is bad. This project investigated ABC to determine if it was better.
     ABC used XXX and YYY to implement ZZZ. This is particularly interesting as XXX and YYY have
-    never been used together. It was found that  
+    never been used together. It was found that
     ABC was 20\% better than XYZ, though it caused rabies in half of subjects.''
 \end{abstract}
 
-%==============================================================================
+%===================================================================================================
 
-% EDUCATION REUSE CONSENT FORM
-% If you consent to your project being shown to future students for educational purposes
-% then insert your name and the date below to  sign the education use form that appears in the front of the document. 
-% You must explicitly give consent if you wish to do so.
-% If you sign, your project may be included in the Hall of Fame if it scores particularly highly.
-%
-% Please note that you are under no obligation to sign 
-% this declaration, but doing so would help future students.
-%
-\def\consentname {Artem Usov} % your full name
-\def\consentdate {19 January 2020} % the date you agree
+\def\consentname {Artem Usov}
+\def\consentdate {19 January 2020}
 \educationalconsent
 
+%===================================================================================================
 
-%==============================================================================
 \tableofcontents
 
-%==============================================================================
-%% Notes on formatting
-%==============================================================================
-% The first page, abstract and table of contents are numbered using Roman numerals and are not
-% included in the page count. 
-%
-% From now on pages are numbered
-% using Arabic numerals. Therefore, immediately after the first call to \chapter we need the call
-% \pagenumbering{arabic} and this should be called once only in the document. 
-%
-% Do not alter the bibliography style.
-%
-% The first Chapter should then be on page 1. You are allowed 40 pages for a 40 credit project and 30 pages for a 
-% 20 credit report. This includes everything numbered in Arabic numerals (excluding front matter) up
-% to but excluding the appendices and bibliography.
-%
-% You must not alter text size (it is currently 10pt) or alter margins or spacing.
-%
-%
-%==================================================================================================================================
-%
-% IMPORTANT
-% The chapter headings here are **suggestions**. You don't have to follow this model if
-% it doesn't fit your project. Every project should have an introduction and conclusion,
-% however. 
-%
-%==================================================================================================================================
+%===================================================================================================
+
 \chapter{Introduction}
 
-% reset page numbering. Don't remove this!
 \pagenumbering{arabic}
 
+\section{End goal of programming}
 
-Why should the reader care about what are you doing and what are you actually doing?
-\section{Guidance}
+The end goal in all programming projects, is to create a solution to the task at hand that performs exactly as expected by the programmer, and exactly solves the problem that was initially defined.
+However, this very rarely actually happens.
 
-\textbf{Motivate} first, then state the general problem clearly. 
+On the one hand, this is often because the original problem is not statically defined.
+If it is a solution for an external client, their requirements and needs will change over time, or the needs and wants of the users using this project can also change.
+This means the project needs to be adapted over time.
+On the other hand, and almost always much less evident, is that programs do not perform exactly as the programmer imagines them to work.
 
-\section{Writing guidance}
-\subsection{Who is the reader?}
+These are in general called \emph{bugs} in a program, and have become more and more common as the projects we create have become more complex compared to the early days of computing and the underlying hardware we work on has also become more complex.
+Therefore in both academia and industry, there have been great efforts over the years to create tools that allow us to decrease the amount of bugs in our programs and increase our productivity.
 
-This is the key question for any writing. Your reader:
+\subsection{Static Code Analysis}
+
+One area of great effort has been in the development of static code analysis tools.
+Some of these exist integrated into the language itself such as with Spark \citep{Carre1990}.
+Spark is a formally defined language based on the Ada \citep{Ada1979} language intended for the development of high integrity software such as flight control systems.
+Spark uses contracts and flow analysis to logically prove that programs are correct.
+Others exist as separate, well-known tools that exist alongside the language such as the Clang analysis tools for C and C++ \citep{kremenek2008}.
+
+While they are not necessarily needed to write correct programs, these tools have quickly become industry standards for maintaining a level of correctness within codebases and avoiding typical programming errors.
+
+\subsection{Into Static Analysis}
+
+Underlying all of the previously mentioned static code analysis tools, is their use of the \textbf{type system} of the language.
+Type systems at their most basic work by assigning types to various constructs of a program so that incompatible types cannot be used.
+
+For example, one common area of error in C code that the Clang tools warn about is implicit conversions where the value of an expression is a different type from the one expected, such as the use of a floating point number where an integer is expected.
+The C language will implicitly convert the value to an integer, however this can cause unexpected behaviour for the programmer.
+It knows that this conversion needs to happen as the type system dictates that you cannot use any other type other than an integer where an integer is expected.
+
+\section{Varying Type Systems}
+
+The effectiveness of static analysis tools and more generally the \emph{safety} and \emph{expressivity} of a programming language therefore depends on the type system that is used.
+Type systems have evolved from the relatively simple systems in languages like C to more complex ones such as in Java where there are custom object types and subtyping relations where types can be substituted for one another.
+
+More modern advances in type systems include the use of linear types in the Cyclone \citep{grossman2002} language that allow us to more naturally and logically define finite state machines.
+There exist other new developments in type systems such as Boolean types which are explored in this paper.
+
+\section{Goals of this Project}
+
+In this section, the issue and aims of this paper are presented.
+
+\subsection{Problem Statement}
+
+The typical hierarchical subtyping definitions in Java quite often restrict and complicate the logic that the programmer wants to implement. These problems come up particularly often when working with legacy code that has defines incorrect abstractions in its classes. This therefore leads to less understandable and less maintainable code, that could cause problems in the future.
+
+\subsection{Aims}
+
+The aim of this project is to implement a new programming language that uses a proposed type system consisting of boolean types and a semantic subtyping algorithm. This project aims to transform the mathematical definition of such a type system into an actual solution in software, solving the issues encountered doing so. The language should be able to illustrate the improved solutions to the
+common example problems encounter in a language without these features such as Java. Furthermore, the language will be evaluated so see whether these additional language features are intuitive to use by programmers.
+
+\section{Dissertation Outline}
+
+The dissertation is structured into seven chapters as follow:
 
 \begin{itemize}
     \item
-          is a trained computer scientist: \emph{don't explain basics}.
+          \textbf{Chapter 2} provides background about type systems and Featherweight Java, the language on top of which the new type system is implemented. We also discuss some existing work on semantic type systems and boolean types.
     \item
-          has limited time: \emph{keep on topic}.
+          \textbf{Chapter 3} TODO
     \item
-          has no idea why anyone would want to do this: \emph{motivate clearly}
+          \textbf{Chapter 4} TODO
     \item
-          might not know \emph{anything} about your project in particular:
-          \emph{explain your project}.
+          \textbf{Chapter 5} TODO
     \item
-          but might know precise details and check them: \emph{be precise and
-              strive for accuracy.}
+          \textbf{Chapter 6} contains details about the evaluation method, evaluation results and analysis of results.
     \item
-          doesn't know or care about you: \emph{personal discussions are
-              irrelevant}.
+          Finally \textbf{chapter 8} concludes the dissertation with a summary of the important results.
 \end{itemize}
 
-Remember, you will be marked by your supervisor and one or more members
-of staff. You might also have your project read by a prize-awarding
-committee or possibly a future employer. Bear that in mind.
+%===================================================================================================
 
-\subsection{References and style guides}
-There are many style guides on good English writing. You don't need to
-read these, but they will improve how you write.
-
-\begin{itemize}
-    \item
-          \emph{How to write a great research paper} \cite{Pey17} (\textbf{recommended}, even
-          though you aren't writing a research paper)
-    \item
-          \emph{How to Write with Style} \cite{Von80}. Short and easy to read. Available online.
-    \item
-          \emph{Style: The Basics of Clarity and Grace} \cite{Wil09} A very popular modern English 
-          style guide.
-    \item
-          \emph{Politics and the English Language} \cite{Orw68}  A famous essay on effective, clear
-          writing in English.
-    \item
-          \emph{The Elements of Style} \cite{StrWhi07} Outdated, and American, but a classic.
-    \item
-          \emph{The Sense of Style} \cite{Pin15} Excellent, though quite in-depth.
-\end{itemize}
-
-\subsubsection{Citation styles}
-
-\begin{itemize}
-    \item If you are referring to a reference as a noun, then cite it as: ``\citet{Orw68} discusses
-          the role of language in political thought.''
-    \item If you are referring implicitly to references, use: ``There are many good books on writing
-          \citep{Orw68, Wil09, Pin15}.''
-\end{itemize}
-
-There is a complete guide on good citation practice by Peter Coxhead available here: 
-\url{http://www.cs.bham.ac.uk/~pxc/refs/index.html}. 
-If you are unsure about how to cite online sources, please see this guide: 
-\url{https://student.unsw.edu.au/how-do-i-cite-electronic-sources}.
-
-\subsection{Plagiarism warning}
-
-\begin{highlight_title}{WARNING}
-    
-    If you include material from other sources without full and correct attribution, you are 
-    commiting plagiarism. The penalties for plagiarism are severe. Quote any included text and cite
-    it correctly. Cite all images, figures, etc. clearly in the caption of the figure.
-\end{highlight_title}
-
-
-%==================================================================================================================================
 \chapter{Background}
-What did other people do, and how is it relevant to what you want to do?
+
 
 \section{Type Systems}
 
-Type systems are by far the most popular and best developed methods in modern software engineering 
-to reduce the number of run-time errors in a program. A possible definition of a type system is 
-given by \citet{Pierce2002} as:
+In all modern programming languages, a type systems is arguably the main way that incorrect behaviour in a program is reduced.
+A possible definition of a type system is given by \citet{Pierce2002} as:
 
-\textit{A type system is a tractable syntactic method for proving the absence of certain program
-    behaviors by classifying phrases according to the kinds of values they compute.}
+\emph{A type system is a tractable syntactic method for proving the absence of certain program behaviors by classifying phrases according to the kinds of values they compute.}
 
-In particular, the most important detail in the above definition is the emphasis on classifying 
-phrases in our language into a particular type based on the kinds of values they hold or compute. 
-For example this would allow us to check that the arguments given to an arithmetic operation are 
-always numbers. This therefore allows us to validate that a program is absent of certain bad 
-run-time behaviour.
+In particular, the most important detail in the above definition is the emphasis on classifying phrases in our language into a particular type based on the kinds of values they hold or compute.
+For example by using a type system, we can check that the arguments given to an arithmetic operation are always numbers.
+Therefore we can validate that a specific program is absent of certain bad run-time behaviour such as trying to add a boolean value \emph{true} to a number \emph{2}.
 
-However what the above definition is missing that is it defines a type system as solely a syntactic 
-method, where it is defined by a formal system of deduction rules, which is by far the most common 
-approach for a type system. There does exist an alternative method in the semantic approach. 
-\citet{Frisch2002} describe the semantic approach as instead starting with a model of the language 
-and all the possible values in the language and define an interpretation of types as subsets of 
-values the model.
+However what the above definition is inaccurate about is that is it defines a type system to be solely a syntactic method, in which the system is defined as a list of formal deduction rules.
+The syntactic approach is certainly by far the most common approach for a type system.
+However, there does exist an alternative method in the semantic approach.
+\citet{Frisch2002} describe the semantic approach as instead starting with a model of the language and all the possible values in the language and defines an interpretation of types as subsets of values the model.
 
-Such as model comes with several advantages, such as when $t \leq s$ does not hold, then it is
-possible to exhibit an element of the model which is in the interpretation of type $t$ and not $s$, 
-even in the presence of arrow \textit{(function)} types. This can then be used to show more 
-informative error messages to the programmer \citep{Castagna2005}. However due to being a more 
-technical, such as it being not trivial to actually define the interpretation of types as subsets of
-a model, it has received less attention than syntactic methods.
+Such as model comes with several advantages.
+For example, given two types $s$ and $t$, which represent a certain subset of values in the model, when $s \subseteq t$ does not hold, then it is possible to exhibit an element of the model which is in the interpretation of type $s$ and not $t$.
+This can then be used to show more informative error messages to the programmer \citep{Castagna2005}, such as showing which value in $s$ is causing the equality not to hold.
+However due to being a more technical approach, such as the non-triviality of defining the interpretation of types as subsets of a model, the semantic method has received less attention than syntactic methods.
 
-The first problem we encounter in the semantic approach is that in the semantic approach, $t_{1}$
-is a subtype of $t_{2}$ if all the $t_{1}$-values are also $t_{2}$-values. However, in this way, 
-subtyping is defined by relying on the notion of well-typed values; hence, we need the typing 
-relation to determine typing judgements for values; but the typing rules use the subtyping relation
-which we are going to define \citep{Dardha2017}. So, there is a circularity as demonstrated in 
-Figure \ref{fig:circ}.
+The first problem we encounter in the semantic approach is that in such a model, $t_{1}$ is a subtype of $t_{2}$ if all the $t_{1}$-values are also $t_{2}$-values, i.e. the equality $t_{1} \subseteq t_{2}$ holds.
+However, in this way, subtyping is defined by relying on the notion of well-typed values; hence, we need the typing relation to determine typing judgements for values; but the typing rules use the subtyping relation defined in \citep{Dardha2017}.
+So, there is a circularity in our definition, as demonstrated in Figure \ref{fig:circ}.
 
-To solve this problem, we follow the framework defined in \citep{Frisch2008}. The general idea of
-the framework is that we first extend the types in the language with \textit{Boolean Combinators}: 
-union $\lor$, intersection $\land$ and negation $\neg$. We then define an abstract model $\beta$ 
-where our types are interpreted according to the set-theoretic meaning of the combinators and can 
-define subtyping as set-inclusion and therefore define the typing rules. Separately, if we have a 
-notion of well-typed values, we can define another interpretation of types as sets of values. We can
-again define a subtyping relation $\nu$. While these may be different relation, if the models are 
-chosen carefully such that 
-\begin{equation}
+To solve this problem, we follow the framework defined by \citet{Frisch2008}.
+The general idea of the framework is that we first extend the types in the language with \emph{Boolean Combinators}: union $\lor$, intersection $\land$ and negation $\neg$.
+We can then define an abstract model $\beta$ where our types are interpreted according to the set-theoretic meaning of the combinators and can define subtyping as set-inclusion and therefore define the typing rules.
+Separately, if we have a notion of well-typed values, we can define another interpretation of types as sets of values.
+We can again define a subtyping relation $\nu$.
+While these may be different relation, if the models are chosen carefully such that:
+\begin{equation*}
     s \leq_{\beta} t \iff s \leq_{\nu} t,
-\end{equation}
-then these models coincide and this closes the circularity. 
+\end{equation*}
+
+then these models coincide and this closes the circularity.
 
 \begin{figure}
     \centering
     \includegraphics[width=0.4\linewidth]{images/circularity.PNG}
-    \caption{TODO caption, \citep{Castagna2005}}
+    \caption{Circularity in the semantic subtyping definition \citep{Castagna2005}}
     \label{fig:circ}
 \end{figure}
 
 \section{Featherweight Java}
 
-The syntax of the language is exactly that of Featherweight Java, or FJ \citep{Igarashi1999}, with 
-the associated type system only being different. This was chosen on purpose as the full features of 
-Java such as concurrency and reflection are orthogonal (\textit{TODO reword}) to the purpose of the 
-project while the type system of FJ still exactly corresponds to that of Java. The main key 
-simplification in FJ is the omission of assignment. All fields of an object are initialised in the
-constructor and not changed afterwards. While this restricts FJ to what is essentially a functional 
-fragment of Java, it is still fully computationally complete. The syntax of FJ can be seen in Figure
-\ref{fig:syntax} and a sample code fragment can be seen in Figure \ref{fig:class}.
+The syntax of the JSF is exactly that of Featherweight Java (FJ) \citep{Igarashi1999}, with only the associated type system being different.
+This was chosen on purpose as the full features of Java such as concurrency and reflection are orthogonal to the purpose of demonstrating the use of the novel semantic type system.
+The main key simplification in FJ from Java is the omission of assignment.
+All fields of an object cannot be changed after initialisation and all methods are pure functions
+While this restricts FJ to what is essentially a functional fragment of Java, it is still fully computationally complete.
 
-\begin{figure}
-    \centering
-    \includegraphics[width=0.4\linewidth]{images/syntax.PNG}
-    \caption{TODO caption, \citep{Igarashi1999}}
-    \label{fig:syntax}
-\end{figure}
+\section{Tools}
+
+The type system of FSJ was built using Antlr to define the grammar and type checking of the language and the
+
+
+\section{Related Work}
+The closest similar area of research would likely be the work on $\mathbb{C}$Duce
+\citep{Benzaken2003}, which is also a functional language with a semantic type system designed for
+working with XML documents and a continuation of the work on XDuce \citep{Hosoya2003}. The language
+extended XDuce by introducing less XML specific types such as records, boolean connectives and arrow
+types. This therefore makes it similar to (\textit{TODO reword}) our language in that a class-based
+semantic type system is a combination of the $\mathbb{C}$Duce record types with arrow types
+\textit{(fields and methods)}
+
+Our work and the work on $\mathbb{C}$Duce follow the functional style of $\lambda$-calculus,
+whereas the work by \citet{Castagna2008} extends $\pi$-calculus with semantic subtyping.
+(\textit{TODO reword}) Similar work to ours creating an implementation for this would result in a
+Golang-like language \citep{Meyerson2014}, creating a concurrency-focused language with more
+intuitive types. The paper found that it was required to be able to decide and resolve the atomicy,
+that is whether the only proper subtype is the empty type, of types in order to decide the subtyping
+relation, and observes that this same problem appears in $\lambda$-calculus and any other
+semantic-based system, for which we will show where we encountered this problem further in this
+paper.
+
+%==================================================================================================================================
+\chapter{Analysis/Requirements}
+What is the problem that you want to solve, and how did you arrive at it?
+\section{Guidance}
+Make it clear how you derived the constrained form of your problem via a clear and logical process.
+
+%==================================================================================================================================
+\chapter{Design}
+How is this problem to be approached, without reference to specific implementation details?
+
+
+\label{sec:design}
+The syntax of types is given by the following grammar \citep{Dardha2013,Dardha2017}:
+$$
+    \begin{array}{llll}
+        \tau   & ::=                                       & \alpha \ |\ \mu
+               & \mbox{{\em Type term}}
+        \\
+        \alpha & ::=                                       & \zero \ |\ \btypes \ |\ [\wt{l:\tau}] \ |\ \alpha \ \bf{and}\ \alpha \ |\ \bf{not}\ \alpha
+        \qquad
+               & \mbox{{\em Object type} ($\alpha $-type)}
+        \\
+        \mu    & ::=                                       & \alpha \to \alpha \ |\ \mu \ \bf{and}\ \mu \ |\ \bf{not}\ \mu
+               & \mbox{{\em Method type} ($\mu $-type)}
+    \end{array}
+$$
+
+The syntax of terms is given by the following grammar and is based on the standard syntax of terms in FJ \cite{Igarashi1999,Dardha2013,Dardha2017}:
+\begin{align*}
+     & \mbox{\textit{Class declaration}}  & L \; ::= \; & \syndecl{C}{C}{\wt{\alpha \ a};\ K; \ \wt{M}\ }                         \\
+     & \mbox{\textit{Constructor}}        & K \;::=\;   & C\ (\wt{\alpha\ x})\ \{\ \synsuper(\wt{x});\ \wt{\synthis.a}=\wt{x}; \} \\
+     & \mbox{\textit{Method declaration}} & M \; ::= \; & \alpha \ m\ (\alpha \ x)\ \{\ \synret e; \}                             \\
+     & \mbox{\textit{Expressions}}        & e \; ::=\;  & x\ |\  c\ |\ e.a\ |\ e.m(e) \ | \ \synnew C(\wt{e})
+\end{align*}
 
 \begin{figure}
     \centering
@@ -241,34 +234,6 @@ fragment of Java, it is still fully computationally complete. The syntax of FJ c
     \label{fig:class}
 \end{figure}
 
-\section{Related Work}
-The closest similar area of research would likely be the work on $\mathbb{C}$Duce 
-\citep{Benzaken2003}, which is also a functional language with a semantic type system designed for 
-working with XML documents and a continuation of the work on XDuce \citep{Hosoya2003}. The language
-extended XDuce by introducing less XML specific types such as records, boolean connectives and arrow
-types. This therefore makes it similar to (\textit{TODO reword}) our language in that a class-based 
-semantic type system is a combination of the $\mathbb{C}$Duce record types with arrow types 
-\textit{(fields and methods)}
-
-Our work and the work on $\mathbb{C}$Duce follow the functional style of $\lambda$-calculus,
-whereas the work by \citet{Castagna2008} extends $\pi$-calculus with semantic subtyping.
-(\textit{TODO reword}) Similar work to ours creating an implementation for this would result in a 
-Golang-like language \citep{Meyerson2014}, creating a concurrency-focused language with more 
-intuitive types. The paper found that it was required to be able to decide and resolve the atomicy, 
-that is whether the only proper subtype is the empty type, of types in order to decide the subtyping
-relation, and observes that this same problem appears in $\lambda$-calculus and any other 
-semantic-based system, for which we will show where we encountered this problem further in this 
-paper. 
-
-%==================================================================================================================================
-\chapter{Analysis/Requirements}
-What is the problem that you want to solve, and how did you arrive at it?
-\section{Guidance}
-Make it clear how you derived the constrained form of your problem via a clear and logical process. 
-
-%==================================================================================================================================
-\chapter{Design}
-How is this problem to be approached, without reference to specific implementation details? 
 \section{Guidance}
 Design should cover the abstract design in such a way that someone else might be able to do what you did, but with a different language or library or tool.
 
@@ -298,8 +263,8 @@ You may include multiple figures in one float, as in Figure \ref{fig:synthetic},
     \includegraphics[width=0.5\linewidth]{images/relu.pdf}
     
     \caption{In figure captions, explain what the reader is looking at: ``A schematic of the rectifying linear unit, where $a$ is the output amplitude,
-        $d$ is a configurable dead-zone, and $Z_j$ is the input signal'', as well as why the reader is looking at this: 
-        ``It is notable that there is no activation \emph{at all} below 0, which explains our initial results.'' 
+        $d$ is a configurable dead-zone, and $Z_j$ is the input signal'', as well as why the reader is looking at this:
+        ``It is notable that there is no activation \emph{at all} below 0, which explains our initial results.''
         \textbf{Use vector image formats (.pdf) where possible}. Size figures appropriately, and do not make them over-large or too small to read.
     }
     
@@ -315,15 +280,15 @@ You may include multiple figures in one float, as in Figure \ref{fig:synthetic},
         \caption{Synthetic image, black on white.}
         \label{fig:syn1}
     \end{subfigure}
-    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
+    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc.
     %(or a blank line to force the subfigure onto a new line)
     \begin{subfigure}[b]{0.45\textwidth}
         \includegraphics[width=\textwidth]{images/synthetic_2.png}
         \caption{Synthetic image, white on black.}
         \label{fig:syn2}
     \end{subfigure}
-    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc. 
-    %(or a blank line to force the subfigure onto a new line)    
+    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc.
+    %(or a blank line to force the subfigure onto a new line)
     \caption{Synthetic test images for edge detection algorithms. \subref{fig:syn1} shows various gray levels that require an adaptive algorithm. \subref{fig:syn2}
         shows more challenging edge detection tests that have crossing lines. Fusing these into full segments typically requires algorithms like the Hough transform.
         This is an example of using subfigures, with \texttt{subref}s in the caption.
@@ -334,8 +299,8 @@ You may include multiple figures in one float, as in Figure \ref{fig:synthetic},
 
 \subsection{Equations}
 
-Equations should be typeset correctly and precisely. Make sure you get parenthesis sizing correct, and punctuate equations correctly 
-(the comma is important and goes \textit{inside} the equation block). Explain any symbols used clearly if not defined earlier. 
+Equations should be typeset correctly and precisely. Make sure you get parenthesis sizing correct, and punctuate equations correctly
+(the comma is important and goes \textit{inside} the equation block). Explain any symbols used clearly if not defined earlier.
 
 For example, we might define:
 \begin{equation}
@@ -379,12 +344,12 @@ Algorithms can be set using \texttt{algorithm2e}, as in Algorithm \ref{alg:metro
 \subsection{Tables}
 
 If you need to include tables, like Table \ref{tab:operators}, use a tool like https://www.tablesgenerator.com/ to generate the table as it is
-extremely tedious otherwise. 
+extremely tedious otherwise.
 
 \begin{table}[]
     \caption{The standard table of operators in Python, along with their functional equivalents from the \texttt{operator} package. Note that table
         captions go above the table, not below. Do not add additional rules/lines to tables. }\label{tab:operators}
-    %\tt 
+    %\tt
     \rowcolors{2}{}{gray!3}
     \begin{tabular}{@{}lll@{}}
         %\toprule
@@ -428,10 +393,10 @@ extremely tedious otherwise.
 
 Avoid putting large blocks of code in the report (more than a page in one block, for example). Use syntax highlighting if possible, as in Listing \ref{lst:callahan}.
 
-\begin{lstlisting}[language=python, float, caption={The algorithm for packing the $3\times 3$ outer-totalistic binary CA successor rule into a 
+\begin{lstlisting}[language=python, float, caption={The algorithm for packing the $3\times 3$ outer-totalistic binary CA successor rule into a
     $16\times 16\times 16\times 16$ 4 bit lookup table, running an equivalent, notionally 16-state $2\times 2$ CA.}, label=lst:callahan]
     def create_callahan_table(rule="b3s23"):
-        """Generate the lookup table for the cells."""        
+        """Generate the lookup table for the cells."""
         s_table = np.zeros((16, 16, 16, 16), dtype=np.uint8)
         birth, survive = parse_rule(rule)
 
@@ -499,7 +464,7 @@ See the file \texttt{guide\_to\_visualising.pdf} for further information and gui
     \includegraphics[width=1.0\linewidth]{images/boxplot_finger_distance.pdf}
     
     \caption{Average number of fingers detected by the touch sensor at different heights above the surface, averaged over all gestures. Dashed lines indicate
-        the true number of fingers present. The Box plots include bootstrapped uncertainty notches for the median. It is clear that the device is biased toward 
+        the true number of fingers present. The Box plots include bootstrapped uncertainty notches for the median. It is clear that the device is biased toward
         undercounting fingers, particularly at higher $z$ distances.
     }
     
@@ -517,7 +482,7 @@ Summarise the whole project for a lazy reader who didn't read the rest (e.g. a p
           Summarise briefly and fairly.
     \item
           You should be addressing the general problem you introduced in the
-          Introduction.        
+          Introduction.
     \item
           Include summary of concrete results (``the new compiler ran 2x
           faster'')
@@ -528,9 +493,9 @@ Summarise the whole project for a lazy reader who didn't read the rest (e.g. a p
 
 %==================================================================================================================================
 %
-% 
+%
 %==================================================================================================================================
-%  APPENDICES  
+%  APPENDICES
 
 \begin{appendices}
 
@@ -561,7 +526,7 @@ Summarise the whole project for a lazy reader who didn't read the rest (e.g. a p
 \end{appendices}
 
 %==================================================================================================================================
-%   BIBLIOGRAPHY   
+%   BIBLIOGRAPHY
 
 % The bibliography style is abbrvnat
 % The bibliography always appears last, after the appendices.

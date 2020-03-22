@@ -1,0 +1,271 @@
+%
+%  Macro files
+%  Originally from Frisch, Castagna, Benzaken
+%  
+%
+
+%% Ornela
+\newcommand{\abstr}[4]{\lambda_{({#1} , {#2})} {#3}.{#4}}
+\newcommand{\semval}[2]{\sem{#1}_{\mathcal #2}}
+
+
+
+\newif{\ifSHORT}
+\newif{\ifLongVersion}
+\newif{\ifWithRecords}
+\newif{\ifWiths}
+
+\newcommand{\possiblecut}[1]{{\color{black}#1}}   
+
+\newcommand{\maincomment}[1]{%
+  \ifMarginalComments{\mbox{}\\[1mm]$\Longrightarrow$\textsf{#1}\mbox{}\\[1mm]} \else {} \fi}
+
+\newenvironment{mylist}{%
+\begin{list}{$\bullet$}{\topsep2pt\parskip0pt\partopsep0pt\itemsep3pt\labelwidth10.5mm\labelsep3pt\leftmargin11mm}}%
+{\end{list}}
+
+%
+%  unsemplice comando che mi dice la versione
+%
+\usepackage{calc}\newcounter{tempo}\setcounter{tempo}{\time}
+\newcommand{\version}[1]{\mbox{}\\[-\baselineskip]%
+   \raisebox{#1in}[0in][0in]{\makebox[\textwidth][c]{\rm\small \today:v.\thetempo}}}
+\newcommand{\titlepageheader}[1]{\mbox{}\\[-\baselineskip]%
+\raisebox{5.3in}[0in][0in]{\makebox[\textwidth][c]{\rm\small #1}}}
+\newcommand{\duce}{$\mathbb{C}$Duce }
+\newcommand{\cduce}{$\mathbb{C}$Duce }
+\newcommand{\cdoge}{$\mathbb{C}$Doge }
+\newcommand{\cpi}{$\mathbb{C}\pi$ }
+\newcommand{\cobj}{$\mathbb{C}$Obj }
+\newcommand{\sempi}{$\pi_\leq$}   % was semantic-$\pi${}}
+\newcommand{\emptyl}{\mathsf{empty}}
+%
+% Daniele
+%
+% altri commandi
+\newcommand{\wt}[1]{\widetilde{#1}}
+
+\newcommand{\synrnd}{\mathbf{rnd}}
+\newcommand{\synclass}{\mathbf{class} \ }
+\newcommand{\syninterface}{\mathbf{interface} \ }
+\newcommand{\synext}{\ \mathbf{extends }\ }
+\newcommand{\synimpl}{\ \mathbf{implements}\ }
+\newcommand{\synret}{\mathbf{return}\ }
+\newcommand{\synthis}{\mathbf{this}}
+\newcommand{\synsuper}{\mathbf{super}}
+\newcommand{\synfinal}{\mathbf{final}}
+\newcommand{\synnew}{\mathbf{new}\ }
+\newcommand{\syndecl}[3]{\synclass #1 \synext #2\ \{#3\}}
+\newcommand{\synidecl}[2]{\synclass #1 \synext #2\ }
+
+\newcommand{\mmif}{\mathbf{if}}
+\newcommand{\mmthen}{\mathbf{then}}
+\newcommand{\mmelse}{\mathbf{else}}
+\newcommand{\mmclass}{\mathbf{class}}
+\newcommand{\mmnew}{\mathbf{new}}
+\newcommand{\mmnull}{\mathbf{null}}
+\newcommand{\mmextends}{\mathbf{extends}}
+\newcommand{\mmint}{\mathbf{int}}
+\newcommand{\mmreal}{\mathbf{real}}
+\newcommand{\mmbool}{\mathbf{bool}}
+\newcommand{\mmtrue}{\mathbf{true}}
+\newcommand{\mmfalse}{\mathbf{false}}
+\newcommand{\nname}{\mathbf{name}}
+\newcommand{\mmreturn}{\mathbf{return}}
+\newcommand{\mminstof}{\mathbf{instanceof}}
+\newcommand{\mmtry}{\mathbf{try}}
+\newcommand{\mmcatch}{\mathbf{catch}}
+\newcommand{\mmthrow}{\mathbf{throw}}
+\newcommand{\mmlet}{\mathbf{let}}
+\newcommand{\mmin}{\mathbf{in}}
+\newcommand{\nominal}{\mathbf{nominal}}
+
+\newcommand{\naming}[1]{(#1)^\nname}
+\newcommand{\type}{\mathit{type}}
+\newcommand{\mbody}{\mathit{body}}
+\newcommand{\judge}[2]{#1 \vdash #2}
+\newif\ifmai\maifalse
+
+
+\newcommand{\height}[1]{\hslash(#1)}%{\textit{height}(#1)}
+%\DeclareMathOperator{\uparrowop}{\uparrow}
+%\DeclareMathOperator{\downarrowop}{\downarrow}
+%
+% definition enum environment
+%
+\newenvironment{enum}{\begin{enumerate}\vspace{-5pt}\topsep0pt\parskip0pt\partopsep0pt\itemsep1pt}{\end{enumerate}\vspace{-5pt}}
+
+
+%
+%
+\newcommand{\A}{{\cal A}}
+\newcommand{\Norm}{{\cal N}}
+\newcommand{\exten}{\mathbb E}
+\newcommand{\extenf}{\mathbb{E}_f}
+\newcommand{\atoms}{{\mathbb T}}
+\newcommand{\myitem}{\mbox{}\\[.5mm]\hspace*{3.5mm}--~~}
+
+\newcommand{\dead}{\textsf{0}}
+%\newcommand{\mathbb}[1]{\Bbb{#1}}
+%\newcommand{\llbracket}{[\![}
+%\newcommand{\rrbracket}{]\!]}
+
+\newcommand{\VAR}{\textit{Var}}
+\newcommand{\zero}{\mathbf{0}}
+\newcommand{\one}{\mathbf{1}}
+%\newcommand{\qed}{\mbox{}\hfill\mbox{$\Box$}}
+\newcommand{\bij}{\partial}
+\newcommand{\para}{~~|~~}
+\newcommand{\hasse}[1]{\xymatrix@R-1em@C-2em{#1}}
+
+\newcommand{\todo}[1]{{\bf \underline{TODO:} #1}}
+\newcommand{\ignore}[1]{}
+\newcommand{\Is}{\colon\!\!\colon \!\!\!\!= }
+
+\newcommand{\txtvee}{\text{\rm ~or~}}
+\newcommand{\txtwedge}{\text{\rm ~and~}}
+
+\newcommand{\dom}{\textit{dom}}
+
+%\newcommand{\naturals}{\mathbb{N}}
+
+% Op�rateurs math�matiques
+\renewcommand{\P}{{\cal P}}
+\newcommand{\Pf}{{\P_f}}
+\newcommand{\compl}[2]{{\complement_{#2}} {#1}}
+\newcommand{\egdef}{\stackrel{\textrm{\tiny def}}{=}}
+\newcommand{\segdef}{\!\!\!\stackrel{\textrm{\tiny def}}{=}\!\!\!}
+\renewcommand{\subset}{\subseteq}
+\renewcommand{\emptyset}{\varnothing}
+
+\newcommand{\cX}{{\cal X}}
+
+% Les univers
+\newcommand{\ubasic}{{\text{\bf basic}}}
+\newcommand{\urec}{{\text{\bf rec}}}
+\newcommand{\ufun}{{\text{\bf fun}}}
+
+% Basic types
+\newcommand{\btypes}{{\mathbb B}}
+\newcommand{\semb}[1]{{\cal B} {\llbracket #1 \rrbracket}}
+\newcommand{\Types}{\textbf{Types}}
+% Les mod�les
+\newcommand{\domaine}{{\cal D}}
+%\newcommand{\univ}{{\cal U}}
+\newcommand{\domwr}{\domaine_\Omega}
+\newcommand{\stdmod}{{\cal U}}
+\newcommand{\stdmodwr}{{\cal U}_\Omega}
+\newcommand{\sem}[1]{{\llbracket #1 \rrbracket}}
+\newcommand{\esem}[1]{{\mathbb E}\left( #1 \right)}
+\newcommand{\esemd}[1]{{\mathbb E}$D$}
+\newcommand{\esemp}[1]{{\cal E}\llparenthesis #1 \rrparenthesis}
+\newcommand{\tsem}[1]{\llparenthesis #1 \rrparenthesis}
+%\newcommand{\semv}[1]{{\mathbb V}{\llbracket #1 \rrbracket}}
+
+
+% Les types
+\newcommand{\functor}{{\mathbb T}}
+\newcommand{\syntypes}{{\mathcal{T}}}
+\newcommand{\atomtypes}{\textit{A\/}}%{\syntypes^\circ}
+\newcommand{\synatoms}{{\mathcal A}}
+\newcommand{\synprod}{\pmb{\times}}
+\newcommand{\synarrow}{\pmb{\rightarrow}}
+\newcommand{\synneg}{\pmb{\neg}}
+\newcommand{\synvee}{\pmb{\vee}}
+\newcommand{\synwedge}{\pmb{\wedge}}
+\newcommand{\syndiff}{\pmb{\backslash}}
+\newcommand{\syncap}{\operatornamewithlimits{\pmb{\bigwedge}}}
+\newcommand{\syncup}{\operatornamewithlimits{\pmb{\bigvee}}}
+\newcommand{\socle}[1]{\beth(#1)}
+\newcommand{\appl}{\bullet}
+\newcommand{\synch}[2]{\textit{ch}^{#1}\!(#2)}
+\newcommand{\synchan}[1]{\textit{ch}(#1)}
+\newcommand{\synchanK}{\textit{ch}}
+\newcommand{\synchanout}[1]{\textit{ch}^{\!\textbf{--}\!\!}(#1)}
+\newcommand{\synchanin}[1]{\textit{ch}^+(#1)}
+
+%blackboardbold types
+\def\bbbone{{\mathchoice {\rm 1\mskip-4mu l} {\rm 1\mskip-4.5mu l}
+          {\rm 1\mskip-4.5mu l} {\rm 1\mskip-5mu l}}}
+\newcommand{\synnatone}{\bbbone}
+\newcommand{\synnatk}{\Bbbk}
+\newcommand{\synnat}[1]{\mathbb{#1}}
+
+% Les motifs
+\newcommand{\pator}[2]{#1 \pmb{|} #2}
+\newcommand{\patand}[2]{#1 \pmb{\wedge} #2}
+%\newcommand{\patleft}[1]{\pmb{(}#1\pmb{,\_)}}
+%\newcommand{\patright}[1]{\pmb{(\_,}#1\pmb{)}}
+\newcommand{\patcst}[2]{\pmb{(}#1\pmb{:=}#2\pmb{)}}
+\newcommand{\patpair}[2]{\pmb{(}#1\pmb{,}#2\pmb{)}}
+
+% Filtrage
+\newcommand{\erreur}{\Omega}
+\newcommand{\accept}[1]{\pmb{\lbag} #1 \pmb{\rbag}}
+\newcommand{\acceptd}[1]{\pmb{\lfloor} #1 \pmb{\rfloor}}
+\newcommand{\semaccept}[1]{\Lbag #1 \Rbag}
+\newcommand{\filter}[2]{({#1}/{#2})}%{ ({#1} \Downarrow {#2}) }
+\newcommand{\semfilter}[2]{ ({#1} \downarrow {#2}) }
+
+
+% Symboles du langage
+%\newcommand{\myarrow}{\Pisymbol{cmt}{61}\Pisymbol{pcr}{62}}%
+\newcommand{\myarrow}{\!\!\boldsymbol{\Rightarrow}\!\!} %\texttt{\char61\char62\relax}}
+\newcommand{\mybar}{\texttt{|}}%
+\newcommand{\motifs}{\mathbb{P}}
+\newcommand{\vars}{\mathbb{V}}
+\newcommand{\consts}{\mathbb{C}}
+\newcommand{\exprs}{{\mathbb E}}
+\newcommand{\expr}{{e}}
+\newcommand{\pat}{{\tt p}}
+\newcommand{\const}{{n}}
+\newcommand{\op}{{o}}
+\newcommand{\ops}{{\mathbb O}}
+\newcommand{\valeurs}{{\cal V}}
+\newcommand{\values}{\valeurs}
+\newcommand{\blpar}{\boldsymbol{(}}
+\newcommand{\brpar}{\boldsymbol{)}}
+\newcommand{\match}[5]{\mathtt{match~} #1 \mathtt{~with~} #2 \myarrow #3 \mybar
+  #4 \myarrow #5}
+\newcommand{\typecase}[5]{\mathtt{typecase~} #1 \mathtt{~with~} (#2 :
+  #3) \myarrow #4 \mybar (#2 : \synneg #3) \myarrow #5}
+\newcommand{\typec}[5]{\texttt{(} #3=#1\pmb{\in}#2\texttt{)}\pmb{?}#4\texttt{{:}}#5}
+\newcommand{\genabstraction}[3]{\abstr{f}{#1}{#2}{#3}}
+%\newcommand{\abstr}[4]{\boldsymbol{\mu} #1^{\blpar #2 \brpar}\blpar #3 \brpar \boldsymbol{.}#4}
+\newcommand{\stdmatch}{\match{\expr}{p_1}{\expr_1}{p_2}{\expr_2}}
+\newcommand{\exprpair}[2]{\blpar #1 \boldsymbol{,} #2 \brpar}
+\newcommand{\exprop}[2]{#1 \blpar #2 \brpar}
+
+% S�mantique op�rationnelle
+%\newcommand{\wrong}{\mbox{\bf wrong}}
+\newcommand{\wrong}{\Omega}
+%\newcommand{\reject}{\mbox{\bf reject}}
+%\newcommand{\apply}{{\tt apply}}
+
+
+% Enregistrements
+\newcommand{\domdef}[1]{\text{Def}(#1)}
+\newcommand{\labels}{{\cal L}}
+\newcommand{\urecord}{{\text{\bf record}}}
+\newcommand{\trec}[2]{\pmb{[} #1 : #2 \pmb{]}}
+\newcommand{\tsupp}[1]{\text{\bf S}(#1)}
+%\newcommand{\supp}[1]{\text{Supp}(#1)}
+\newcommand{\patrec}[2]{\{ #1 : #2\}}
+\newcommand{\Iff}{\Longleftrightarrow}
+\newcommand{\reff}{\mathtt{ref}\,}
+\newcommand{\lazy}{\mathtt{lazy}\,}
+
+
+% Th�or�mes ...
+%\newtheorem{theorem}{Theorem}[section]
+%\newtheorem{lemma}[theorem]{Lemma}
+%\newtheorem{proposition}[theorem]{Proposition}
+%\newtheorem{corollary}[theorem]{Corollary}
+%\newtheorem{definition}[theorem]{Definition}
+%\newtheorem{condition}{Condition}
+%\newenvironment{definition}{\begin{defn}}{\qed\end{defn}}
+%\newtheorem{definition}[theorem]{Definition}
+%\newtheorem{property}[theorem]{Property}
+%\newtheorem{convention}[theorem]{Convention}
+%\newtheorem{remark}[theorem]{Remark}
+%\renewenvironment{proof}{{\sl Proof}:}{\qed}

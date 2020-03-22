@@ -160,6 +160,7 @@ Due to space limit we will remove most theoretical details from this submission,
 \section{SFJ: Design and Implementation}
 \label{sec:design}
 The syntax of types is given by the following grammar \cite{Dardha2013,Dardha2017}:
+
 $$
 \begin{array}{llll}
 \tau & ::= & \alpha \ |\ \mu
@@ -173,6 +174,7 @@ $$
 & \mbox{{\em Method type} ($\mu $-type)}
 \end{array}
 $$
+
 $\alpha$-types are used to type fields and $\mu$-types are used to type methods.
 Type $\zero$ is the empty type.
 Type $\btypes$ denotes the \emph{basic} types, such as integers, booleans, etc.
@@ -189,8 +191,8 @@ The syntax of terms is given by the following grammar and is based on the standa
 Since we want to use types $\tau$ in practice in SFJ, we restrict them to finite trees whose leaves are constants with no cycles.
 For e.g., a recursive type $\alpha = [a : \alpha]$ denotes an infinite program tree \textbf{new} $C$(\textbf{new} $C$($\cdots{}$)), hence we avoid it as it is inhabitable.
 %Similarly the types $\alpha = [b: \beta]$, $\beta = [a = \alpha]$ would also be impossible to instantiate.
-When processing the abstract syntax tree (AST) of a program in SFJ, we forbid fields to have the same type as the type of the class they are defined in. 
-Secondly, we mark any classes containing fields typed with only basic types as \emph{resolved} otherwise, as \emph{unresolved}. 
+When processing the abstract syntax tree (AST) of a program in SFJ, we forbid fields to have the same type as the type of the class they are defined in.
+Secondly, we mark any classes containing fields typed with only basic types as \emph{resolved} otherwise, as \emph{unresolved}.
 This is captured by the following algorithm, which checks if the type definitions in the program are valid.
 \begin{verbatim}
 do
@@ -208,8 +210,8 @@ while resolutionOccured is true
 if all classes are not resolved:
     program contains invalid type definition
 \end{verbatim}
-%If the types in the program are finite trees whose leaves are constants with no cycles, then at each iteration of the algorithm, either all the types are going to be resolved, or we are going to be able to resolve at least one type. 
-%If we do not resolve at least one type and not all types are resolved, we know we have encountered a cycle in the type definition. 
+%If the types in the program are finite trees whose leaves are constants with no cycles, then at each iteration of the algorithm, either all the types are going to be resolved, or we are going to be able to resolve at least one type.
+%If we do not resolve at least one type and not all types are resolved, we know we have encountered a cycle in the type definition.
 %
 Now, we can define the subtyping relation.
 Building upon the interpretation of types as sets of values to define the semantic subtyping for FJ \cite{Dardha2013,Dardha2017}, in our implementation of SFJ we keep track of the subtyping relation by defining a map from a type to the set of its subtypes, with the property that the set of values of a subtype is included in the set of values of the type.
@@ -220,10 +222,10 @@ As a first step, we start with basic types.
     &Double  = \left\{Double, Float, Int, Short, Byte\right\} &&Float = \left\{Float, Short, Byte\right\}\\
     &Long = \left\{Long, Int, Short, Byte\right\}  &&Int = \left\{Int, Short, Byte\right\}\\
     &Short = \left\{Short, Byte\right\} && Byte = \left\{Byte\right\}\\
-    &Boolean = \left\{Boolean \right\} 
+    &Boolean = \left\{Boolean \right\}
 \end{flalign*}
 %
-Note that \emph{Int} is not a subtype of \emph{Float} as a 32-bit \emph{float} cannot represent the whole set of 32-bit \emph{integer} values accurately and therefore \emph{Int} is not fully set-contained, however this is not the case for \emph{Int} and \emph{Double}. 
+Note that \emph{Int} is not a subtype of \emph{Float} as a 32-bit \emph{float} cannot represent the whole set of 32-bit \emph{integer} values accurately and therefore \emph{Int} is not fully set-contained, however this is not the case for \emph{Int} and \emph{Double}.
 Similarly, \emph{Long} is not a subtype of \emph{Double}.
 
 Finally, the following algorithm defines the subtyping relation for all class types, which concludes the process.
@@ -267,27 +269,27 @@ function checkSuperSet(class, other):
 Let us illustrate the subtyping algorithm with our \emph{Polygons} example \autoref{polygons}.
 The algorithm generates the following subtyping relation, which also includes the subtyping relation for basic types defined in the first step.
 \begin{flalign*}
-    &Polygon = \left\{Polygon, Triangle, Square, Rhombus \right\} && Triangle  = \left\{Triangle\right\}\\ 
+    &Polygon = \left\{Polygon, Triangle, Square, Rhombus \right\} && Triangle  = \left\{Triangle\right\}\\
     &Square = \left\{Square\right\} &&
-    Diagonal = \left\{Diagonal\right\} 
+    Diagonal = \left\{Diagonal\right\}
 \end{flalign*}
-Recall method \emph{diagonal} in class \emph{Diagonal}, we can see that the result of the set operation on its parameter type gives the following set of polygons: 
+Recall method \emph{diagonal} in class \emph{Diagonal}, we can see that the result of the set operation on its parameter type gives the following set of polygons:
 \begin{flalign*}
-    Polygon \textbf{ and not } Triangle = \left\{Polygon, Square, Rhombus \right\} 
+    Polygon \textbf{ and not } Triangle = \left\{Polygon, Square, Rhombus \right\}
 \end{flalign*}
 If we pass to \emph{diagonal} an argument of type \emph{Triangle}, as it is not contained in the computed set of subtypes, we get a typechecking error at compile time \cite{UD20}.
 
 The subtyping algorithm finds all nominal and structural subtypes.
-It will find all nominal subtypes, as nominal subtypes inherit all fields and methods of their super class, so are always guaranteed to be a superset. 
-Similarly, given all pairs of types, the algorithm checks if one is a superset of the other, i.e.,\ they share common fields and methods, and if so, they are related by structural subtyping. 
-For e.g., type $empty = []$, will have all classes as structural subtypes. 
+It will find all nominal subtypes, as nominal subtypes inherit all fields and methods of their super class, so are always guaranteed to be a superset.
+Similarly, given all pairs of types, the algorithm checks if one is a superset of the other, i.e.,\ they share common fields and methods, and if so, they are related by structural subtyping.
+For e.g., type $empty = []$, will have all classes as structural subtypes.
 %The above algorithm will without differentiating, find all nominal and structural subtypes as we always consider all other classes in the program to be potential subtype candidates.
 
 Note that both approaches to subtyping have their drawbacks.
 %However, it can be argued that structural subtyping is counterproductive in writing logically correct programs.
-Consider two structurally equivalent record types $coordinate = [x:int, y:int, z:int]$ and $colour = [x:int, y:int, z:int]$. 
+Consider two structurally equivalent record types $coordinate = [x:int, y:int, z:int]$ and $colour = [x:int, y:int, z:int]$.
 While structurally they can be used interchangeably in our type system, their ``meaning'' is completely different.
-On the other hand, with nominal subtyping in Java one can define an overridden method to perform the opposite logic to what the super class is expecting. 
+On the other hand, with nominal subtyping in Java one can define an overridden method to perform the opposite logic to what the super class is expecting.
 Therefore, both approaches leave an expectation on the developer to check what they are doing is correct, hence the integration of both in SFJ is the key to overcoming these drawbacks, as one can choose which approach to use for a given task.
 
 Furthermore, we have extended FJ with method types, demonstrated below to show another possible implementation of the Polygons example \autoref{polygons}.
@@ -302,7 +304,7 @@ We do not have to generate a relation for all methods in all classes as this is 
 only generate the set of subtypes on encountering a method type.
 
 %In the implementation of SFJ, we are liberal in the use of fields and method which might not be implemented for all types in the subtyping relation rather than restricting only it to those which we know are shared by all types.
-%Improper use of this allows for run-time exceptions however it more closely follows the idea of giving the programmer tools to create more expressive programs at the cost of checking program correctness such as with the use of structural subtypes. 
+%Improper use of this allows for run-time exceptions however it more closely follows the idea of giving the programmer tools to create more expressive programs at the cost of checking program correctness such as with the use of structural subtypes.
 
 \section{Related Work and Conclusion}
 \label{sec:conclusion}

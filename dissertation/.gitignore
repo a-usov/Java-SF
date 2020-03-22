@@ -248,3 +248,6 @@ TSWLatexianTemp*
 
 # Dont check-in vscode folder
 .vscode/
+
+# added by Artem
+__latexindent_temp.tex
