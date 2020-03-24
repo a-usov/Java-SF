@@ -1,6 +1,8 @@
 \documentclass{l4proj}
 
 \input{semmacros}
+\usepackage{amsmath, amssymb}
+
 
 \begin{document}
 
@@ -41,11 +43,11 @@
 
 \section{End goal of programming}
 
-The end goal in all programming projects, is to create a solution to the task at hand that performs exactly as expected by the programmer, and exactly solves the problem that was initially defined.
+The end goal in all programming projects is to create a solution to the task at hand that exactly solves the initially defined problem and performs exactly as expected by the programmer.
 However, this very rarely actually happens.
 
 On the one hand, this is often because the original problem is not statically defined.
-If it is a solution for an external client, their requirements and needs will change over time, or the needs and wants of the users using this project can also change.
+If it is a solution for an external client, their requirements and needs will change over time, or similarly the needs and wants of the users using this project can also change.
 This means the project needs to be adapted over time.
 On the other hand, and almost always much less evident, is that programs do not perform exactly as the programmer imagines them to work.
 
@@ -67,9 +69,9 @@ While they are not necessarily needed to write correct programs, these tools hav
 Underlying all of the previously mentioned static code analysis tools, is their use of the \textbf{type system} of the language.
 Type systems at their most basic work by assigning types to various constructs of a program so that incompatible types cannot be used.
 
-For example, one common area of error in C code that the Clang tools warn about is implicit conversions where the value of an expression is a different type from the one expected, such as the use of a floating point number where an integer is expected.
-The C language will implicitly convert the value to an integer, however this can cause unexpected behaviour for the programmer.
-It knows that this conversion needs to happen as the type system dictates that you cannot use any other type other than an integer where an integer is expected.
+For example, one common area of error in C code that the Clang tools warn about is implicit conversions, where the value of an expression is a different type from the one expected, such as the use of a floating point number where an integer is expected.
+The C language will implicitly convert the value to an integer, however this can cause unexpected behaviour, unbeknownst to the programmer.
+The language knows that this conversion needs to happen as the type system dictates that you cannot use any other type other than an integer where an integer is expected.
 
 \section{Varying Type Systems}
 
@@ -81,16 +83,20 @@ There exist other new developments in type systems such as Boolean types which a
 
 \section{Goals of this Project}
 
-In this section, the issue and aims of this paper are presented.
+In this section, the issues and aims of this paper are presented.
 
 \subsection{Problem Statement}
 
-The typical hierarchical subtyping definitions in Java quite often restrict and complicate the logic that the programmer wants to implement. These problems come up particularly often when working with legacy code that has defines incorrect abstractions in its classes. This therefore leads to less understandable and less maintainable code, that could cause problems in the future.
+The typical hierarchical subtyping definitions in Java quite often restrict and complicate the logic that the programmer wants to implement.
+These problems come up particularly often when working with legacy code that has incorrectly defined abstractions in its classes.
+This therefore leads to less understandable and less maintainable code that could cause problems in the future.
 
 \subsection{Aims}
 
-The aim of this project is to implement a new programming language that uses a proposed type system consisting of boolean types and a semantic subtyping algorithm. This project aims to transform the mathematical definition of such a type system into an actual solution in software, solving the issues encountered doing so. The language should be able to illustrate the improved solutions to the
-common example problems encounter in a language without these features such as Java. Furthermore, the language will be evaluated so see whether these additional language features are intuitive to use by programmers.
+The aim of this project is to implement a new programming language, which we further call Semantic Featherweight Java (SFJ), that uses a proposed type system consisting of boolean types and a semantic subtyping algorithm.
+This project aims to transform the mathematical definition of such a type system into an actual solution in software, solving the issues encountered doing so.
+The language should be able to illustrate the improved solutions to the common example problems encountered in a language without these features such as Java.
+Furthermore, the language will be evaluated so see whether these additional language features are intuitive to use.
 
 \section{Dissertation Outline}
 
@@ -98,7 +104,8 @@ The dissertation is structured into seven chapters as follow:
 
 \begin{itemize}
     \item
-          \textbf{Chapter 2} provides background about type systems and Featherweight Java, the language on top of which the new type system is implemented. We also discuss some existing work on semantic type systems and boolean types.
+          \textbf{Chapter 2} provides background about type systems and Featherweight Java, the language on top of which the new type system is implemented.
+          We also discuss some existing work on semantic type systems and boolean types.
     \item
           \textbf{Chapter 3} TODO
     \item
@@ -115,6 +122,7 @@ The dissertation is structured into seven chapters as follow:
 
 \chapter{Background}
 
+In this chapter, we define and explore type systems and the different ways they can be defined. We especially explore the semantic method of defining a type system and explore the benefits and challenges that it brings.
 
 \section{Type Systems}
 
@@ -123,14 +131,14 @@ A possible definition of a type system is given by \citet{Pierce2002} as:
 
 \emph{A type system is a tractable syntactic method for proving the absence of certain program behaviors by classifying phrases according to the kinds of values they compute.}
 
-In particular, the most important detail in the above definition is the emphasis on classifying phrases in our language into a particular type based on the kinds of values they hold or compute.
-For example by using a type system, we can check that the arguments given to an arithmetic operation are always numbers.
-Therefore we can validate that a specific program is absent of certain bad run-time behaviour such as trying to add a boolean value \emph{true} to a number \emph{2}.
+In particular, the detail we want to focus on in the above definition is the emphasis on classifying phrases in our language into a particular type based on the kinds of values they hold or compute.
+For example by using a type system, we can check that the arguments given to an arithmetic operation are always correct.
+Given a number and another arithmetic expression, we know they both hold or compute a number type, so the operation is correct.
+Therefore we can validate that a specific program is absent of certain bad run-time behaviour such as possibly trying to add a boolean value \emph{true} to a number \emph{2}.
 
 However what the above definition is inaccurate about is that is it defines a type system to be solely a syntactic method, in which the system is defined as a list of formal deduction rules.
-The syntactic approach is certainly by far the most common approach for a type system.
-However, there does exist an alternative method in the semantic approach.
-\citet{Frisch2002} describe the semantic approach as instead starting with a model of the language and all the possible values in the language and defines an interpretation of types as subsets of values the model.
+The syntactic approach is certainly by far the most common approach for a type system, but there does exist an alternative method in the semantic approach.
+\citet{Frisch2002} describe the semantic approach as instead starting with a model of the language and all the possible values in the language and defining an interpretation of types as subsets of values the model.
 
 Such as model comes with several advantages.
 For example, given two types $s$ and $t$, which represent a certain subset of values in the model, when $s \subseteq t$ does not hold, then it is possible to exhibit an element of the model which is in the interpretation of type $s$ and not $t$.
@@ -138,7 +146,7 @@ This can then be used to show more informative error messages to the programmer 
 However due to being a more technical approach, such as the non-triviality of defining the interpretation of types as subsets of a model, the semantic method has received less attention than syntactic methods.
 
 The first problem we encounter in the semantic approach is that in such a model, $t_{1}$ is a subtype of $t_{2}$ if all the $t_{1}$-values are also $t_{2}$-values, i.e. the equality $t_{1} \subseteq t_{2}$ holds.
-However, in this way, subtyping is defined by relying on the notion of well-typed values; hence, we need the typing relation to determine typing judgements for values; but the typing rules use the subtyping relation defined in \citep{Dardha2017}.
+However, in this way, subtyping is defined by relying on the notion of well-typed values; hence, we need the typing relation to determine typing judgements for values; but the typing rules require a subtyping relation to be fully defined.
 So, there is a circularity in our definition, as demonstrated in Figure \ref{fig:circ}.
 
 To solve this problem, we follow the framework defined by \citet{Frisch2008}.
@@ -162,16 +170,62 @@ then these models coincide and this closes the circularity.
 
 \section{Featherweight Java}
 
-The syntax of the JSF is exactly that of Featherweight Java (FJ) \citep{Igarashi1999}, with only the associated type system being different.
-This was chosen on purpose as the full features of Java such as concurrency and reflection are orthogonal to the purpose of demonstrating the use of the novel semantic type system.
-The main key simplification in FJ from Java is the omission of assignment.
-All fields of an object cannot be changed after initialisation and all methods are pure functions
+The syntax of SFJ is exactly that of Featherweight Java (FJ) \citep{Igarashi1999}, with only the associated type system being different.
+FJ is closely related to Java, with a key simplification in the removal of assignment operators.
+All fields of an object cannot be changed after initialisation and all methods are pure functions.
 While this restricts FJ to what is essentially a functional fragment of Java, it is still fully computationally complete.
+SFJ was intentionally based on FJ instead of the full Java language because features such as concurrency and reflection are orthogonal to the purpose of demonstrating the implementation of our novel semantic type system.
 
 \section{Tools}
 
-The type system of FSJ was built using Antlr to define the grammar and type checking of the language and the
+The type system of FSJ was built using ANTLR \citep{parr2013} to define the grammar of the language and create a parser for this grammar rather than having to create these by hand, making the initial development process much quicker.
+It accepts a grammar using Extended Backus-Naur Form (EBNF) notation to create ANTLR rules which are a list of productions or alternatives. A general form of a rule is therefore as follow:
 
+$$
+    \begin{array}{llll}
+        rule & : & alternative_{1}
+        \\
+             & | & alternative_{2}
+        \\
+             &   & \vdots
+        \\
+             & | & alternative_{n}
+        \\
+             & ; & 
+    \end{array}
+$$
+
+Each alternative production in a rule can itself be a list of elements, where an element can be another rule or just a terminating token. Since we are using EBNF notation, we can also use \emph{*} and \emph{?} to respectively signify repeated and conditional elements in a production. We show an excerpt taken from the SFJ grammar as an example:
+
+$$
+    \begin{array}{llll}
+        expression     & : & \mbox{primExpression ( (PLUS | MINUS | DIV | MULT) primExpression)?}
+        \\
+                       & ;
+        \\
+        \\
+        primExpression & : & \mbox{NUMBER}
+        \\
+                       & | & \mbox{TRUE}
+        \\
+                       & ; & 
+        \\
+        \\
+        TRUE           & : & \mbox{'true'}
+        \\
+                       & ; & 
+        \\
+        \\
+        NUMBER         & : & \mbox{DIGIT (DIGIT)*}
+        \\
+                       & ; & 
+        \\
+        \\
+        DIGIT          & : & '0'..'9'
+        \\
+                       & ; & 
+    \end{array}
+$$
 
 \section{Related Work}
 The closest similar area of research would likely be the work on $\mathbb{C}$Duce
@@ -192,7 +246,7 @@ relation, and observes that this same problem appears in $\lambda$-calculus and 
 semantic-based system, for which we will show where we encountered this problem further in this
 paper.
 
-%==================================================================================================================================
+%===================================================================================================
 \chapter{Analysis/Requirements}
 What is the problem that you want to solve, and how did you arrive at it?
 \section{Guidance}
