@@ -3,7 +3,6 @@
 \input{semmacros}
 \usepackage{amsmath, amssymb}
 
-
 \begin{document}
 
 %===================================================================================================
@@ -47,31 +46,30 @@ The end goal in all programming projects is to create a solution to the task at 
 However, this very rarely actually happens.
 
 On the one hand, this is often because the original problem is not statically defined.
-If it is a solution for an external client, their requirements and needs will change over time, or similarly the needs and wants of the users using this project can also change.
+If it is a solution for an external client, then their requirements and needs will change over time, or similarly the needs and wants of the users using this project can also change.
 This means the project needs to be adapted over time.
-On the other hand, and almost always much less evident, is that programs do not perform exactly as the programmer imagines them to work.
+On the other hand, and almost always much less evident, is that programs do not work exactly as the programmer imagines them to work.
 
-These are in general called \emph{bugs} in a program, and have become more and more common as the projects we create have become more complex compared to the early days of computing and the underlying hardware we work on has also become more complex.
-Therefore in both academia and industry, there have been great efforts over the years to create tools that allow us to decrease the amount of bugs in our programs and increase our productivity.
+These are in general called \emph{bugs} in a program, and have become more and more common as projects have become more complex compared to the early days of computing and the underlying hardware we work on has also become more complex.
+Therefore in both academia and industry there have been great efforts over the years to create tools that allow us to decrease the amount of bugs in our programs and increase our productivity.
 
 \subsection{Static Code Analysis}
 
 One area of great effort has been in the development of static code analysis tools.
 Some of these exist integrated into the language itself such as with Spark \citep{Carre1990}.
 Spark is a formally defined language based on the Ada \citep{Ada1979} language intended for the development of high integrity software such as flight control systems.
-Spark uses contracts and flow analysis to logically prove that programs are correct.
 Others exist as separate, well-known tools that exist alongside the language such as the Clang analysis tools for C and C++ \citep{kremenek2008}.
 
-While they are not necessarily needed to write correct programs, these tools have quickly become industry standards for maintaining a level of correctness within codebases and avoiding typical programming errors.
+Whilst they are not necessarily needed to write correct programs, these tools have quickly become industry standards for maintaining a level of correctness within codebases and avoiding typical programming errors.
 
 \subsection{Into Static Analysis}
 
-Underlying all of the previously mentioned static code analysis tools, is their use of the \textbf{type system} of the language.
+Underlying all of the previously mentioned static code analysis tools, is their use of the \emph{type system} of the language.
 Type systems at their most basic work by assigning types to various constructs of a program so that incompatible types cannot be used.
 
 For example, one common area of error in C code that the Clang tools warn about is implicit conversions, where the value of an expression is a different type from the one expected, such as the use of a floating point number where an integer is expected.
 The C language will implicitly convert the value to an integer, however this can cause unexpected behaviour, unbeknownst to the programmer.
-The language knows that this conversion needs to happen as the type system dictates that you cannot use any other type other than an integer where an integer is expected.
+Whilst being inconvenient, this conversion needs to happen as the type system of the language dictates that you cannot use any other type other than an integer where an integer is expected.
 
 \section{Varying Type Systems}
 
@@ -79,7 +77,7 @@ The effectiveness of static analysis tools and more generally the \emph{safety} 
 Type systems have evolved from the relatively simple systems in languages like C to more complex ones such as in Java where there are custom object types and subtyping relations where types can be substituted for one another.
 
 More modern advances in type systems include the use of linear types in the Cyclone \citep{grossman2002} language that allow us to more naturally and logically define finite state machines.
-There exist other new developments in type systems such as Boolean types which are explored in this paper.
+There also exist other new developments in type systems such as Boolean types which are explored in this paper.
 
 \section{Goals of this Project}
 
@@ -93,8 +91,8 @@ This therefore leads to less understandable and less maintainable code that coul
 
 \subsection{Aims}
 
-The aim of this project is to implement a new programming language, which we further call Semantic Featherweight Java (SFJ), that uses a proposed type system consisting of boolean types and a semantic subtyping algorithm.
-This project aims to transform the mathematical definition of such a type system into an actual solution in software, solving the issues encountered doing so.
+The aim of this project is to implement a new programming language, which we further call Semantic Featherweight Java (SFJ), which uses a new proposed type system consisting of boolean types and a semantic subtyping algorithm.
+This project aims to transform the mathematical definition of such a type system into an actual software implementation, solving the issues encountered doing so.
 The language should be able to illustrate the improved solutions to the common example problems encountered in a language without these features such as Java.
 Furthermore, the language will be evaluated so see whether these additional language features are intuitive to use.
 
@@ -115,51 +113,79 @@ The dissertation is structured into seven chapters as follow:
     \item
           \textbf{Chapter 6} contains details about the evaluation method, evaluation results and analysis of results.
     \item
-          Finally \textbf{chapter 8} concludes the dissertation with a summary of the important results.
+          Finally \textbf{chapter 7} concludes the dissertation with a summary of the important results.
 \end{itemize}
 
 %===================================================================================================
 
 \chapter{Background}
 
-In this chapter, we define and explore type systems and the different ways they can be defined. We especially explore the semantic method of defining a type system and explore the benefits and challenges that it brings.
+In this chapter, we define and explore type systems and the different ways they can be defined. We especially explore the semantic method of defining a type system and explore the benefits and challenges that it brings. We also discuss the tools that were used in this project and the related work that has already been done with boolean types or semantic type systems.
 
 \section{Type Systems}
 
-In all modern programming languages, a type systems is arguably the main way that incorrect behaviour in a program is reduced.
+In all modern programming languages, a \emph{type system} is arguably the main way that incorrect behaviour in a program is reduced by preventing the occurrence of \emph{type errors}.
 A possible definition of a type system is given by \citet{Pierce2002} as:
 
 \emph{A type system is a tractable syntactic method for proving the absence of certain program behaviors by classifying phrases according to the kinds of values they compute.}
 
-In particular, the detail we want to focus on in the above definition is the emphasis on classifying phrases in our language into a particular type based on the kinds of values they hold or compute.
-For example by using a type system, we can check that the arguments given to an arithmetic operation are always correct.
-Given a number and another arithmetic expression, we know they both hold or compute a number type, so the operation is correct.
-Therefore we can validate that a specific program is absent of certain bad run-time behaviour such as possibly trying to add a boolean value \emph{true} to a number \emph{2}.
+A type error is defined by \citet{wright1994} as:
 
-However what the above definition is inaccurate about is that is it defines a type system to be solely a syntactic method, in which the system is defined as a list of formal deduction rules.
+\emph{The use of a function on arguments for which it is not defined, and the attempted application of a non-function.}
+
+Most importantly, we want to emphasize from the first definition that in a type system, we aim to classify phrases in our language into a specific \emph{type}.
+Then, using the type system, we can check that the types of the arguments given to any operation are always correct, thus avoiding a type error.
+
+For example, taking the addition operation which takes two arguments of the number type, then given the arguments $42$ and $2 + 2$, we know they both hold or compute a number type and so there is guaranteed to be no type error.
+Conversely, given the arguments $42$ and the boolean value $true$, they are not both a number type and so cause a type error.
+We therefore avoid unexpected bad run-time behaviour and instead find these problems before even running the program.
+
+However what the first definition is missing is that it defines a type system to be solely a syntactic method, in which the system is defined as a list of formal deduction rules.
 The syntactic approach is certainly by far the most common approach for a type system, but there does exist an alternative method in the semantic approach.
 \citet{Frisch2002} describe the semantic approach as instead starting with a model of the language and all the possible values in the language and defining an interpretation of types as subsets of values the model.
 
+For example, given a language with a model $D$:
+
+\begin{equation*}
+    D = \left[ a + bi \mid a, b \in \mathbb{R}\right]
+\end{equation*}
+
+we can define the types \emph{int}, \emph{real} and \emph{complex} as subsets of the values in $D$ corresponding to their usual mathematical definitions.
+
 Such as model comes with several advantages.
-For example, given two types $s$ and $t$, which represent a certain subset of values in the model, when $s \subseteq t$ does not hold, then it is possible to exhibit an element of the model which is in the interpretation of type $s$ and not $t$.
-This can then be used to show more informative error messages to the programmer \citep{Castagna2005}, such as showing which value in $s$ is causing the equality not to hold.
-However due to being a more technical approach, such as the non-triviality of defining the interpretation of types as subsets of a model, the semantic method has received less attention than syntactic methods.
+For example, given two types $s$ and $t$, which represent subsets of values in the model, when $s \subseteq t$ does not hold, it is possible to exhibit an element of the model which is in the interpretation of type $s$ and not $t$.
+This can then be used to show more informative error messages to the programmer as shown by \citet{Castagna2005}, such as showing which value in $s$ is causing the equality not to hold.
+Secondly the set based approach to the type system leads itself to able to incorporate boolean operators into its types easily.
+However due to being a more technical approach, such as the non-triviality of defining the interpretation of types as subsets of a model as discussed below, the semantic method has received less attention than syntactic methods.
 
 The first problem we encounter in the semantic approach is that in such a model, $t_{1}$ is a subtype of $t_{2}$ if all the $t_{1}$-values are also $t_{2}$-values, i.e. the equality $t_{1} \subseteq t_{2}$ holds.
-However, in this way, subtyping is defined by relying on the notion of well-typed values; hence, we need the typing relation to determine typing judgements for values; but the typing rules require a subtyping relation to be fully defined.
+However, in this way, subtyping is defined by relying on the notion of well-typed values; hence, we need the typing relation to able to type values; but the typing rules require a subtyping relation to be fully defined.
 So, there is a circularity in our definition, as demonstrated in Figure \ref{fig:circ}.
 
 To solve this problem, we follow the framework defined by \citet{Frisch2008}.
-The general idea of the framework is that we first extend the types in the language with \emph{Boolean Combinators}: union $\lor$, intersection $\land$ and negation $\neg$.
-We can then define an abstract model $\beta$ where our types are interpreted according to the set-theoretic meaning of the combinators and can define subtyping as set-inclusion and therefore define the typing rules.
-Separately, if we have a notion of well-typed values, we can define another interpretation of types as sets of values.
-We can again define a subtyping relation $\nu$.
-While these may be different relation, if the models are chosen carefully such that:
+The general idea of the framework is that we first extend the types in the language with \emph{Boolean Combinators}: union $\lor$, intersection $\land$ and negation $\neg$ to give a type algebra $\tau$.
+We can then define an abstract model $\beta$ with a interpretation function $[\![ ]\!]_{\beta} : \tau \to \rho(\beta)$ (where $\rho(\beta)$ is the power-set of $\beta$).
+This model must capture the meaning of each type but also interprets the combinators in a set-theoretic way, such as $[\![s \land t]\!]_{\beta} = [\![s]\!]_{\beta} \cap [\![t]\!]_{\beta}$ etc.
+This model then induces the following subtyping relation:
+
+\begin{equation*}
+    s \leq_{\beta} t \iff [\![s]\!]_{\beta} \subseteq [\![t]\!]_{\beta}
+\end{equation*}
+
+and we can therefore define the typing rules.
+
+Separately, now that we have typing rules, we can define a new interpretation of types based on values $[\![t]\!]_{\mathrm{v}} = \left\{\mathrm{v} \in V \mid \: \vdash_{\beta} \mathrm{v} : t \right\}$ and then define a ``new''subtyping relation as above:
+
+\begin{equation*}
+    s \leq_{\mathrm{v}} t \iff [\![s]\!]_{\mathrm{v}} \subseteq [\![t]\!]_{\mathrm{v}}
+\end{equation*}
+
+While these may be different relations, if the models are chosen carefully such that:
 \begin{equation*}
     s \leq_{\beta} t \iff s \leq_{\nu} t,
 \end{equation*}
 
-then these models coincide and this closes the circularity.
+then these subtyping relations coincide and this closes the circularity.
 
 \begin{figure}
     \centering
@@ -176,10 +202,35 @@ All fields of an object cannot be changed after initialisation and all methods a
 While this restricts FJ to what is essentially a functional fragment of Java, it is still fully computationally complete.
 SFJ was intentionally based on FJ instead of the full Java language because features such as concurrency and reflection are orthogonal to the purpose of demonstrating the implementation of our novel semantic type system.
 
+\paragraph{On multimethods}
+Since FJ is a core language, some features of the full Java are removed: overloading methods is one of them.
+In our framework, leveraging the expressivity of boolean connectives and semantic subtyping, many of these features, and language constructs, e.g., lists, are restored: overloading methods is one of them. We can thus model \emph{multimethods} \citep{BC97}, which according to the authors is ``\emph{very clean and easy to understand [...] it would be the best solution for a brand new language}".
+As an example \citet{Dardha2013,Dardha2017}, consider the following class declarations:
+$$
+    \begin{array}{ll}
+        \syndecl{A}{\mathit{Object}} {
+         &
+            \qquad
+            \syndecl{B}{A} {
+                \\
+                \qquad\quad \mathbf{int}\ \mathit{length}\ (\mathbf{string}\ s)\{\ \ldots\ \}\qquad
+         &
+                \qquad\qquad\quad \mathbf{int}\ \mathit{length}\ (\mathbf{int}\ n)\{\ \ldots\ \}
+                \\
+            }
+         &
+            \qquad }
+    \end{array}
+$$
+Method {\it length} has type $\mathbf{string} \rightarrow \mathbf{int}$ in $A$. However, in $B$ it has type $(\mathbf{string} \rightarrow \mathbf{int}) \synwedge (\mathbf{int} \rightarrow \mathbf{int})$,
+which can be simplified as $(\mathbf{string} \synvee \mathbf{int}) \rightarrow \mathbf{int}$.
+
+
 \section{Tools}
 
-The type system of FSJ was built using ANTLR \citep{parr2013} to define the grammar of the language and create a parser for this grammar rather than having to create these by hand, making the initial development process much quicker.
-It accepts a grammar using Extended Backus-Naur Form (EBNF) notation to create ANTLR rules which are a list of productions or alternatives. A general form of a rule is therefore as follow:
+The type system of FSJ was built using ANTLR \citep{parr2013} to define the grammar of the language and automatically create a parser for this grammar rather than having to create one by hand, which made the initial development process much quicker.
+It accepts a grammar using Extended Backus-Naur Form (EBNF) \footnote{See ISO/IEC 14977 for reference, although it is not the standard used in the examples} notation to create ANTLR rules which are a list of productions or alternatives.
+A general form of a rule is as follow:
 
 $$
     \begin{array}{llll}
@@ -191,11 +242,14 @@ $$
         \\
              & | & alternative_{n}
         \\
-             & ; & 
+             & ; &
     \end{array}
 $$
 
-Each alternative production in a rule can itself be a list of elements, where an element can be another rule or just a terminating token. Since we are using EBNF notation, we can also use \emph{*} and \emph{?} to respectively signify repeated and conditional elements in a production. We show an excerpt taken from the SFJ grammar as an example:
+Each alternative production in a rule can itself be a list of elements, where an element can be another rule or just a terminating token.
+Since we are using EBNF notation, we can also use \emph{*} and \emph{?} to respectively signify repeated and conditional elements in a production.
+We can also use $|$ to give several alternatives for a single element.
+We show an excerpt taken from the SFJ grammar as an example:
 
 $$
     \begin{array}{llll}
@@ -208,28 +262,28 @@ $$
         \\
                        & | & \mbox{TRUE}
         \\
-                       & ; & 
+                       & ; &
         \\
         \\
         TRUE           & : & \mbox{'true'}
         \\
-                       & ; & 
+                       & ; &
         \\
         \\
         NUMBER         & : & \mbox{DIGIT (DIGIT)*}
         \\
-                       & ; & 
+                       & ; &
         \\
         \\
         DIGIT          & : & '0'..'9'
         \\
-                       & ; & 
+                       & ; &
     \end{array}
 $$
 
 \section{Related Work}
 The closest similar area of research would likely be the work on $\mathbb{C}$Duce
-\citep{Benzaken2003}, which is also a functional language with a semantic type system designed for
+\citep{Benzaken2003}, which is xalso a functional language with a semantic type system designed for
 working with XML documents and a continuation of the work on XDuce \citep{Hosoya2003}. The language
 extended XDuce by introducing less XML specific types such as records, boolean connectives and arrow
 types. This therefore makes it similar to (\textit{TODO reword}) our language in that a class-based
@@ -239,7 +293,7 @@ semantic type system is a combination of the $\mathbb{C}$Duce record types with 
 Our work and the work on $\mathbb{C}$Duce follow the functional style of $\lambda$-calculus,
 whereas the work by \citet{Castagna2008} extends $\pi$-calculus with semantic subtyping.
 (\textit{TODO reword}) Similar work to ours creating an implementation for this would result in a
-Golang-like language \citep{Meyerson2014}, creating a concurrency-focused language with more
+Golang-like \footnote{https://golang.org/} like language, creating a concurrency-focused language with more
 intuitive types. The paper found that it was required to be able to decide and resolve the atomicy,
 that is whether the only proper subtype is the empty type, of types in order to decide the subtyping
 relation, and observes that this same problem appears in $\lambda$-calculus and any other
@@ -247,15 +301,18 @@ semantic-based system, for which we will show where we encountered this problem 
 paper.
 
 %===================================================================================================
-\chapter{Analysis/Requirements}
-What is the problem that you want to solve, and how did you arrive at it?
-\section{Guidance}
-Make it clear how you derived the constrained form of your problem via a clear and logical process.
 
-%==================================================================================================================================
-\chapter{Design}
-How is this problem to be approached, without reference to specific implementation details?
+% \chapter{Analysis/Requirements}
+% What is the problem that you want to solve, and how did you arrive at it?
+% \section{Guidance}
+% Make it clear how you derived the constrained form of your problem via a clear and logical process.
 
+%===================================================================================================
+\chapter{SFJ: Design and Implementation}
+
+\section{Syntax}
+
+\subsection{Syntax of Types}
 
 \label{sec:design}
 The syntax of types is given by the following grammar \citep{Dardha2013,Dardha2017}:
@@ -273,7 +330,20 @@ $$
     \end{array}
 $$
 
-The syntax of terms is given by the following grammar and is based on the standard syntax of terms in FJ \cite{Igarashi1999,Dardha2013,Dardha2017}:
+$\alpha$-types are used to type fields and $\mu$-types are used to type methods.
+Type $\zero$ is the empty type.
+Type $\btypes$ denotes the \emph{basic} types, such as integers, booleans, etc.
+    {Record} types $[\wt{l:\tau}]$, where $\wt l$ is a sequence of disjoint labels are used to type objects.
+Arrow types $\alpha \to \alpha$ are used to type methods.
+The boolean types using ${and}$ and ${not}$ have their expected set-theoretic meanings, and ${or}$ is obtained by their combination.\\
+
+\subsection{Syntax of Terms}
+
+The syntax of terms is given by the following grammar and is based on the standard syntax of terms in FJ \cite{Igarashi1999,Dardha2013,Dardha2017}.
+We assume an infinite countable set of names, with some special names: $\mathit{Object}$ indicates the root class, $\synthis$  indicates the current and $\synsuper$ indicates the parent object.
+We let  $A, B, C, \ldots$ range over classes; $a, b, \ldots$ over fields; $m, n, \ldots$ over methods and $x, y, z, \ldots$ range over variables.
+Constants $c$ range over an infinite countable set $\mathcal{K}$.
+
 \begin{align*}
      & \mbox{\textit{Class declaration}}  & L \; ::= \; & \syndecl{C}{C}{\wt{\alpha \ a};\ K; \ \wt{M}\ }                         \\
      & \mbox{\textit{Constructor}}        & K \;::=\;   & C\ (\wt{\alpha\ x})\ \{\ \synsuper(\wt{x});\ \wt{\synthis.a}=\wt{x}; \} \\
@@ -281,75 +351,32 @@ The syntax of terms is given by the following grammar and is based on the standa
      & \mbox{\textit{Expressions}}        & e \; ::=\;  & x\ |\  c\ |\ e.a\ |\ e.m(e) \ | \ \synnew C(\wt{e})
 \end{align*}
 
-\begin{figure}
-    \centering
-    \includegraphics[width=0.4\linewidth]{images/class.PNG}
-    \caption{TODO caption, \citep{Igarashi1999}}
-    \label{fig:class}
-\end{figure}
+A {program} $(\wt{L}, e)$ is a pair of a sequence of class declarations $\wt L$, giving rise to a class hierarchy as specified by the inheritance relation, and an expression $e$ to be evaluated.
+%
+A class declaration $L$ specifies the name of the class, the name of the parent class it extends, its typed fields , the constructor $K$ and its method declarations $M$.
+The constructor $K$ initializes the fields of the object by assigning values to the fields inherited by the super-class and to the fields declared in the current \textbf{this} class.
+%
+A method declaration $M$ specifies the signature of the method, namely the return type, the method name and the formal parameter as well as the body of the method.
+Notice that in our theoretical development we use unary methods, without loss of generality: tuples of arguments can be modelled by an object that instantiates a ``special''class containing as fields all the needed arguments.
+Expressions $e$ include variables, constants, field accesses, method invocations and object creations.
 
-\section{Guidance}
-Design should cover the abstract design in such a way that someone else might be able to do what you did, but with a different language or library or tool.
+%===================================================================================================
 
-%==================================================================================================================================
 \chapter{Implementation}
+
 What did you do to implement this idea, and what technical achievements did you make?
+
 \section{Guidance}
 You can't talk about everything. Cover the high level first, then cover important, relevant or impressive details.
-
-
 
 \section{General points}
 
 These points apply to the whole dissertation, not just this chapter.
 
-
-
 \subsection{Figures}
+
 \emph{Always} refer to figures included, like Figure \ref{fig:relu}, in the body of the text. Include full, explanatory captions and make sure the figures look good on the page.
-You may include multiple figures in one float, as in Figure \ref{fig:synthetic}, using \texttt{subcaption}, which is enabled in the template.
-
-
-
-% Figures are important. Use them well.
-\begin{figure}
-    \centering
-    \includegraphics[width=0.5\linewidth]{images/relu.pdf}
-    
-    \caption{In figure captions, explain what the reader is looking at: ``A schematic of the rectifying linear unit, where $a$ is the output amplitude,
-        $d$ is a configurable dead-zone, and $Z_j$ is the input signal'', as well as why the reader is looking at this:
-        ``It is notable that there is no activation \emph{at all} below 0, which explains our initial results.''
-        \textbf{Use vector image formats (.pdf) where possible}. Size figures appropriately, and do not make them over-large or too small to read.
-    }
-    
-    % use the notation fig:name to cross reference a figure
-    \label{fig:relu}
-\end{figure}
-
-
-\begin{figure}
-    \centering
-    \begin{subfigure}[b]{0.45\textwidth}
-        \includegraphics[width=\textwidth]{images/synthetic.png}
-        \caption{Synthetic image, black on white.}
-        \label{fig:syn1}
-    \end{subfigure}
-    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc.
-    %(or a blank line to force the subfigure onto a new line)
-    \begin{subfigure}[b]{0.45\textwidth}
-        \includegraphics[width=\textwidth]{images/synthetic_2.png}
-        \caption{Synthetic image, white on black.}
-        \label{fig:syn2}
-    \end{subfigure}
-    ~ %add desired spacing between images, e. g. ~, \quad, \qquad, \hfill etc.
-    %(or a blank line to force the subfigure onto a new line)
-    \caption{Synthetic test images for edge detection algorithms. \subref{fig:syn1} shows various gray levels that require an adaptive algorithm. \subref{fig:syn2}
-        shows more challenging edge detection tests that have crossing lines. Fusing these into full segments typically requires algorithms like the Hough transform.
-        This is an example of using subfigures, with \texttt{subref}s in the caption.
-    }\label{fig:synthetic}
-\end{figure}
-
-\clearpage
+You may include multiple figures in one float, as in Figure, using \texttt{subcaption}, which is enabled in the template.
 
 \subsection{Equations}
 
@@ -363,129 +390,24 @@ For example, we might define:
 where $\hat{f}(\xi)$ is the Fourier transform of the time domain signal $f(x)$.
 
 \subsection{Algorithms}
-Algorithms can be set using \texttt{algorithm2e}, as in Algorithm \ref{alg:metropolis}.
 
-% NOTE: line ends are denoted by \; in algorithm2e
-\begin{algorithm}
-    \DontPrintSemicolon
-    \KwData{$f_X(x)$, a probability density function returing the density at $x$.\; $\sigma$ a standard deviation specifying the spread of the proposal distribution.\;
-        $x_0$, an initial starting condition.}
-    \KwResult{$s=[x_1, x_2, \dots, x_n]$, $n$ samples approximately drawn from a distribution with PDF $f_X(x)$.}
-    \Begin{
-        $s \longleftarrow []$\;
-        $p \longleftarrow f_X(x)$\;
-        $i \longleftarrow 0$\;
-        \While{$i < n$}
-        {
-            $x^\prime \longleftarrow \mathcal{N}(x, \sigma^2)$\;
-            $p^\prime \longleftarrow f_X(x^\prime)$\;
-            $a \longleftarrow \frac{p^\prime}{p}$\;
-            $r \longleftarrow U(0,1)$\;
-            \If{$r<a$}
-            {
-                $x \longleftarrow x^\prime$\;
-                $p \longleftarrow f_X(x)$\;
-                $i \longleftarrow i+1$\;
-                append $x$ to $s$\;
-            }
-        }
-    }
-    
-    \caption{The Metropolis-Hastings MCMC algorithm for drawing samples from arbitrary probability distributions,
-        specialised for normal proposal distributions $q(x^\prime|x) = \mathcal{N}(x, \sigma^2)$. The symmetry of the normal distribution means the acceptance rule takes the simplified form.}\label{alg:metropolis}
-\end{algorithm}
+Algorithms can be set using \texttt{algorithm2e}, as in Algorithm.
 
 \subsection{Tables}
 
-If you need to include tables, like Table \ref{tab:operators}, use a tool like https://www.tablesgenerator.com/ to generate the table as it is
-extremely tedious otherwise.
+If you need to include tables, like Table , use a tool like https://www.tablesgenerator.com/ to generate the table as it is extremely tedious otherwise.
 
-\begin{table}[]
-    \caption{The standard table of operators in Python, along with their functional equivalents from the \texttt{operator} package. Note that table
-        captions go above the table, not below. Do not add additional rules/lines to tables. }\label{tab:operators}
-    %\tt
-    \rowcolors{2}{}{gray!3}
-    \begin{tabular}{@{}lll@{}}
-        %\toprule
-        \textbf{Operation}    & \textbf{Syntax}                         & \textbf{Function}                          \\ %\midrule % optional rule for header
-        Addition              & \texttt{a + b}                          & \texttt{add(a, b)}                         \\
-        Concatenation         & \texttt{seq1 + seq2}                    & \texttt{concat(seq1, seq2)}                \\
-        Containment Test      & \texttt{obj in seq}                     & \texttt{contains(seq, obj)}                \\
-        Division              & \texttt{a / b}                          & \texttt{div(a, b) }                        \\
-        Division              & \texttt{a / b}                          & \texttt{truediv(a, b) }                    \\
-        Division              & \texttt{a // b}                         & \texttt{floordiv(a, b)}                    \\
-        Bitwise And           & \texttt{a \& b}                         & \texttt{and\_(a, b)}                       \\
-        Bitwise Exclusive Or  & \texttt{a \textasciicircum b}           & \texttt{xor(a, b)}                         \\
-        Bitwise Inversion     & \texttt{$\sim$a}                        & \texttt{invert(a)}                         \\
-        Bitwise Or            & \texttt{a | b}                          & \texttt{or\_(a, b)}                        \\
-        Exponentiation        & \texttt{a ** b}                         & \texttt{pow(a, b)}                         \\
-        Identity              & \texttt{a is b}                         & \texttt{is\_(a, b)}                        \\
-        Identity              & \texttt{a is not b}                     & \texttt{is\_not(a, b)}                     \\
-        Indexed Assignment    & \texttt{obj{[}k{]} = v}                 & \texttt{setitem(obj, k, v)}                \\
-        Indexed Deletion      & \texttt{del obj{[}k{]}}                 & \texttt{delitem(obj, k)}                   \\
-        Indexing              & \texttt{obj{[}k{]}}                     & \texttt{getitem(obj, k)}                   \\
-        Left Shift            & \texttt{a \textless{}\textless b}       & \texttt{lshift(a, b)}                      \\
-        Modulo                & \texttt{a \% b}                         & \texttt{mod(a, b)}                         \\
-        Multiplication        & \texttt{a * b}                          & \texttt{mul(a, b)}                         \\
-        Negation (Arithmetic) & \texttt{- a}                            & \texttt{neg(a)}                            \\
-        Negation (Logical)    & \texttt{not a}                          & \texttt{not\_(a)}                          \\
-        Positive              & \texttt{+ a}                            & \texttt{pos(a)}                            \\
-        Right Shift           & \texttt{a \textgreater{}\textgreater b} & \texttt{rshift(a, b)}                      \\
-        Sequence Repetition   & \texttt{seq * i}                        & \texttt{repeat(seq, i)}                    \\
-        Slice Assignment      & \texttt{seq{[}i:j{]} = values}          & \texttt{setitem(seq, slice(i, j), values)} \\
-        Slice Deletion        & \texttt{del seq{[}i:j{]}}               & \texttt{delitem(seq, slice(i, j))}         \\
-        Slicing               & \texttt{seq{[}i:j{]}}                   & \texttt{getitem(seq, slice(i, j))}         \\
-        String Formatting     & \texttt{s \% obj}                       & \texttt{mod(s, obj)}                       \\
-        Subtraction           & \texttt{a - b}                          & \texttt{sub(a, b)}                         \\
-        Truth Test            & \texttt{obj}                            & \texttt{truth(obj)}                        \\
-        Ordering              & \texttt{a \textless b}                  & \texttt{lt(a, b)}                          \\
-        Ordering              & \texttt{a \textless{}= b}               & \texttt{le(a, b)}                          \\
-        % \bottomrule
-    \end{tabular}
-\end{table}
 \subsection{Code}
 
-Avoid putting large blocks of code in the report (more than a page in one block, for example). Use syntax highlighting if possible, as in Listing \ref{lst:callahan}.
+Avoid putting large blocks of code in the report (more than a page in one block, for example). Use syntax highlighting if possible, as in Listing.
 
-\begin{lstlisting}[language=python, float, caption={The algorithm for packing the $3\times 3$ outer-totalistic binary CA successor rule into a
-    $16\times 16\times 16\times 16$ 4 bit lookup table, running an equivalent, notionally 16-state $2\times 2$ CA.}, label=lst:callahan]
-    def create_callahan_table(rule="b3s23"):
-        """Generate the lookup table for the cells."""
-        s_table = np.zeros((16, 16, 16, 16), dtype=np.uint8)
-        birth, survive = parse_rule(rule)
+%===================================================================================================
 
-        # generate all 16 bit strings
-        for iv in range(65536):
-            bv = [(iv >> z) & 1 for z in range(16)]
-            a, b, c, d, e, f, g, h, i, j, k, l, m, n, o, p = bv
-
-            # compute next state of the inner 2x2
-            nw = apply_rule(f, a, b, c, e, g, i, j, k)
-            ne = apply_rule(g, b, c, d, f, h, j, k, l)
-            sw = apply_rule(j, e, f, g, i, k, m, n, o)
-            se = apply_rule(k, f, g, h, j, l, n, o, p)
-
-            # compute the index of this 4x4
-            nw_code = a | (b << 1) | (e << 2) | (f << 3)
-            ne_code = c | (d << 1) | (g << 2) | (h << 3)
-            sw_code = i | (j << 1) | (m << 2) | (n << 3)
-            se_code = k | (l << 1) | (o << 2) | (p << 3)
-
-            # compute the state for the 2x2
-            next_code = nw | (ne << 1) | (sw << 2) | (se << 3)
-
-            # get the 4x4 index, and write into the table
-            s_table[nw_code, ne_code, sw_code, se_code] = next_code
-
-        return s_table
-
-\end{lstlisting}
-
-%==================================================================================================================================
 \chapter{Evaluation}
 How good is your solution? How well did you solve the general problem, and what evidence do you have to support that?
 
 \section{Guidance}
+
 \begin{itemize}
     \item
           Ask specific questions that address the general problem.
@@ -502,7 +424,7 @@ How good is your solution? How well did you solve the general problem, and what 
 \section{Evidence}
 Make sure you present your evidence well. Use appropriate visualisations, reporting techniques and statistical analysis, as appropriate.
 
-If you visualise, follow the basic rules, as illustrated in Figure \ref{fig:boxplot}:
+If you visualise, follow the basic rules, as illustrated in Figure:
 \begin{itemize}
     \item Label everything correctly (axis, title, units).
     \item Caption thoroughly.
@@ -513,23 +435,13 @@ If you visualise, follow the basic rules, as illustrated in Figure \ref{fig:boxp
 
 See the file \texttt{guide\_to\_visualising.pdf} for further information and guidance.
 
-\begin{figure}
-    \centering
-    \includegraphics[width=1.0\linewidth]{images/boxplot_finger_distance.pdf}
-    
-    \caption{Average number of fingers detected by the touch sensor at different heights above the surface, averaged over all gestures. Dashed lines indicate
-        the true number of fingers present. The Box plots include bootstrapped uncertainty notches for the median. It is clear that the device is biased toward
-        undercounting fingers, particularly at higher $z$ distances.
-    }
-    
-    % use the notation fig:name to cross reference a figure
-    \label{fig:boxplot}
-\end{figure}
 
+%===================================================================================================
 
-%==================================================================================================================================
 \chapter{Conclusion}
+
 Summarise the whole project for a lazy reader who didn't read the rest (e.g. a prize-awarding committee).
+
 \section{Guidance}
 \begin{itemize}
     \item
@@ -545,45 +457,144 @@ Summarise the whole project for a lazy reader who didn't read the rest (e.g. a p
               won't get credit for things you haven't done}.
 \end{itemize}
 
-%==================================================================================================================================
-%
-%
-%==================================================================================================================================
+%===================================================================================================
+
 %  APPENDICES
 
 \begin{appendices}
 
 
-    \chapter{Appendices}
-    
-    
-    Typical inclusions in the appendices are:
-    
-    \begin{itemize}
-        \item
-              Copies of ethics approvals (required if obtained)
-        \item
-              Copies of questionnaires etc. used to gather data from subjects.
-        \item
-              Extensive tables or figures that are too bulky to fit in the main body of
-              the report, particularly ones that are repetitive and summarised in the body.
-              
-        \item Outline of the source code (e.g. directory structure), or other architecture documentation like class diagrams.
-              
-        \item User manuals, and any guides to starting/running the software.
-              
-    \end{itemize}
-    
-    \textbf{Don't include your source code in the appendices}. It will be
-    submitted separately.
-    
+    \chapter{SFJ ANTLR Grammar}
+
+    \begin{lstlisting}
+        grammar jsf;
+
+        @header{
+        package jsf;
+        }
+
+        program
+                :       classDecl* expression EOF
+                ;
+
+        classDecl
+                :   CLASS classlbl=ID (EXTEND extendlbl=ID)? LBRAC
+                        fieldDecl* constructorDecl methodDecl*
+                    RBRAC
+                ;
+
+        fieldDecl
+                :       type ID SEMI
+                ;
+
+        constructorDecl
+                :       constructorname=ID LPAR (type ID (COMMA type ID)*)? RPAR LBRAC
+                            superDecl
+                            fieldAssignment*
+                        RBRAC
+                ;
+
+        superDecl
+                :       SUPER LPAR (ID (COMMA ID)*)? RPAR SEMI
+                ;
+
+        fieldAssignment
+                :       THIS DOT field=ID EQ parameter=ID SEMI
+                ;
+
+        methodDecl
+                :       returntype=type name=ID LPAR (paramtype=methodType paramname=ID)? RPAR LBRAC
+                            RETURN expression SEMI
+                        RBRAC
+                ;
+
+        expression
+                :       e1=primExpression
+                            (op=(PLUS | MINUS | DIV | MULT) e2=primExpression)?
+                ;
+
+        primExpression
+                :       NUMBER
+                |       DECIMAL
+                |       TRUE
+                |       FALSE
+                |       ID
+                |       THIS
+                |       primExpression DOT ID
+                |       primExpression DOT ID LPAR (expression)? RPAR
+                |       NEW ID LPAR (expression (COMMA expression)*)? RPAR
+                ;
+
+        type
+                :       basicType
+                |       ID
+                |       NOT classlbl=type
+                |       LPAR type1=type bool=(AND | OR) type2=type RPAR
+                ;
+
+        basicType
+                :       BYTE | INT | LONG | FLOAT | DOUBLE | CHAR | BOOL
+                ;
+
+        methodType
+                : type
+                | LPAR (NOT)? ID COLON param=type ARROW returnType=type RPAR
+                ;
+
+
+        BYTE    :       'byte'                      ;
+        INT     :       'int'                       ;
+        LONG    :       'long'                      ;
+        FLOAT   :       'float'                     ;
+        DOUBLE  :       'double'                    ;
+        CHAR    :       'char'                      ;
+        BOOL    :       'bool'                      ;
+
+        TRUE    :       'true'                      ;
+        FALSE   :       'false'                     ;
+
+        AND     :       'and'                       ;
+        OR      :       'or'                        ;
+        NOT     :       'not'                       ;
+
+        CLASS   :       'class'                     ;
+        SUPER   :       'super'                     ;
+        EXTEND  :       'extends'                   ;
+        THIS    :       'this'                      ;
+        RETURN  :       'return'                    ;
+        NEW     :       'new'                       ;
+
+        LPAR    :       '('                         ;
+        RPAR    :       ')'                         ;
+        LBRAC   :       '{'                         ;
+        RBRAC   :       '}'                         ;
+        EQ      :       '='                         ;
+        PLUS    :       '+'                         ;
+        MINUS   :       '-'                         ;
+        DIV     :       '/'                         ;
+        MULT    :       '*'                         ;
+        COMMA   :       ','                         ;
+        DOT     :       '.'                         ;
+        SEMI    :       ';'                         ;
+        COLON   :       ':'                         ;
+        ARROW   :       '->'                        ;
+
+        ID      :       LETTER (LETTER | DIGIT)*    ;
+        NUMBER  :       DIGIT (DIGIT)*              ;
+        DECIMAL :       DIGIT DOT (DIGIT)*          ;
+        SPACE   :       (' ' | '\t')+   -> skip     ;
+        EOL     :       '\r'? '\n'      -> skip     ;
+        EMPTY   :       'EMPTY'                     ;
+
+        fragment LETTER :   'a'..'z' | 'A'..'Z'     ;
+        fragment DIGIT  :   '0'..'9'                ;
+    \end{lstlisting}
+
+    \chapter{TODO}
+
 \end{appendices}
 
-%==================================================================================================================================
-%   BIBLIOGRAPHY
-
-% The bibliography style is abbrvnat
-% The bibliography always appears last, after the appendices.
+%===================================================================================================
 
 \bibliographystyle{abbrvnat}
 
