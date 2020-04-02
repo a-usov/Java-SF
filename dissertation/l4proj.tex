@@ -3,6 +3,10 @@
 \input{semmacros}
 \usepackage{amsmath, amssymb}
 
+\SetKwRepeat{Do}{do}{while}
+\SetKwProg{Fn}{Function}{:}{end}
+
+
 \begin{document}
 
 %===================================================================================================
@@ -46,11 +50,11 @@ The end goal in all programming projects is to create a solution to the task at 
 However, this very rarely actually happens.
 
 On the one hand, this is often because the original problem is not statically defined.
-If it is a solution for an external client, then their requirements and needs will change over time, or similarly the needs and wants of the users using this project can also change.
+If, for example, it is a solution for an external client, then their requirements and needs will change over time.
 This means the project needs to be adapted over time.
 On the other hand, and almost always much less evident, is that programs do not work exactly as the programmer imagines them to work.
 
-These are in general called \emph{bugs} in a program, and have become more and more common as projects have become more complex compared to the early days of computing and the underlying hardware we work on has also become more complex.
+In general these are called \emph{bugs} in a program, and have become more and more common as projects and the underlying hardware they run on have become more complex since the early days of computing.
 Therefore in both academia and industry there have been great efforts over the years to create tools that allow us to decrease the amount of bugs in our programs and increase our productivity.
 
 \subsection{Static Code Analysis}
@@ -58,23 +62,23 @@ Therefore in both academia and industry there have been great efforts over the y
 One area of great effort has been in the development of static code analysis tools.
 Some of these exist integrated into the language itself such as with Spark \citep{Carre1990}.
 Spark is a formally defined language based on the Ada \citep{Ada1979} language intended for the development of high integrity software such as flight control systems.
-Others exist as separate, well-known tools that exist alongside the language such as the Clang analysis tools for C and C++ \citep{kremenek2008}.
+Others exist as separate, well-known tools that exist alongside the language such as the Clang analysis tools for C and C++. \footnote{https://clang.llvm.org/docs/ClangTools.html}
 
 Whilst they are not necessarily needed to write correct programs, these tools have quickly become industry standards for maintaining a level of correctness within codebases and avoiding typical programming errors.
 
-\subsection{Into Static Analysis}
+\subsection{How static analysis works}
 
-Underlying all of the previously mentioned static code analysis tools, is their use of the \emph{type system} of the language.
+Underlying how all of the previously mentioned static code analysis tools work, is through their use of the \emph{type system} of the language.
 Type systems at their most basic work by assigning types to various constructs of a program so that incompatible types cannot be used.
 
 For example, one common area of error in C code that the Clang tools warn about is implicit conversions, where the value of an expression is a different type from the one expected, such as the use of a floating point number where an integer is expected.
-The C language will implicitly convert the value to an integer, however this can cause unexpected behaviour, unbeknownst to the programmer.
-Whilst being inconvenient, this conversion needs to happen as the type system of the language dictates that you cannot use any other type other than an integer where an integer is expected.
+The C language will implicitly convert the value to an integer, however this happens unbeknownst to the programmer, which can cause unexpected behaviour later on in the program.
+The tools, using the same knowledge that you can only use an integer where an integer is expected, can therefore flag this as being a potential bug.
 
 \section{Varying Type Systems}
 
 The effectiveness of static analysis tools and more generally the \emph{safety} and \emph{expressivity} of a programming language therefore depends on the type system that is used.
-Type systems have evolved from the relatively simple systems in languages like C to more complex ones such as in Java where there are custom object types and subtyping relations where types can be substituted for one another.
+Type systems have evolved from the relatively simple systems in languages like C to more complex ones such as in Java which have class types and subtyping relations where types can be substituted for one another.
 
 More modern advances in type systems include the use of linear types in the Cyclone \citep{grossman2002} language that allow us to more naturally and logically define finite state machines.
 There also exist other new developments in type systems such as Boolean types which are explored in this paper.
@@ -91,9 +95,12 @@ This therefore leads to less understandable and less maintainable code that coul
 
 \subsection{Aims}
 
-The aim of this project is to implement a new programming language, which we further call Semantic Featherweight Java (SFJ), which uses a new proposed type system consisting of boolean types and a semantic subtyping algorithm.
-This project aims to transform the mathematical definition of such a type system into an actual software implementation, solving the issues encountered doing so.
-The language should be able to illustrate the improved solutions to the common example problems encountered in a language without these features such as Java.
+The aim of this project is to implement a new programming language, which we further call Semantic Featherweight Java (SFJ), which uses a new proposed type system consisting of a semantic subtyping algorithm, which is based on set-theoretic models, and boolean type connectives such as: \emph{and}, \emph{or} and \emph{not}.
+
+While there is some non-trivial mathematical machinery involved in implementing such a type system, once it is implemented, this more powerful type system can be used by programmers without knowledge of the implementation underneath.
+
+This project aims to transform the mathematical definition of such a type system by \citet{Dardha2017} into an actual software implementation, solving the issues encountered doing so.
+The language should be able to illustrate improved solutions to the example problems which are encountered in a language without these features such as Java.
 Furthermore, the language will be evaluated so see whether these additional language features are intuitive to use.
 
 \section{Dissertation Outline}
@@ -103,9 +110,9 @@ The dissertation is structured into seven chapters as follow:
 \begin{itemize}
     \item
           \textbf{Chapter 2} provides background about type systems and Featherweight Java, the language on top of which the new type system is implemented.
-          We also discuss some existing work on semantic type systems and boolean types.
+          We also discuss the tools which were used in this project and existing work on semantic type systems and boolean types.
     \item
-          \textbf{Chapter 3} TODO
+          \textbf{Chapter 3} introduces the design a    nd implementation of SFJ. This includes the syntax of the language, and the key algorithms which were used to implement the type system.
     \item
           \textbf{Chapter 4} TODO
     \item
@@ -194,6 +201,41 @@ then these subtyping relations coincide and this closes the circularity.
     \label{fig:circ}
 \end{figure}
 
+\section{Nominal vs Structural Subtyping}
+
+Orthogonally to the discussion above of syntactic versus semantic approaches, for object-oriented languages such as SFJ, there also exists two other opposing approaches to defining a subtyping relation: the \emph{nominal} and \emph{structural} approaches.
+
+Nominal subtyping is based on explicit declarations by the developer of the class-hierarchy and is the approach used in Java. $A$ is a subtype of $B$ if and only if it declared to be so by including an explicit declaration that $A$ extends $B$. In Java, every user-defined class either extends another user-defined class or extends the root $Object$ class, creating a tree-like subtyping hierarchy.
+
+Structural subtyping uses the structure of classes, namely its fields and methods, to define the subtyping relation. $A$ is a subtype of $B$ if and only if the fields and methods of $B$ are a subset of the fields and methods of $A$, and that field and method return types are covariant and the method argument types are contravariant. This is similar to the requirements in Liskov's substitution principle \citep{Liskov1994} without the behavioural conditions.
+
+$$
+    \begin{array}{ll}
+        \syndecl{Apple}{\mathit{Object}} {
+         &
+            \qquad
+            \syndecl{Steel}{\mathit{Object}} {
+                \\
+                \qquad\quad \mathbf{float}\ \mathit{setPrice}\ (\mathbf{int}\ a)\{\ \ldots\ \}\qquad
+         &
+                \qquad\qquad\quad \mathbf{int}\ \mathit{quality}\
+                \\
+            }
+            \qquad\quad\qquad
+         &
+            \qquad\qquad\quad \mathbf{int}\ \mathit{setPrice}\ (\mathbf{float}\ a)\{\ \ldots\ \}
+            \\
+         &
+            \qquad }
+    \end{array}
+$$
+
+We can see in the example above that $Steel$ is a structural subtype of $Apple$, as we can see that the use of any field or method of $Apple$ would also be valid for an object of type $Steel$. Similarly any field or method return types in $Steel$ are the same or less generic than in $Apple$, and any method argument types are the same or more generic in $Steel$ than in $Apple$. However, $Apple$ is not a subtype of $Steel$ as $Apple$ is missing the $quality$ field. However in some cases a pair of classes can both be subtypes of one another.
+
+Nominal subtyping is more popular than structural subtyping, which makes it perhaps unsurprising that nominal subtyping aligns well with the syntactic approach, and structural subtyping aligns well with the semantic approach.
+
+In our implementation of SFJ based on the work of \citet{Dardha2017, Dardha2013}, we implement a semantic type system however we include both nominal and structural subtyping as we will further show that this approach gives the programmer a choice in which approach he may wish to use, but also allows greater flexibility and compactness for the logic a programmer may wish to implement.
+
 \section{Featherweight Java}
 
 The syntax of SFJ is exactly that of Featherweight Java (FJ) \citep{Igarashi1999}, with only the associated type system being different.
@@ -202,10 +244,12 @@ All fields of an object cannot be changed after initialisation and all methods a
 While this restricts FJ to what is essentially a functional fragment of Java, it is still fully computationally complete.
 SFJ was intentionally based on FJ instead of the full Java language because features such as concurrency and reflection are orthogonal to the purpose of demonstrating the implementation of our novel semantic type system.
 
-\paragraph{On multimethods}
-Since FJ is a core language, some features of the full Java are removed: overloading methods is one of them.
-In our framework, leveraging the expressivity of boolean connectives and semantic subtyping, many of these features, and language constructs, e.g., lists, are restored: overloading methods is one of them. We can thus model \emph{multimethods} \citep{BC97}, which according to the authors is ``\emph{very clean and easy to understand [...] it would be the best solution for a brand new language}".
-As an example \citet{Dardha2013,Dardha2017}, consider the following class declarations:
+\paragraph{Multimethods}
+While FJ removes some feature of the full Java language, the introduction of boolean types and semantic subtyping restores some of these for free.
+Overloaded methods is one of these.
+As suggested by \citet{Dardha2017}, we can thus model \emph{multimethods} \citep{BC97}, which according to the authors is ``\emph{very clean and easy to understand [...] it would be the best solution for a brand new language}".
+As an example \citet{Dardha2013,Dardha2017} consider the following class declarations:
+
 $$
     \begin{array}{ll}
         \syndecl{A}{\mathit{Object}} {
@@ -222,6 +266,7 @@ $$
             \qquad }
     \end{array}
 $$
+
 Method {\it length} has type $\mathbf{string} \rightarrow \mathbf{int}$ in $A$. However, in $B$ it has type $(\mathbf{string} \rightarrow \mathbf{int}) \synwedge (\mathbf{int} \rightarrow \mathbf{int})$,
 which can be simplified as $(\mathbf{string} \synvee \mathbf{int}) \rightarrow \mathbf{int}$.
 
@@ -340,25 +385,174 @@ The boolean types using ${and}$ and ${not}$ have their expected set-theoretic me
 \subsection{Syntax of Terms}
 
 The syntax of terms is given by the following grammar and is based on the standard syntax of terms in FJ \cite{Igarashi1999,Dardha2013,Dardha2017}.
+
 We assume an infinite countable set of names, with some special names: $\mathit{Object}$ indicates the root class, $\synthis$  indicates the current and $\synsuper$ indicates the parent object.
 We let  $A, B, C, \ldots$ range over classes; $a, b, \ldots$ over fields; $m, n, \ldots$ over methods and $x, y, z, \ldots$ range over variables.
-Constants $c$ range over an infinite countable set $\mathcal{K}$.
 
 \begin{align*}
      & \mbox{\textit{Class declaration}}  & L \; ::= \; & \syndecl{C}{C}{\wt{\alpha \ a};\ K; \ \wt{M}\ }                         \\
      & \mbox{\textit{Constructor}}        & K \;::=\;   & C\ (\wt{\alpha\ x})\ \{\ \synsuper(\wt{x});\ \wt{\synthis.a}=\wt{x}; \} \\
      & \mbox{\textit{Method declaration}} & M \; ::= \; & \alpha \ m\ (\alpha \ x)\ \{\ \synret e; \}                             \\
-     & \mbox{\textit{Expressions}}        & e \; ::=\;  & x\ |\  c\ |\ e.a\ |\ e.m(e) \ | \ \synnew C(\wt{e})
+     & \mbox{\textit{Expressions}}        & e \; ::=\;  & x\ |\ e.a\ |\ e.m(e) \ | \ \synnew C(\wt{e})
 \end{align*}
 
-A {program} $(\wt{L}, e)$ is a pair of a sequence of class declarations $\wt L$, giving rise to a class hierarchy as specified by the inheritance relation, and an expression $e$ to be evaluated.
-%
+A {program} $(\wt{L}, e)$ consists of a sequence of class declarations $\wt L$ and an expression $e$ to be evaluated.
+
 A class declaration $L$ specifies the name of the class, the name of the parent class it extends, its typed fields , the constructor $K$ and its method declarations $M$.
 The constructor $K$ initializes the fields of the object by assigning values to the fields inherited by the super-class and to the fields declared in the current \textbf{this} class.
-%
-A method declaration $M$ specifies the signature of the method, namely the return type, the method name and the formal parameter as well as the body of the method.
-Notice that in our theoretical development we use unary methods, without loss of generality: tuples of arguments can be modelled by an object that instantiates a ``special''class containing as fields all the needed arguments.
-Expressions $e$ include variables, constants, field accesses, method invocations and object creations.
+A method declaration $M$ specifies the signature of the method, namely the return type, the method name and the formal parameter as well as the body of the method. Expressions $e$ include variables, constants, field accesses, method invocations and object creations.
+
+In the theoretical development by \citet{Dardha2017}, unary methods are used without loss of generality: tuples of arguments can be modelled by an object that instantiates a ``special''class containing as fields all the needed arguments.
+
+We include the translation of the syntax of term into the ANTLR grammar for SFJ in Appendix \ref{lst:sfjgram}.
+
+\section{Implementation}
+
+\subsection{Finite Types}
+
+Since we want to use types $\tau$ in practice in SFJ, we restrict them to finite trees whose leaves are basic types with no cycles.
+For example, a recursive type $A = [a : A]$ denotes an infinite program tree \textbf{new} ${A}$(\textbf{new} $A$($\cdots{}$)), hence we avoid it as it is uninhabitable.
+Similarly the types $A = [b: B]$, $B = [a = A]$ create a cycle in our program tree and would also be impossible to instantiate.
+
+These kind of type definitions are allowed but still inhabitable in Java since you can always instantiate a object of any type by assigning the value $null$ to it.
+However, since we restrict ourselves to the functional fragment of Java, we do not allow this.
+
+Given a SFJ program, we use the ANTLR grammar to create a parser for our language and run this parser on the program to give us an abstract syntax tree (AST).
+When processing the AST of a program in SFJ, we forbid fields to have the same type as the type of the class they are defined in.
+Secondly, we mark any classes containing fields typed with only basic types as \emph{resolved} otherwise, as \emph{unresolved}.
+This is then used by Algorithm \ref{alg:types}, which checks if the type definitions in the program are valid.
+
+\begin{algorithm}
+    \DontPrintSemicolon
+    \KwData{$classes$, a set of classes, each marked as resolved or unresolved depending on if their fields contain only basic types}
+    \KwResult{$True$ if classes are all valid type definitions, $False$ if not.}
+    \Begin{
+        \Do{$resolutionOccured = true$}{
+            $resolutionOccured \longleftarrow false$ \;
+            \For{class that is unresolved in classes}{
+                $resolved \longleftarrow true$ \;
+                \For{field in class that contains a class type}{
+                    \For{type in field that is a class type}{
+                        \If{type is unresolved}{
+                            $resolved \longleftarrow false$
+                        }
+                    }
+                }
+                \;
+                \If{$resolved = true$}{
+                    $class \longleftarrow resolved$ \;
+                    $resolutionOccured \longleftarrow true$ \;
+                }
+            }
+        }
+        \;
+        \uIf{all classes are not resolved}{
+            \KwRet $False$
+        }
+        \Else{
+            \KwRet $True$
+        }
+    }
+
+\caption{Algorithm for given a set of classes which are marked as resolved or unresolved, determines if all the classes can be resolved, i.e. if all the types are finite trees with no cycles and with basic types as leaves}
+\label{alg:types}
+\end{algorithm}
+
+If the types in the program are finite trees whose leaves are constants with no cycles, then at each iteration of the algorithm we are going to be able to resolve at least one type or all the types are going to be resolved.
+If we do not resolve at least one type and not all types are resolved, we know we have encountered a cycle in the type definition.
+
+\subsection{Defining the subtyping relation}
+
+Now, given that we know that the class type definitions in our program are valid, we can define the subtyping relation for this program.
+
+Building upon the interpretation of types as sets of values, we define the subtyping relation by defining a map from a type to the set of its subtypes, with the property that the set of values of a subtype is included in the set of values of the type.
+As a first step, we start with basic types.
+
+\begin{flalign}
+    \label{fig:initialSubtype}
+    &Double  = \left\{Double, Float, Int, Short, Byte\right\} &&Float = \left\{Float, Short, Byte\right\}\\
+    &Long = \left\{Long, Int, Short, Byte\right\}  &&Int = \left\{Int, Short, Byte\right\}\\
+    &Short = \left\{Short, Byte\right\} && Byte = \left\{Byte\right\}\\
+    &Boolean = \left\{Boolean \right\}
+\end{flalign}
+
+We would like to note that \emph{Int} is not a subtype of \emph{Float}, as by the definition of floating-point numbers in Java \footnote{See IEEE-754 for reference}, \emph{Float} only has 23 bits for the mantissa, meaning it cannot represent all possible values of a 32 bit \emph{Int} accurately and therefore \emph{Int} is not fully set-contained. However, this is not the case for \emph{Int} and \emph{Double} as the latter has a 52 bit mantissa. This is also why \emph{Long} is not a subtype of \emph{Double}.
+
+Finally, Algorithm \ref{alg:subtyping} defines the subtyping relation for all class types, which concludes the process.
+
+\begin{algorithm}
+    \DontPrintSemicolon
+    \KwData{
+        $classes$, \;
+
+        $relation$, a map of types to the set of its subtypes.\ref{fig:initialSubtype}
+    }
+
+    \Begin{
+        \Fn{generateRelation(classes: List<Class>)}{
+            $untyped: List<Class>\ \longleftarrow []$
+
+            \For{class in classes}{
+                \If{addClass(class) = $False$}{
+                    $untyped.add(class)$
+                }
+            }
+            \If{$untyped \neq []$}{
+                $generateRelation(untyped)$
+            }
+        }
+        \;
+        \Fn{addClass(class: Class) $\rightarrow$ boolean}{
+            \For{existing class type in relation}{
+                \If{checkSuperSet(class, existingClass) = false}{
+                    \KwRet $False$\;
+                }
+                $checkSuperSet(existingClass, class)$\;
+            }
+            $relation[class].add(class)$ \;
+            \KwRet $True$ \;
+        }
+        \;
+        \Fn{checkSuperSet(class: Class, other: Class) $\rightarrow$ boolean}{
+            $flag \longleftarrow True$ \;
+            \;
+            \For{field in class}{
+                \If{field contains type not in relation}{
+                    \KwRet $False$
+                }
+                \uIf{other does not contain field}{
+                    $flag \longleftarrow False$
+                }
+                \Else{
+                    \If{other.field.types does not fully contain field.types}{
+                        $flag \longleftarrow False$
+                    }
+                }
+            }
+            \;
+            \For{method in class}{
+                \If{method contains type not in relation}{
+                    \KwRet $False$
+                }
+                \uIf{other does not contain method}{
+                    $flag \longleftarrow False$
+                }
+                \Else{
+                    \If{other.method.types does not fully contain method.types}{
+                        $flag \longleftarrow False$
+                    }
+                }
+            }
+            \;
+            \If{$flag = True$}{
+                $relation[other].add$
+            }
+        }
+    }
+
+\caption{Recursive algorithm for creating a semantic subtyping relation, given a set of class types that are finite trees and the initial relation for basic types. Given that we know all classes are valid types, we are guaranteed it will terminate}
+\label{alg:subtyping}
+\end{algorithm}
 
 %===================================================================================================
 
@@ -466,12 +660,8 @@ Summarise the whole project for a lazy reader who didn't read the rest (e.g. a p
 
     \chapter{SFJ ANTLR Grammar}
 
-    \begin{lstlisting}
-        grammar jsf;
-
-        @header{
-        package jsf;
-        }
+    \begin{lstlisting}[label={lst:sfjgram}, caption={The full ANTLR grammar for SFJ language}]
+        grammar sfj;
 
         program
                 :       classDecl* expression EOF
