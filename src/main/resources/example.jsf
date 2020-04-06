@@ -17,8 +17,8 @@ class Square extends Rectangle {
         super(w);
     }
 
-    int getArea(bool a) {
-        return 2;
+    (int and not byte) getArea(bool a) {
+        return 2000000;
     }
 
     double calculate((getPrice: void -> double) p) {
