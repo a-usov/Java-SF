@@ -1,0 +1,86 @@
+\section{Background}
+\label{sec:background}
+The technical developments behind semantic subtyping and its properties are not easy, however, they are completely transparent to the programmer.
+In this section we will illustrate the types and typing rules behind SFJ, however, the technical details behind defining the semantic subtyping are beyond the scope of the paper and we refer the reader to the relevant work \cite{Dardha2013,Dardha2017}.
+
+\paragraph{Types} are defined by following grammar:
+$$
+\begin{array}{llll}
+\tau & ::= & \alpha \ |\ \mu
+& \mbox{{\em Type term}}
+\\
+\alpha & ::=  & \zero \ |\ \btypes \ |\ [\wt{l:\tau}] \ |\ \alpha \synwedge \alpha \ |\ \synneg\alpha
+\qquad
+& \mbox{{\em Object type} ($\alpha $-type)}
+\\
+\mu & ::=  & \alpha \to \alpha \ |\ \mu \synwedge \mu \ |\ \synneg\mu
+& \mbox{{\em Method type} ($\mu $-type)}
+\end{array}
+$$
+$\alpha$-types are used to type fields and $\mu$-types are used to type methods.
+Type $\zero$ is the empty type.
+Type $\btypes$ denotes the \emph{basic} types, such as integers, booleans, etc.
+We will use $\rho$ range over \emph{record} types $[\wt{l:\tau}]$, where $\wt l$ is a sequence of disjoint labels ranging over an infinite countable set ${\cal L}$.
+Given a type $\rho = [\wt{a:\alpha},\wt{m:\mu}]$, $\rho(a_i)$ is the type of the field $a_i$ and $\rho(m_j)$ is the type of the method $m_j$.
+The boolean types using $\synwedge$ and $\synneg$ connectives in both $\alpha$ and $\mu$ syntactic category have the expected meaning.
+We will use $\one$ to denote the type $\synneg \zero$, corresponding to the universal type. We let $\alpha \syndiff \alpha'$  denote $\alpha \synwedge \synneg \alpha'$ and $\alpha \synvee \alpha'$  denote $\synneg(\synneg \alpha \synwedge \synneg \alpha')$. The same holds for the $\mu$-types.
+Arrow types $\alpha \to \alpha$ are used to type methods.
+
+\paragraph{Terms}
+are based on FJ \cite{featherweight}.
+We assume an infinite countable set of names, with some special names: $\mathit{Object}$ indicates the root class, $\synthis$  indicates the current and $\synsuper$ indicates the parent object.
+We let  $A, B, C, \ldots$ range over classes; $a, b, \ldots$ over fields; $m, n, \ldots$ over methods and $x, y, z, \ldots$ range over variables.
+Constants $c$ range over an infinite countable set $\mathcal{K}$.
+The syntax of terms is given by the following grammar:
+\begin{align*}
+& \mbox{\textit{Class declaration}} & L \; ::= \; & \syndecl{C}{C}{\wt{\alpha \ a};\ K; \ \wt{M}\ }\\
+& \mbox{\textit{Constructor}} & K \;::=\; & C\ (\wt{\alpha\ x})\ \{\ \synsuper(\wt{x});\ \wt{\synthis.a}=\wt{x}; \}\\
+& \mbox{\textit{Method declaration}} & M \; ::= \; & \alpha \ m\ (\alpha \ x)\ \{\ \synret e; \} \\
+& \mbox{\textit{Expressions}} & e \; ::=\; & x\ |\  c\ |\ e.a\ |\ e.m(e) \ | \ \synnew C(\wt{e})
+\end{align*}
+A {program} $(\wt{L}, e)$ is a pair of a sequence of class declarations $\wt L$, giving rise to a class hierarchy as specified by the inheritance relation, and an expression $e$ to be evaluated. 
+%
+A class declaration $L$ specifies the name of the class, the name of the parent class it extends, its typed fields , the constructor $K$ and its method declarations $M$.
+The constructor $K$ initializes the fields of the object by assigning values to the fields inherited by the super-class and to the fields declared in the current \textbf{this} class.
+%
+A method declaration $M$ specifies the signature of the method, namely the return type, the method name and the formal parameter as well as the body of the method.
+Notice that in our theoretical development we use unary methods, without loss of generality: tuples of arguments can be modelled by an object that instantiates a ``special''class containing as fields all the needed arguments.
+Expressions $e$ include variables, constants, field accesses, method invocations and object creations. 
+
+\paragraph{On multimethods}
+Since FJ is a core language, some features of the full Java are removed: overloading methods is one of them.
+In our framework, leveraging the expressivity of boolean connectives and semantic subtyping, many of these features, and language constructs, e.g., lists, are restored: overloading methods is one of them. We can thus model \emph{multimethods}, \cite{BC97}, which according to the authors is ``\emph{very clean and easy to understand [...] it would be the best solution for a brand new language}".
+As an example Dardha \emph{et al.}  \cite{Dardha2013,Dardha2017}, consider the following class declarations:
+$$
+\begin{array}{ll}
+\syndecl{A}{\mathit{Object}} {
+&
+\qquad
+\syndecl{B}{A} {
+\\
+	%\qquad\quad \ldots
+%&
+	%\qquad\qquad\quad \ldots
+%\\
+	\qquad\quad \mathbf{int}\ \mathit{length}\ (\mathbf{string}\ s)\{\ \ldots\ \}\qquad
+&
+	\qquad\qquad\quad \mathbf{int}\ \mathit{length}\ (\mathbf{int}\ n)\{\ \ldots\ \}
+\\
+}
+&
+\qquad }
+\end{array}
+$$
+Method {\it length} has type $\mathbf{string} \rightarrow \mathbf{int}$ in $A$. However, in $B$ it has type $(\mathbf{string} \rightarrow \mathbf{int}) \synwedge (\mathbf{int} \rightarrow \mathbf{int})$,
+which can be simplified as $(\mathbf{string} \synvee \mathbf{int}) \rightarrow \mathbf{int}$.
+
+
+\paragraph{Typing Rules} use the subtyping relation $\leq_{\mathcal B}$ defined semantically as set inclusion of types which are interpreted as subsets of a model, we call it $\mathcal B$ of FJ. Details of model $\mathcal B$ and the subtyping relation $\leq_{\mathcal B}$ are fully presented in \cite{Dardha2013,Dardha2017}.
+
+Typing judgements for expression are of the form $\Gamma \vdash_{\mathcal B} e : \tau$ and for method declarations are $\Gamma \vdash_{\mathcal B} M$. The same for class declarations and programs.
+
+Let us assume a sequence of class declarations $\wt{L}$.
+We first determine the (structural) type of every class $C$ in $\wt{L}$.
+To this aim, we have to take into account the inheritance relation specified in the class declarations in $\wt{L}$.
+We write ``$a \in C$'' to mean that there is a field declaration of name $a$ in class $C$ within the hierarchy $\wt L$.
+Similarly, we write ``$a \in C$ with type $\alpha$'' to also specify the declared type $\alpha$. Similar notations also hold for method names $m$.
