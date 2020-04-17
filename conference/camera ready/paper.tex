@@ -32,32 +32,30 @@
 \begin{document}
 
 \title{SFJ: An implementation of Semantic Featherweight Java
-    %\thanks{Research supported by the UK EPSRC grant EP/K034413/1, ``From Data Types to Session Types: A Basis for Concurrency and Distribution (ABCD)'', and by the EU HORIZON 2020 MSCA RISE project 778233 ``BehAPI: Behavioural Application Program Interfaces''.}
+    \thanks{Research supported by the UK EPSRC grant EP/K034413/1, ``From Data Types to Session Types: A Basis for Concurrency and Distribution (ABCD)'', and by the EU HORIZON 2020 MSCA RISE project 778233 ``BehAPI: Behavioural Application Program Interfaces''.}
 }
 \titlerunning{SFJ}
 
 \author{Artem Usov \and Ornela Dardha\orcidID{0000-0001-9927-7875}}
 \authorrunning{A. Usov and O. Dardha}
 
-\institute{School of Computing Science, University of Glasgow, United Kingdom \\
-    \email{\{artem.usov, ornela.dardha\}@glasgow.ac.uk}}
+\institute{School of Computing Science, University of Glasgow, Glasgow, United Kingdom \\
+\email{2296905U@student.gla.ac.uk, ornela.dardha@glasgow.ac.uk}}
 
 \maketitle
 
-\begin{abstract}
-    {Subtyping} is a key notion in programming languages, as it allows more flexibility in coding.
+\begin{abstract}    
     There are two approaches to defining subtyping relations: the \emph{syntactic} and the \emph{semantic} approach.
-    %
     In semantic subtyping, one defines a model of the language and an interpretation of types as subsets of this model.
     Subtyping is defined as inclusion of subsets denoting types.
-    %
-    An orthogonal subtyping question, typical of object-oriented languages, is the \emph{nominal} vs. \emph{structural} subtyping.
-    Dardha \emph{et al.} \cite{Dardha2013,Dardha2017} defined boolean types and semantic subtyping for Featherweight Java (FJ) and integrated both structural and nominal subtyping, thus exploiting the benefits of both approaches.
+    
+    An orthogonal subtyping question, typical of object-oriented languages, is the \emph{nominal} and the \emph{structural} subtyping.
+    Dardha \emph{et al.} \cite{Dardha2013,Dardha2017} defined boolean types and semantic subtyping for Featherweight Java (FJ) and integrated both nominal and structural subtyping, thus exploiting the benefits of both approaches.
     However, these benefits were illustrated only at a theoretical level, but not exploited practically.
 
-    In this paper, we present SFJ---Semantic Featherweight Java, an implementation of FJ which features boolean types and structural subtyping as well as nominal subtyping.
-    The benefits of SFJ, illustrated in the paper and the video (with audio/subtitles) \cite{UD20}, show how static typechecking of boolean types and semantic subtyping gives higher guarantees of program correctness, more flexibility and compactness of program writing.
-    %\keywords{Nominal subtyping \and Structural subtyping  \and Semantic Featherweight Java \and Object-oriented languages \and Boolean types \and Type theory.}
+    We present SFJ---Semantic Featherweight Java, an implementation of FJ which features boolean types and semantic subtyping and integrates nominal as well as structural subtyping.
+    The benefits of SFJ, illustrated in the paper and the accompanying video (with audio/subtitles) \cite{UD20}, show how static typechecking of boolean types and semantic subtyping gives higher guarantees of program correctness, more flexibility and compactness of program writing.
+    \keywords{Nominal subtyping \and Structural subtyping  \and Semantic Featherweight Java \and Object-oriented languages \and Boolean types \and Type theory.}
 \end{abstract}
 
 
