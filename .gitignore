@@ -25,3 +25,10 @@ hs_err_pid*
 build/
 .gradle/
 .idea/
+*.aux
+*.bbl
+*.blg
+*.out
+*.gz
+*.pdf
+*.toc
