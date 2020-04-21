@@ -17,8 +17,18 @@
 \usepackage{hyperref}
 \usepackage{stmaryrd}
 
+% Algorithm typesetting package
+\usepackage[plain, shortend, linesnumberedhidden, ruled]{algorithm2e}
+\SetAlFnt{\sffamily \small}
+\SetKwRepeat{Do}{do}{while}
+\SetKwProg{Fn}{Function}{:}{end}
+\SetKwInOut{Input}{input}\SetKwInOut{Output}{output}
+
+%% For section renaming in autoref
 \addto\extrasenglish{%
   \renewcommand{\sectionautorefname}{\S}%
+  \renewcommand{\subsectionautorefname}{\S}%
+  \renewcommand{\algorithmautorefname}{Algo.}%
 }
 
 \makeatletter
@@ -168,30 +178,55 @@ Finally, as discussed in Dardha \emph{et al.} \cite[\S 8.4]{Dardha2017}, thanks 
 
 \section{SFJ: Design and Implementation}
 \label{sec:design}
-Since we want to use types $\tau$ in practice in SFJ, we restrict them to finite trees whose leaves are constants with no cycles.
-For example, a recursive type $\alpha = [a : \alpha]$ denotes an infinite program tree \textbf{new} $C$(\textbf{new} $C$($\cdots{}$)), hence we avoid it as it is inhabitable.
-%Similarly the types $\alpha = [b: \beta]$, $\beta = [a = \alpha]$ would also be impossible to instantiate.
-When processing the abstract syntax tree (AST) of a program in SFJ, we forbid fields to have the same type as the type of the class they are defined in.
-Secondly, we mark any classes containing fields typed with only basic types as \emph{resolved} otherwise, as \emph{unresolved}.
-This is captured by the following algorithm, which checks if the type definitions in the program are valid.
-\begin{verbatim}
-do
-    boolean resolutionOccured = false
-    for class that is unresolved:
-        boolean resolved = true
-        for field in class that contains a class type:
-            if class type is not resolved
-                resolved = false
-        if resolved is true:
-            set class to be resolved
-            resolutionOccured = true
-while resolutionOccured is true
+Since we want to use types $\tau$ in practice in SFJ, we restrict them to \emph{finite trees} whose leaves are basic types, $\btypes$ \autoref{sec:terms} with no cycles.
+For example, a recursive type $\alpha = [a : \alpha]$ denotes an infinite program tree \textbf{new} $C$(\textbf{new} $C$($\cdots{}$)), hence we rule it out as it is not inhabitable. Similarly, the types $\alpha = [b: \beta]$, $\beta = [a = \alpha]$ create a cycle and thus would not be inhabitable.
+Notice that the above types can be defined in Java but as well are not inhabitable.
 
-if all classes are not resolved:
-    program contains invalid type definition
-\end{verbatim}
-%If the types in the program are finite trees whose leaves are constants with no cycles, then at each iteration of the algorithm, either all the types are going to be resolved, or we are going to be able to resolve at least one type.
-%If we do not resolve at least one type and not all types are resolved, we know we have encountered a cycle in the type definition.
+The type system of SFJ builds upon the type system by Dardha \emph{et al.} \cite{Dardha2013,Dardha2017}.
+It is implemented using ANTLR \cite{parr2013}. We start by defining the grammar of the language in Extended Backus-Naur Form (EBNF), following \autoref{sec:types} and by using ANTLR, we can automatically generate a parser for SFJ and extend it in order to implement the required checks for our type system. Running the parser returns an abstract syntax tree (AST) of a program in SFJ. 
+
+When visiting the AST of a program, we check if it is well-formed, following the intuition at the end of \autoref{sec:background}. We mark any classes containing fields typed with only basic types as \emph{resolved} otherwise, as \emph{unresolved}.
+Using this information, \autoref{alg:types} checks if the type definitions in a program are valid, namely, if they are finite trees whose leaves are basic types with no cycles.
+%
+At each iteration of the algorithm we resolve at least one type, until all the types are resolved, and return $True$. However, if there is at least one type unresolved, that means there is a cycle in the type definition and we return $False$.
+
+\begin{algorithm}[t]
+    \SetAlgoLined
+    \caption{ValidityCheck}
+    \label{alg:types}
+
+    \DontPrintSemicolon
+    \Input{classes marked $resolved/unresolved$ depending if their fields contain only basic types.}
+    \Output{$True$ if all classes are valid type definitions, $False$ otherwise.}
+    \BlankLine
+    \Begin{
+        \Do{$resolutionOccured = true$}{ %\tcc {comment}
+            $resolutionOccured \longleftarrow false$ \;
+            \For{class that is unresolved in classes}{
+                $resolved \longleftarrow true$ \;
+                \For{field in class that contains a class type}{
+                    \If{type of field is unresolved}{
+                        $resolved \longleftarrow false$
+                    }
+
+                }
+                \;
+                \If{$resolved = true$}{
+                    $class \longleftarrow resolved$ \;
+                    $resolutionOccured \longleftarrow true$ \;
+                }
+            }
+        }
+        \;
+        \uIf{not all classes are resolved}{
+            \KwRet $False$
+        }
+        \Else{
+            \KwRet $True$
+        }
+    }
+\end{algorithm}
+
 %
 Now, we can define the subtyping relation.
 Building upon the interpretation of types as sets of values to define the semantic subtyping for FJ \cite{Dardha2013,Dardha2017}, in our implementation of SFJ we keep track of the subtyping relation by defining a map from a type to the set of its subtypes, with the property that the set of values of a subtype is included in the set of values of the type.
