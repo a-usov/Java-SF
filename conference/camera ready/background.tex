@@ -1,7 +1,7 @@
 \section{Background}
 \label{sec:background}
-The technical developments behind semantic subtyping and its properties are not easy, however, they are completely transparent to the programmer. Moreover, they are beyond the scope of this paper and we refer the reader to the relevant work \cite{Dardha2013,Dardha2017}.
-%
+The technical developments behind semantic subtyping and its properties are complex, however, they are completely transparent to the programmer. The framework is detailed and proved correct in the relevant work by Dardha \emph{et al.} \cite{Dardha2013,Dardha2017}, and SFJ builds on that framework.
+
 In this section we will briefly detail the types and terms of SFJ.
 
 \subsection{Types}
@@ -13,7 +13,7 @@ $$
 \\
 \alpha & ::=  & \zero \ |\ \btypes \ |\ [\wt{l:\tau}] \ |\ \alpha\ \synwedge\ \alpha \ |\ \synneg\ \alpha
 \qquad
-& \mbox{{\em Object types} ($\alpha $-types)}
+& \mbox{{\em Field types} ($\alpha $-types)}
 \\
 \mu & ::=  & \alpha \to \alpha \ |\ \mu\ \synwedge\ \mu \ |\ \synneg\ \mu
 & \mbox{{\em Method types} ($\mu $-types)}
@@ -75,8 +75,9 @@ $$
 \qquad }
 \end{array}
 $$
-Method {\it length} has type $\mathbf{string} \rightarrow \mathbf{int}$ in $A$. However, in $B$ it has type $(\mathbf{string} \rightarrow \mathbf{int}) \synwedge (\mathbf{int} \rightarrow \mathbf{int})$,
-which can be simplified as $(\mathbf{string} \synvee \mathbf{int}) \rightarrow \mathbf{int}$.
+Method {\it length} has type $\mathbf{string} \rightarrow \mathbf{int}$ in class $A$.
+However, because class $B$ extends class $A$,  {\it length} has type $(\mathbf{string} \rightarrow \mathbf{int})\ \synwedge\ (\mathbf{int} \rightarrow \mathbf{int})$ in class $B$,
+which can be simplified to $(\mathbf{string}\ \synvee\ \mathbf{int}) \rightarrow \mathbf{int}$.
 
 
 % \subsection{Typing Rules} use the subtyping relation $\leq_{\mathcal B}$ defined semantically as set inclusion of types which are interpreted as subsets of a model, we call it $\mathcal B$ of FJ. Details of model $\mathcal B$ and the subtyping relation $\leq_{\mathcal B}$ are fully presented in \cite{Dardha2013,Dardha2017}.
