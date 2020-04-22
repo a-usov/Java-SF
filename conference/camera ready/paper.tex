@@ -2,7 +2,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%
 %PACKAGES
 %%%%%%%%%%%%%%%%%%%%%%%%
-%\usepackage[utf8]{inputenc}
+\usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[english]{babel}
 
@@ -21,7 +21,7 @@
 \renewcommand{\theequation}{\arabic{section}.\arabic{equation}}
 
 % Algorithm typesetting package
-\usepackage[plain, shortend, linesnumberedhidden, ruled]{algorithm2e}
+\usepackage[plain, shortend, linesnumbered]{algorithm2e}
 \SetAlFnt{\sffamily \small}
 \SetKwRepeat{Do}{do}{while}
 \SetKwProg{Fn}{Function}{:}{end}
@@ -33,6 +33,7 @@
   \renewcommand{\subsectionautorefname}{\S}%
   \renewcommand{\algorithmautorefname}{Algorithm}%
   %\renewcommand{\exampleautorefname}{Ex.}%
+  \renewcommand{\equationautorefname}{Mapping}%
 }
 
 \makeatletter
@@ -75,6 +76,7 @@
 
 
 \section{Introduction}
+\label{sec:intro}
 There are two approaches to defining subtyping relations: the \emph{syntactic} and the \emph{semantic} approach.
 Syntactic subtyping \cite{Liskov1994} is more mainstream in programming languages and is defined by means of a set of formal deductive subtyping rules.
 Semantic subtyping \cite{Castagna2005,Cas05,Frisch2008} is more recent and less known:  one defines a formal model of the language and an interpretation of types as subsets of this model. Then, subtyping is defined as set inclusion of subsets denoting types.
@@ -187,12 +189,12 @@ Since we want to use types $\tau$ in practice in SFJ, we restrict them to \emph{
 For example, a recursive type $\alpha = [a : \alpha]$ denotes an infinite program tree \textbf{new} $C$(\textbf{new} $C$($\cdots{}$)), hence we rule it out as it is not inhabitable. Similarly, the types $\alpha = [b: \beta]$, $\beta = [a = \alpha]$ create a cycle and thus would not be inhabitable.
 Notice that the above types can be defined in Java, but as well are not inhabitable.
 
-SFJ is implemented using ANTLR \cite{parr2013}. We start by defining the grammar of the language in Extended Backus-Naur Form (EBNF), following \autoref{sec:types} and by using ANTLR, we can automatically generate a parser for SFJ and extend it in order to implement the required checks for our types and type system. Running the parser on an SFJ program returns an abstract syntax tree (AST) of that program. 
-%
+SFJ is implemented using ANTLR \cite{parr2013}. We start by defining the grammar of the language in Extended Backus-Naur Form (EBNF), following \autoref{sec:types} and by running ANTLR, we can automatically generate a parser for SFJ and extend it in order to implement the required checks for our types and type system. Running the parser on an SFJ program returns an abstract syntax tree (AST) of that program. 
+
 When visiting the AST, we check if the program is well-formed, following the intuition at the end of \autoref{sec:background}. We mark any classes containing fields typed with only basic types as \emph{resolved} otherwise, as \emph{unresolved}.
 Using this information, \autoref{alg:types} checks if the type definitions in a program are valid, namely, if they are finite trees whose leaves are basic types with no cycles.
 %
-At each iteration of the algorithm we can resolve at least one type, until all the types are resolved, and return $True$. However, if there is at least one type unresolved, that means there is a cycle in the type definition, and we return $False$.
+At each iteration of the algorithm we can resolve at least one type, until all the types in the SFJ program are resolved, and return $True$. However, if there is at least one type unresolved, meaning there is a cycle in the type definition, we return $False$.
 
 \begin{algorithm}[t]
     \SetAlgoLined
@@ -200,24 +202,24 @@ At each iteration of the algorithm we can resolve at least one type, until all t
     \label{alg:types}
 
     \DontPrintSemicolon
-    \Input{$classes$, the set of classes marked $resolved/unresolved$ depending if their fields contain only basic types.}
+    \Input{$classes$, the set of classes marked $resolved$ if their fields contain only basic types, $unresolved$ otherwise.}
     \Output{$True$ if all classes are valid type definitions, $False$ otherwise.}
     \BlankLine
     \Begin{
-        \Do{$resolutionOccured = true$}{ %\tcc {comment}
-            $resolutionOccured \longleftarrow false$ \;
+        \Do{$resolutionOccured = True$}{ %\tcc {comment}
+            $resolutionOccured \longleftarrow False$ \;
             \For{class that is unresolved in classes}{
-                $resolved \longleftarrow true$ \;
+                $resolved \longleftarrow True$ \;
                 \For{field in class that contains a class type}{
                     \If{type of field is unresolved}{
-                        $resolved \longleftarrow false$
+                        $resolved \longleftarrow False$
                     }
 
                 }
                 \;
-                \If{$resolved = true$}{
+                \If{$resolved = True$}{
                     $class \longleftarrow resolved$ \;
-                    $resolutionOccured \longleftarrow true$ \;
+                    $resolutionOccured \longleftarrow True$ \;
                 }
             }
         }
@@ -231,8 +233,8 @@ At each iteration of the algorithm we can resolve at least one type, until all t
     }
 \end{algorithm}
 
-\subsection{Building semantic subtyping for SFJ}
-If \autoref{alg:types} returns $True$, we can proceed to building semantic subtyping for SFJ.
+\subsection{Building the semantic subtyping for SFJ}
+If \autoref{alg:types} returns $True$, meaning all type definitions in the program are valid, we can proceed to building the semantic subtyping for SFJ.
 Leveraging the interpretation of types as sets of values to define the semantic subtyping for FJ \cite{Dardha2013,Dardha2017}, in our implementation of SFJ we keep track of the semantic subtyping relation by defining a map from a type to the set of its subtypes, satisfying the property that the set of values of a subtype is included in the set of values of the type.
 We start with basic types and define $Universe$ to be the set of all types.
 The mapping for basic types is defined as follows.
@@ -253,15 +255,30 @@ Note that \emph{Int} is not a subtype of \emph{Float} as a 32-bit \emph{float} c
 Similarly, \emph{Long} is not a subtype of \emph{Double}.
 
 \autoref{alg:subtyping} builds the semantic subtyping relation for all class types of an SFJ program by calling the function \textit{generateRelation}. Given that classes are valid type definitions by \autoref{alg:types}, we are guaranteed that \autoref{alg:subtyping} will terminate.
+The semantic subtyping generated by \autoref{alg:subtyping} is a preorder: it is reflexive and transitive. This is also illustrated by \autoref{eq:initialSubtype}.
+
+Some comments on \autoref{alg:subtyping} will follow.
+In function \textit{generateRelation} we iterate over the set of classes in an SFJ program.
+If the class currently being processed contains fields or methods not present in the subtyping relation (line 5), then we add the current class to the list of \emph{unprocessed} classes (line 6), so we can process its fields and methods first.
+The set of unprocessed classes will then be inspected again in a recursive call (line 10).
+The next two functions of the algorithm, \emph{addClass} and \emph{checkSuperSet}, check subtyping for the current $class$ being processed and update $relation$, which is a mapping from a type to its subtypes and originally only consists of entries from \autoref{eq:initialSubtype}.
+In function $addClass(class)$ we check if the type $class$ is a subtype of an existing type in $relation$ (lines 15-18), as well as the opposite, meaning if $class$ is a supertype of an existing type in $relation$ (line 19). In order to do so $checkSuperSet$ checks all fields (lines 28-39) and all methods (lines 40-51) in $class$ and compares them with an \emph{existingClass} in $relation$. If a subtyping relation is established, then it is added to $relation$ (line 53).
+Finally, upon returning from $checkSuperSet$, we also add $class$ to its own relation (line 21) to satisfy reflexivity and to $Universe$ (line 22), which is a supertype of all types.
+
+It is worth noticing that the subtyping algorithm finds all nominal and structural subtypes of a given type. This is due to the fact that all pairs of types are inspected.
+Recall from \autoref{sec:intro} that nominal subtyping is name-based and given by the class hierarchy defined by the programmer, whether structural subtyping is structure-based and given by the set-inclusion of fields and methods. In particular, it is contra-variant with respect to this set-inclusion.
+\autoref{alg:subtyping} finds all structural subtypes of a given class because it checks that its fields and methods are a superset of existing types in $relation$.
+On the other hand, it also finds all nominal subtypes because a class inherits all fields and methods of its superclass and as such its fields and methods are a superset of its superclass.
+This means that checking for structural subtyping is enough because nominal subtyping will be captured due to inheritance of fields and methods.
 
 %
 \begin{algorithm}
-    \caption{Semantic Subtyping for SFJ}
+    \caption{Semantic Subtyping for SFJ Classes}
     \label{alg:subtyping}
 
     \DontPrintSemicolon
-    \Input{$classes$, the set of classes in an SFJ program for which we have not yet defined a subtyping relation.\\
-    $relation$, mapping of types to the set of subtypes. Initially this relation\\ only contains the entries defined in Equation \ref{eq:initialSubtype}. \;
+    \Input{$classes$, the set of classes in an SFJ program for which we have not yet defined the subtyping relation.\;
+    $relation$, the mapping of types to the set of subtypes, initially being Mapping \ref{eq:initialSubtype}. \;
     }
     \Begin{
         \Fn{generateRelation(classes: List<Class>)}{
@@ -279,7 +296,7 @@ Similarly, \emph{Long} is not a subtype of \emph{Double}.
         \;
         \Fn{addClass(class: Class) $\rightarrow$ boolean}{
             \For{existing class type in relation}{
-                \If{checkSuperSet(class, existingClass) = false}{
+                \If{checkSuperSet(class, existingClass) = False}{
                     \KwRet $False$\;
                 }
                 $checkSuperSet(existingClass, class)$\;
