@@ -44,13 +44,13 @@ We assume an infinite set of names, with some special names:
 $\mathit{Object}$ denotes the root class, $\synthis$ denotes the current object and $\synsuper$ denotes the parent object.
 We let  $A, B,\ldots$ range over classes; $a, b,\ldots$ over fields; $m, n,\ldots$ over methods and $x, y, z, \ldots$ over variables.
 
-A {program} $(\wt{L}, e)$ is a pair of a sequence of class declarations $\wt L$, giving rise to a class hierarchy as specified by the inheritance relation, and an expression $e$ to be evaluated. 
+A {program} $(\wt{L}, e)$ is a pair of a sequence of class declarations $\wt L$, giving rise to a class hierarchy as specified by the inheritance relation, and an expression $e$ to be evaluated.
 %
 A class declaration $L$ specifies the name of the class, the name of the parent class it extends, its typed fields, the constructor $K$ and its method declarations $M$.
-The constructor $K$ initializes the fields of the object by assigning values to the fields inherited by the super-class and to the fields declared in the current \textbf{this} class.
+The constructor $K$ initialises the fields of the object by assigning values to the fields inherited by the super-class and to the fields declared in the current \textbf{this} class.
 %
 A method declaration $M$ specifies the signature of the method, namely the return type, the method name and the formal parameter as well as the body of the method.
-Notice that in our theoretical development we use unary methods, without loss of generality: tuples of arguments can be modelled by an object that instantiates a ``special''class containing as fields all the needed arguments.
+Notice that in our theoretical development we use unary methods, without loss of generality: tuples of arguments can be modelled by an object that instantiates a ``special'' class containing as fields all the needed arguments.
 Expressions $e$ include variables, constants, field accesses, method invocations and object creations.
 
 
