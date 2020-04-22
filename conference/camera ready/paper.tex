@@ -84,7 +84,7 @@ Semantic subtyping \cite{Castagna2005,Cas05,Frisch2008} is more recent and less 
 Orthogonally, for object-oriented languages there are two approaches to defining subtyping relations: the \emph{nominal} and the \emph{structural} approach \cite{Integrating,Useful}.
 Nominal subtyping is based on {declarations} by the developer and is \emph{name}-based: ``$A$ is a subtype of $B$ if and only if it is declared to be so, that is if the class $A$ extends (or implements) the class (or interface) $B$''.
 Structural subtyping instead is based on the \emph{structure} of a class, its fields and methods: ``a class $A$ is a subtype of a class $B$ if and only if the fields and methods of $A$ are a superset of the fields and methods of $B$, and their types in $A$ are subtypes of the types in $B$''.
-Intuitively, extending a class with more fields and methods results in a smaller set of inhabitants for that class. For example, the set of objects of a class \emph{Student} is smaller than the set of objects of a class \emph{Person} as each Student is a Person, but not the other way around. Hence, \emph{Student} is a structural subtype of \emph{Person}, even if it is not declared to be so.
+For example, the set of inhabitants of a class \emph{Student} is smaller than the set of inhabitants of a class \emph{Person}, as each Student is a Person, but not the other way around. However, the set of fields and methods of \emph{Student} is a superset of that of \emph{Person}. Hence, \emph{Student} is a structural subtype of \emph{Person}, even if it is not declared so.
 
 
 Dardha \emph{et al.} \cite{Dardha2013,Dardha2017} define boolean types---based on set-theoretic operations such as \textbf{and}, \textbf{not}, \textbf{or}---and semantic subtyping for \emph{Featherweight Java} (FJ) \cite{featherweight}.
@@ -189,7 +189,7 @@ Since we want to use types $\tau$ in practice in SFJ, we restrict them to \emph{
 For example, a recursive type $\alpha = [a : \alpha]$ denotes an infinite program tree \textbf{new} $C$(\textbf{new} $C$($\cdots{}$)), hence we rule it out as it is not inhabitable. Similarly, the types $\alpha = [b: \beta]$, $\beta = [a = \alpha]$ create a cycle and thus would not be inhabitable.
 Notice that the above types can be defined in Java. These types can be inhabited by assigning \emph{null} to all fields, but are not useful in practice.
 
-SFJ is implemented using ANTLR \cite{parr2013}. We start by defining the grammar of the language in Extended Backus-Naur Form (EBNF), following \autoref{sec:types} and by using ANTLR, we can automatically generate a parser for SFJ and extend it in order to implement the required checks for our types and type system. Running the parser on an SFJ program returns an abstract syntax tree (AST) of that program.
+SFJ is implemented using ANTLR \cite{parr2013}. We start by defining the grammar of the language in Extended Backus-Naur Form (EBNF), following \autoref{sec:types} and by running ANTLR, we can automatically generate a parser for SFJ and extend it in order to implement the required checks for our types and type system. Running the parser on an SFJ program returns an abstract syntax tree (AST) of that program.
 
 When visiting the AST, we check if the program is well-formed, following the intuition at the end of \autoref{sec:background}. We mark any classes containing fields typed with only basic types as \emph{resolved} otherwise, as \emph{unresolved}.
 Using this information, \autoref{alg:types} checks if the type definitions in a program are valid, namely, if they are finite trees whose leaves are basic types with no cycles.
@@ -233,8 +233,8 @@ At each iteration of the algorithm we can resolve at least one type, until all t
     }
 \end{algorithm}
 
-\subsection{Building the semantic subtyping for SFJ}
-If \autoref{alg:types} returns $True$, meaning all type definitions in the program are valid, we can proceed to building the semantic subtyping for SFJ.
+\subsection{Building semantic subtyping for SFJ}
+If \autoref{alg:types} returns $True$, meaning all type definitions in an SFJ program are valid, we can proceed with building the semantic subtyping.
 Leveraging the interpretation of types as sets of values to define the semantic subtyping for FJ \cite{Dardha2013,Dardha2017}, in our implementation of SFJ we keep track of the semantic subtyping relation by defining a map from a type to the set of its subtypes, satisfying the property that the set of values of a subtype is included in the set of values of the type.
 We start with basic types and define $Universe$ to be the set of all types.
 The mapping for basic types is defined as follows.
