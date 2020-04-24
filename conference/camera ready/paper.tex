@@ -75,7 +75,7 @@
 \label{sec:intro}
 There are two approaches to defining subtyping relations: the \emph{syntactic} and the \emph{semantic} approach.
 Syntactic subtyping \cite{Liskov1994} is more mainstream in programming languages and is defined by means of a set of formal deductive subtyping rules.
-Semantic subtyping \cite{Castagna2005,Cas05,Frisch2008} is more recent and less known:  one defines a formal model of the language and an interpretation of types as subsets of this model.
+Semantic subtyping \cite{Aiken,Damm} is more recent and less known:  one defines a formal model of the language and an interpretation of types as subsets of this model.
 Then, subtyping is defined as set inclusion of subsets denoting types.
 
 Orthogonally, for object-oriented languages there are two approaches to defining subtyping relations: the \emph{nominal} and the \emph{structural} approach \cite{Integrating,Useful}.
@@ -178,7 +178,7 @@ Finally, as discussed in Dardha \emph{et al.} \cite[\S 8.4]{Dardha2017}, thanks 
 %The technical developments behind semantic subtyping and its properties are complex, however, they are completely transparent to the developer.
 %Due to space limit we will remove most theoretical details from this submission, as they are not necessary to understand the design and implementation of SFJ, which is the focus of this paper. We refer the reader to the relevant work \cite{Dardha2013,Dardha2017} and we will include a more complete background on semantic subtyping in a possible full paper.
 
-\paragraph{Structure of the paper:}
+\subsubsection{Structure of the paper:}
 In \autoref{sec:background} we present the types and terms of the SFJ language.
 In \autoref{sec:design} we present the design and implementation of SFJ; we discuss our two main algorithms, \autoref{alg:types} in \autoref{sec:valid} which checks the validity of type definitions, and \autoref{alg:subtyping} in \autoref{sec:subtypingAlgo} which generates the semantic subtyping relation. Further, we discuss typing in SFJ in \autoref{sec:typing}; nominal vs. structural subtyping in \autoref{sec:nominal}; and method types in \autoref{sec:methods}.
 We discuss future work, related work and conclude the paper in \autoref{sec:conclusion}.
@@ -471,7 +471,7 @@ Both approaches have their pros and cons, and they leave an expectation on the d
 
 \subsection{Methods in SFJ}
 \label{sec:methods}
-\paragraph{On multimethods}
+\subsubsection{On multimethods}
 Since FJ is a core language, some features of the full Java are removed, such as overloading methods.
 In our framework, by leveraging the expressivity of boolean connectives and semantic subtyping, we are able to restore overloading, among other features \cite[\S 8.4]{Dardha2017}.
 We can thus model \emph{multimethods}, \cite{BC97}, which according to the authors is ``\emph{very clean and easy to understand [...] it would be the best solution for a brand new language}".
@@ -500,7 +500,7 @@ Method {\it length} has type $\mathbf{string} \rightarrow \mathbf{int}$ in class
 However, because class $B$ extends class $A$,  {\it length} has type $(\mathbf{string} \rightarrow \mathbf{int})\ \synwedge\ (\mathbf{int} \rightarrow \mathbf{int})$ in class $B$,
 which can be simplified to $(\mathbf{string}\ \synvee\ \mathbf{int}) \rightarrow \mathbf{int}$.
 
-\paragraph{Method types}
+\subsubsection{Method types}
 Let us illustrate the method types given in \autoref{sec:types} via an alternative implementation of the class $Diagonal$ at the end of \autoref{polygons}.
 $$
 \begin{array}{l}
@@ -529,23 +529,42 @@ This indeed is useful if we are dealing with legacy code as we can still accept 
 
 %In the implementation of SFJ, we are liberal in the use of fields and method which might not be implemented for all types in the subtyping relation rather than restricting only it to those which we know are shared by all types.
 %Improper use of this allows for run-time exceptions however it more closely follows the idea of giving the programmer tools to create more expressive programs at the cost of checking program correctness such as with the use of structural subtypes.
-\section{Conclusion, Related Work and Future Work}
+
+\section{Conclusion, Related and Future Work}
 \label{sec:conclusion}
 
-Semantic subtyping approach goes back to more than two decades ago \cite{Aiken,Damm}.
-Notable lines of work include:
-Hosoya and Pierce \cite{XML1,XML2,XML3} who define XDuce, an XML-oriented language designed specifically to transform XML documents in other XML documents satisfying certain properties.
-Castagna \emph{et al.} \cite{Castagna2005,Cas05,FCB08} extend XDuce with first-class functions and arrow types and implement it as $\mathbb{C}$Duce. The starting point of their framework is a higher-order $\lambda-$calculus with pairs and projections.
-Muehlboeck and Tate \cite{Muehlboeck2018} define a syntactic framework with boolean connectives which has been implemented in the Ceylon programming language \cite{Ceylon2016}.
-Castagna \emph{et al.} \cite{Cpi} define $\mathbb{C}\pi$, a variant of the asynchronous $\pi-$calculus \cite{sangiorgi}, where channel types are augmented with boolean connectives.
-Ancona and Lagorio~\cite{AL10} define subtyping for infinite types coinductively by using union and object type constructors, where types are interpreted as sets of value of the language.
+In this paper we presented the design and implementation of SFJ---Semantic Featherweight Java, an extension of Featherweight Java featuring boolean types, semantic subtyping, and integrating both nominal and structural subtyping. Due to the expressivity of semantic subtyping, in SFJ we are able to restore standard Java constructs and features for example, lists and overloading meathods, which were not present in FJ, thus making SFJ a more complete language.
+We presented \autoref{alg:types} on validity of type definitions and
+\autoref{alg:subtyping} on semantic subtyping, which finds all nominal and structural subtypes for all types in an SFJ program. We also described typing of terms in SFJ, which follows that of Java and builds upon relevant work \cite{Dardha2013,Dardha2017}.
+
+When it comes to executing an SFJ program, our approach is to translate an SFJ program into Java bytecode and then run it on the Java Virtual Machine (JVM). This is a standard approach used also by other object-oriented languages, for example, Kotlin\footnote{https://kotlinlang.org/}.
+The main challenge in translating SFJ to bytecode is in translating boolean connectives.
+For example, a field typed by \textbf{string or int}, will be translated as two Java fields, one of type \textbf{string} and one of type \textbf{int}, and at any given time, only one of the two types will be inhabited by a value. We have fully detailed the strategy for the code generation phase of SFJ using ANTLR \cite{parr2013}, however this is work in progress.
+
+Semantic subtyping goes back to more than two decades ago \cite{Aiken,Damm}.
+%
+Hosoya and Pierce \cite{XML1,XML2,XML3} define XDuce, an XML-oriented language designed specifically to transform XML documents in other XML documents satisfying certain properties.
+%
+Frisch \emph{et al.} \cite{FCB08} extend XDuce by introducing less XML specific types such as records, boolean connectives and arrow types, and implement it as $\mathbb{C}$Duce. Their work is similar to ours in that our class-based semantic type system is a combination of the $\mathbb{C}$Duce record types with arrow types.
+%
+Castagna \emph{et al.} define $\mathbb{C}\pi$ \cite{Cpi}, a variant of the asynchronous $\pi$-calculus, where channel types are augmented with boolean connectives;
+semantic subtyping for ML-like languages \cite{CastagnaP016} and semantic subtyping in a gradual typing framework \cite{CastagnaL17}.
+%
+Ancona and Lagorio~\cite{AL10} define subtyping for infinite types by using union and object type constructors, where types are interpreted as sets of values of the language.
+%
 Bonsangue \emph{et al.}~\cite{BRABR14} study a coalgebraic approach to coinductive types and define a set-theoretic interpretation of coinductive types with union types.
+%
 Pearce \cite{Pearce19} defines semantic subtyping for rewriting rules in the Whiley Rewrite Language and for a flow-typing calculus  \cite{Pearce13}.
 
-To conclude, in this paper we presented the design and implementation of SFJ, an extension of Featherweight Java with boolean types and semantic subtyping, which allow for both structural and nominal subtyping in FJ as well as restore standard Java constructs for example, lists and features for example, overloading which were not present in FJ, making SFJ a more complete language.
+On the implementation side, in addition to $\mathbb{C}$Duce, to the best of our knowledge there are few work who have developed tools.
+%
+Muehlboeck and Tate \cite{Muehlboeck2018} define a syntactic framework with boolean connectives which has been implemented in the Ceylon programming language \cite{Ceylon2016}.
+%
+Ancona and Corradi \cite{AnconaC16} define semantic subtyping for an imperative object-oriented language with mutable fields. In our framework we are considering only the functional fragment of Java, which is FJ, and as a result the semantic subtyping framework is simpler. The authors also propose a prototype implementation of their subtyping algorithm.
+%
+Chaudhuri \emph{et al.} \cite{ChaudhuriVGRL17} present the design and implementation of \textsc{Flow}, which is a type checker for JavaScript. They use boolean connectives \textbf{and}, \textbf{not}, \textbf{or} for their predicates, however they do not define semantic subtyping for their language.
 
 %% References
-\newpage
 \bibliographystyle{splncs04}
 \bibliography{paper}
 \end{document}
