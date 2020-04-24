@@ -147,7 +147,7 @@ Finally, as discussed in Dardha \emph{et al.} \cite[\S 8.4]{Dardha2017}, thanks 
     Now, suppose our class hierarchy is such that \emph{Polygon} is the parent class and all other geometric figures extend \emph{Polygon}, which is how one would naturally define the set of polygons.
     Suppose the class hierarchy is given and is part of legacy code, which cannot be changed.
     Then again, a natural way to implement this in Java is by defining the method \emph{diagonal} in the class \emph{Polygon} and using an \textbf{instanceof}, for example, inside a \textbf{try-catch} construct.
-    Then, an exception would be thrown at runtime, if the argument passed to the method is a triangle.
+    Then, an exception would be thrown at run time, if the argument passed to the method is a triangle.
 
     We propose a more elegant solution, by combining boolean types and semantic subtyping, where only static type-checking is required and we implement this in SFJ \cite{UD20}: it is enough to define a method \emph{diagonal} that has an argument of type \emph{Polygon} \textbf{and not} \emph{Triangle}, thus allowing the type-checker to check at compile time the restrictions on types:
     \begin{equation*}
@@ -180,8 +180,9 @@ Finally, as discussed in Dardha \emph{et al.} \cite[\S 8.4]{Dardha2017}, thanks 
 
 \subsubsection{Structure of the paper:}
 In \autoref{sec:background} we present the types and terms of the SFJ language.
-In \autoref{sec:design} we present the design and implementation of SFJ; we discuss our two main algorithms, \autoref{alg:types} in \autoref{sec:valid} which checks the validity of type definitions, and \autoref{alg:subtyping} in \autoref{sec:subtypingAlgo} which generates the semantic subtyping relation. Further, we discuss typing in SFJ in \autoref{sec:typing}; nominal vs. structural subtyping in \autoref{sec:nominal}; and method types in \autoref{sec:methods}.
-We discuss future work, related work and conclude the paper in \autoref{sec:conclusion}.
+In \autoref{sec:design} we present the design and implementation of SFJ; we discuss our two main algorithms, \autoref{alg:types} in \autoref{sec:valid} which checks the validity of type definitions, and \autoref{alg:subtyping} in \autoref{sec:subtypingAlgo} which generates the semantic subtyping relation.
+Further, we discuss typing of SFJ in \autoref{sec:typing}; nominal vs. structural subtyping in \autoref{sec:nominal}; method types in \autoref{sec:methods}; and code generation in \autoref{sec:code_generation}.
+We discuss related work and conclude the paper in \autoref{sec:conclusion}.
 
 \input{background.tex}
 
@@ -537,26 +538,26 @@ SFJ only includes the typechecking component of the language. We provide a ``pro
 
 Given the similarity of SFJ to Java, our approach is to translate an SFJ program into Java bytecode and then run it on the Java Virtual Machine (JVM) \cite{lindholm2013}. This is a standard approach used also by other object-oriented languages, for example, Kotlin\footnote{https://kotlinlang.org/}. 
 
-The main challenge in translating SFJ into bytecode is in translating boolean connectives.
-For example, a field $f1$ of type \textbf{int or bool}, will be translated as two Java fields, one of type \textbf{int} and one of type \textbf{bool}, and at any given time, only one of the two types will be inhabited by a value. 
+The main challenge in translating SFJ into bytecode is translating types using boolean connectives.
 
-Therefore to reduce the amount of alternatives for which we would need to generate code, we first analyse our program and reduce the boolean types by keeping only the alternatives which actually get used in the program.
+For example, a field $f_1$ of type \textbf{int or bool}, will be translated as two Java fields, one of type \textbf{int} and one of type \textbf{bool}, and only one of the two types will be inhabited by a value. 
+%
+In order to achieve this, we first analyse our program and reduce the boolean types by keeping only the alternatives which actually get used in the program.
 For example, if the field of type \textbf{int or bool} only ever gets initialised with a boolean value, we can reduce it and make it a field of a single type \textbf{bool}.
 %Similarly, basic types can be reduced to their largest type without consequence, such as \textbf{int and not bool} can be reduced to just \textbf{int} as we have already type checked all literal values passed to such a type.
 %
-After this reduction phase of boolean types, we have to expand all other boolean types that still remain by considering the result of their set operation.
-On the example above, consider the field  $f1$ of type \textbf{int or bool}, when translating we need define in our class two fields \textbf{int}$_{f1}$ and \textbf{bool}$\_{f1}$ with the corresponding types.
+After this reduction phase, we then consider the remaining types which use boolean connectives and could not be reduced.
+On the example above, consider again field $f_1$ of type \textbf{int or bool}. This will be translated as two fields \textbf{int}$\_{f_1}$ and \textbf{bool}$\_{f_1}$ with the corresponding types.
 In order to initialise these fields, we use the constructor overloading capabilities of the JVM to generate an overloaded version for each alternative type.
-In each constructor, only the alternative field that matches the type of the parameter in this constructor is initialised with a value and all other alternatives are set to $null$.
+In each constructor, only the field that matches the type of the parameter is initialised with all other fields set to $null$.
 %
+To access the field of an object, we generate code that checks each alternative of the field if it is non-null and includes the rest of the code generation for the expression for each branch. At run time, only one branch will be true, and this is the branch of generated code which will be executed.
+
 For methods, we also use the overloading capabilities of the JVM to define an  overloaded method for each type in the expanded method parameter, all with the same method body.
-Depending on which alternative the argument inhabits at run-time, a different method will be dispatched to.
+Depending on which alternative the argument inhabits at run time, a different method will be dispatched to.
 %
-To access the field of an object, we generate code that checks each alternative of the field if it is non-null and includes the rest of the code generation for the expression for each branch. At runtime, only one branch will be true, and this is the branch of generated code which will be executed.
-
-For structural subtyping, we create an new nominal subtype with the same implementation for each structural subtype a type has, so that it is accepted as a proper subtype in the JVM.
-
-Like methods with boolean types, we similarly implement methods with method types by defining an overloaded alternative for each type that implements the specified method.
+%For structural subtyping, we create an new nominal subtype with the same implementation for each structural subtype a type has, so that it is accepted as a proper subtype in the JVM.
+Like methods with boolean types, we similarly implement methods with method types, as we discussed in \autoref{sec:methods}, by defining an overloaded alternative for each type that implements the specified method.
 
 This concludes the code generation phase for all expressions in SFJ.
 
