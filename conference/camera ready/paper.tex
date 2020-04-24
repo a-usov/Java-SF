@@ -141,7 +141,7 @@ Finally, as discussed in Dardha \emph{et al.} \cite[\S 8.4]{Dardha2017}, thanks 
             \\
             \synidecl{Rhombus}{Polygon} \synimpl Diagonal \ \{\ldots\}
             \\
-            \hspace{2.5cm} // \text{ other geometric figures} \ldots
+            \hspace{2.5cm} // \text{ other polygons } \ldots
         \end{array}
     \end{equation*}
     Now, suppose our class hierarchy is such that \emph{Polygon} is the parent class and all other geometric figures extend \emph{Polygon}, which is how one would naturally define the set of polygons.
@@ -179,15 +179,16 @@ Finally, as discussed in Dardha \emph{et al.} \cite[\S 8.4]{Dardha2017}, thanks 
 %Due to space limit we will remove most theoretical details from this submission, as they are not necessary to understand the design and implementation of SFJ, which is the focus of this paper. We refer the reader to the relevant work \cite{Dardha2013,Dardha2017} and we will include a more complete background on semantic subtyping in a possible full paper.
 
 \paragraph{Structure of the paper:}
-\autoref{sec:background} details the technical developments behind semantic subtyping and its properties.
-\autoref{sec:design} details the design and implementation of SFJ.
-\autoref{sec:conclusion} concludes the paper.
+In \autoref{sec:background} we present the types and terms of the SFJ language.
+In \autoref{sec:design} we present the design and implementation of SFJ; we discuss our two main algorithms, \autoref{alg:types} in \autoref{sec:valid} which checks the validity of type definitions, and \autoref{alg:subtyping} in \autoref{sec:subtypingAlgo} which generates the semantic subtyping relation. Further, we discuss typing in SFJ in \autoref{sec:typing}; nominal vs. structural subtyping in \autoref{sec:nominal}; and method types in \autoref{sec:methods}.
+We discuss future work, related work and conclude the paper in \autoref{sec:conclusion}.
 
 \input{background.tex}
 
-\section{SFJ: Design and Implementation}
+\section{The SFJ Language}
 \label{sec:design}
 \subsection{On Valid Type Definitions}
+\label{sec:valid}
 Since we want to use types $\tau$ in practice in SFJ, we restrict them to \emph{finite trees} whose leaves are basic types $\btypes$ \autoref{sec:terms} with no cycles.
 For example, a recursive type $\alpha = [a : \alpha]$ denotes an infinite program tree \textbf{new} $C$(\textbf{new} $C$($\cdots{}$)), hence we rule it out as it is not inhabitable.
 Similarly, the types $\alpha = [b: \beta]$, $\beta = [a = \alpha]$ create a cycle and thus would not be inhabitable.
@@ -242,7 +243,7 @@ However, if there is at least one type unresolved, meaning there is a cycle in t
 \end{algorithm}
 
 \subsection{Building Semantic Subtyping for SFJ}
-
+\label{sec:subtypingAlgo}
 If \autoref{alg:types} returns $True$, meaning all type definitions in a program are valid, we can then build the semantic subtyping.
 Leveraging the interpretation of types as sets of values to define semantic subtyping for FJ \cite{Dardha2013,Dardha2017}, in SFJ we keep track of the semantic subtyping relation by defining a map from a type to the set of its subtypes, satisfying the property that the set of values of a subtype is included in the set of values of the type.
 We start with basic types and let $Universe$ be a supertype of all types.
@@ -427,7 +428,7 @@ Type $Triangle$ is not contained in $\left\{Polygon, Square, Rhombus \right\}$, 
 This is further illustrated in the accompanying video of this paper \cite{UD20}.
 
 \subsection{Nominal vs. Structural Subtyping}
-
+\label{sec:nominal}
 In this section we will comment on pros and cons of nominal vs. structural subtyping.
 
 Structural subtyping allows for more flexibility in defining this relation and the user does not need to explicitly definite it, as would do with nominal subtyping.
@@ -444,9 +445,9 @@ On the other hand, while nominal subtyping can avoid the above problem, it can i
             \qquad
             \syndecl{B}{A} {
                 \\
-               \qquad \ldots \qquad
+               \qquad \qquad\ldots \qquad
          &
-                \qquad\qquad \ldots
+                \qquad\qquad\qquad \ldots
                 \\
                 \quad \textbf{int}\ n;\qquad
          &
@@ -468,31 +469,66 @@ Both approaches have their pros and cons, and they leave an expectation on the d
 % A class with this keyword is not added to the subtyping relation of other structurally similar classes which are not marked \emph{structural} as this would weaken the invariant conditions of that class.
 
 
-\subsection{Method Types}
-
-Furthermore, we have extended FJ with \emph{method types}, demonstrated below to show another possible implementation of the \emph{Polygons} \autoref{polygons}.
+\subsection{Methods in SFJ}
+\label{sec:methods}
+\paragraph{On multimethods}
+Since FJ is a core language, some features of the full Java are removed, such as overloading methods.
+In our framework, by leveraging the expressivity of boolean connectives and semantic subtyping, we are able to restore overloading, among other features \cite[\S 8.4]{Dardha2017}.
+We can thus model \emph{multimethods}, \cite{BC97}, which according to the authors is ``\emph{very clean and easy to understand [...] it would be the best solution for a brand new language}".
+As an example, taken from Dardha \emph{et al.}  \cite{Dardha2013,Dardha2017}, consider the following class declarations:
 $$
+\begin{array}{ll}
+\syndecl{A}{\mathit{Object}} {
+&
+\qquad
+\syndecl{B}{A} {
+\\
+	%\qquad\quad \ldots
+%&
+	%\qquad\qquad\quad \ldots
+%\\
+	\qquad\quad \mathbf{int}\ \mathit{length}\ (\mathbf{string}\ s)\{\ \ldots\ \}\qquad
+&
+	\qquad\qquad\quad \mathbf{int}\ \mathit{length}\ (\mathbf{int}\ n)\{\ \ldots\ \}
+\\
+}
+&
+\qquad }
+\end{array}
+$$
+Method {\it length} has type $\mathbf{string} \rightarrow \mathbf{int}$ in class $A$.
+However, because class $B$ extends class $A$,  {\it length} has type $(\mathbf{string} \rightarrow \mathbf{int})\ \synwedge\ (\mathbf{int} \rightarrow \mathbf{int})$ in class $B$,
+which can be simplified to $(\mathbf{string}\ \synvee\ \mathbf{int}) \rightarrow \mathbf{int}$.
+
+\paragraph{Method types}
+Let us illustrate the method types given in \autoref{sec:types} via an alternative implementation of the class $Diagonal$ at the end of \autoref{polygons}.
+$$
+\begin{array}{l}
     \synclass Diagonal \ \{
-    \mathbf{int}\ diagonal(\textit{(getDiagonal: void$\rightarrow$int)}  \ shape)\{\ldots\}
+    \\
+    \qquad\qquad\qquad \ldots \\
+    \qquad \textbf{double}\ diagonal((diagonal: \textbf{void} \rightarrow \textbf{double})\ shape)\\
+    \hfill
+    \{\ \synret\ shape.diagonal();\ \}
+    \\
     \}
+\end{array}
 $$
+We define the type of the (outside) $diagonal$ method as accepting any type and its subtypes implementing the (inside) \emph{diagonal} method with type signature \textbf{void} to \textbf{double}.
 
-We define the method type as accepting any type and its subtypes which implement a method called \emph{diagonal} which is a method from the type \emph{Void} to a \emph{Double}.
+In order to type check an argument passed to the (outside) $diagonal$ method, at compile time we build a collection of types $\{type_{1},\ type_{2},\ldots\}$ which are class types where the (inside) $diagonal$ method is defined.
+As such, we iterate over the list of \emph{classes} in an SFJ program (as we did in \autoref{alg:subtyping})) to check for the required method.
+The resulting collection of types is the union of all classes where $diagonal$ is defined together with their subtypes $([\![type_{1}]\!] \cup [\![type_{2}]\!] \cup \ldots)$, where each $[\![type_{i}]\!]$ denotes a mapping of $type_i$ to the set of its subtypes, similar to \autoref{eq:sugtypePolygons}.
 
-In order to type-check the value passed to such an argument, we can at compile-time build a collection of types $\{type_{1},\ type_{2},\ \ldots\}$ which have this method.
-We can do this the simply iterating over the same list of classes in the program as when we were creating our subtyping relation and checking for the presence of the required method.
-The set of accepted types would then be the union of all their corresponding subtypes $([\![type_{1}]\!]_{B} \cup [\![type_{2}]\!]_{B} \cup\ \ldots)$.
+However, calculating this collection of types for each method of every class would be computationally inefficient and most importantly unnecessary as only few methods would in turn be used as method types.
+Therefore we only compute them on demand during typechecking when we come across such a type.
 
-However, calculating this collection of types for each method of every class would be computationally unnecessary as only few of these would be used for method types.
-Therefore we only compute them on demand during type-checking when we come across such a type.
-
-We can therefore use method types to statically include or exclude a portion of our type hierarchy.
-However unlike the use of interfaces such as in the suggested Java solution to the Polygons problem \autoref{polygons}, the values that can be accepted by a method type do not have to be related to each other in any way in the class hierarchy.
-This becomes increasingly useful if we have a legacy system as we can still accept all the classes that have defined \emph{Diagonal} methods without having to go back and add interface implementations.
+We can therefore use method types to statically include or exclude a portion of our class hierarchy.
+However, unlike the use of interfaces, as in one of the proposed Java approaches in \autoref{polygons}, the values that can be accepted by a method type do not have to be related to each other in any way in the class hierarchy.
+This indeed is useful if we are dealing with legacy code as we can still accept all classes where \emph{diagonal} is defined, without having to go back and add interface implementations.
 
 %In the implementation of SFJ, we are liberal in the use of fields and method which might not be implemented for all types in the subtyping relation rather than restricting only it to those which we know are shared by all types.
 %Improper use of this allows for run-time exceptions however it more closely follows the idea of giving the programmer tools to create more expressive programs at the cost of checking program correctness such as with the use of structural subtypes.
-
 \section{Related Work and Conclusion}
 \label{sec:conclusion}
 

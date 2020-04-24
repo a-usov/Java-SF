@@ -52,34 +52,6 @@ Notice that in our theoretical development we use unary methods, without loss of
 Expressions $e$ include variables, constants, field access, method call and object creation.
 
 
-\paragraph{On multimethods}
-Since FJ is a core language, some features of the full Java are removed, such as overloading methods.
-In our framework, by leveraging the expressivity of boolean connectives and semantic subtyping, we are able to restore overloading, among other features \cite[\S 8.4]{Dardha2017}.
-We can thus model \emph{multimethods}, \cite{BC97}, which according to the authors is ``\emph{very clean and easy to understand [...] it would be the best solution for a brand new language}".
-As an example, taken from Dardha \emph{et al.}  \cite{Dardha2013,Dardha2017}, consider the following class declarations:
-$$
-\begin{array}{ll}
-\syndecl{A}{\mathit{Object}} {
-&
-\qquad
-\syndecl{B}{A} {
-\\
-	%\qquad\quad \ldots
-%&
-	%\qquad\qquad\quad \ldots
-%\\
-	\qquad\quad \mathbf{int}\ \mathit{length}\ (\mathbf{string}\ s)\{\ \ldots\ \}\qquad
-&
-	\qquad\qquad\quad \mathbf{int}\ \mathit{length}\ (\mathbf{int}\ n)\{\ \ldots\ \}
-\\
-}
-&
-\qquad }
-\end{array}
-$$
-Method {\it length} has type $\mathbf{string} \rightarrow \mathbf{int}$ in class $A$.
-However, because class $B$ extends class $A$,  {\it length} has type $(\mathbf{string} \rightarrow \mathbf{int})\ \synwedge\ (\mathbf{int} \rightarrow \mathbf{int})$ in class $B$,
-which can be simplified to $(\mathbf{string}\ \synvee\ \mathbf{int}) \rightarrow \mathbf{int}$.
 
 Following FJ \cite{featherweight}, we rule out ill-formed programs, such as declaring a constructor named $B$ within a class named $A$; or multiple fields or methods having the same name; or fields having the same type as the type of the class they are defined in.
 
