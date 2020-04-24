@@ -530,45 +530,43 @@ This indeed is useful if we are dealing with legacy code as we can still accept 
 %In the implementation of SFJ, we are liberal in the use of fields and method which might not be implemented for all types in the subtyping relation rather than restricting only it to those which we know are shared by all types.
 %Improper use of this allows for run-time exceptions however it more closely follows the idea of giving the programmer tools to create more expressive programs at the cost of checking program correctness such as with the use of structural subtypes.
 
-\section{Code generation}
+\subsection{Code Generation}
+\label{sec:code_generation}
+%%
+SFJ only includes the typechecking component of the language. We provide a ``proof'' of the code generation algorithm, which is work in progress at this stage.
 
-So far, SFJ only includes the typechecking component of the language. We provide a ``proof'' of the code generation algorithm for areas of future work.
+Given the similarity of SFJ to Java, our approach is to translate an SFJ program into Java bytecode and then run it on the Java Virtual Machine (JVM) \cite{lindholm2013}. This is a standard approach used also by other object-oriented languages, for example, Kotlin\footnote{https://kotlinlang.org/}. 
 
-Given the similarity of SFJ to Java, we felt that the usage of the Java Virtual Machine (JVM) \cite{lindholm2013} would be most suitable for code generation by transpiling SFJ programs into JVM bytecode.
-This is the approach used by object-oriented languages such as Kotlin amongst others.
-
-The key challenge in implementing code generation compared to other languages is that a single field in SFJ with type $(int\ \textbf{or}\ bool)$ actually represents two JVM fields, one of type $int$ and another of type $bool$, of which only one is inhabited with a value.
+The main challenge in translating SFJ into bytecode is in translating boolean connectives.
+For example, a field $f1$ of type \textbf{int or bool}, will be translated as two Java fields, one of type \textbf{int} and one of type \textbf{bool}, and at any given time, only one of the two types will be inhabited by a value. 
 
 Therefore to reduce the amount of alternatives for which we would need to generate code, we first analyse our program and reduce the boolean types by keeping only the alternatives which actually get used in the program.
-For example, if the field of type $int\ or\ bool$ only ever gets initialised with a boolean value, we can reduce it and make it a field of a single type $bool$.
-Similarly the numerical basic types can also be reduced to their largest type without consequence, such as $int\ \textbf{and not}\ byte$ can be reduced to just $int$ as we have already type checked all literal values passed to such a type.
-
-After reducing the boolean types, we have to expand all boolean types that still remain by considering the result of their set operation.
-Staying with the example of a field named $f1$ of type $int\ or\ bool$, we would define in our class two fields $int\_f1$ and $bool\_f1$ with types $int$ and $boolean$ respectively.
-In order to initialise these field, we use the constructor overloading capabilities of the JVM to generate an overloaded version for each alternative type.
+For example, if the field of type \textbf{int or bool} only ever gets initialised with a boolean value, we can reduce it and make it a field of a single type \textbf{bool}.
+%Similarly, basic types can be reduced to their largest type without consequence, such as \textbf{int and not bool} can be reduced to just \textbf{int} as we have already type checked all literal values passed to such a type.
+%
+After this reduction phase of boolean types, we have to expand all other boolean types that still remain by considering the result of their set operation.
+On the example above, consider the field  $f1$ of type \textbf{int or bool}, when translating we need define in our class two fields \textbf{int}$_{f1}$ and \textbf{bool}$\_{f1}$ with the corresponding types.
+In order to initialise these fields, we use the constructor overloading capabilities of the JVM to generate an overloaded version for each alternative type.
 In each constructor, only the alternative field that matches the type of the parameter in this constructor is initialised with a value and all other alternatives are set to $null$.
-
+%
 For methods, we also use the overloading capabilities of the JVM to define an  overloaded method for each type in the expanded method parameter, all with the same method body.
 Depending on which alternative the argument inhabits at run-time, a different method will be dispatched to.
-
+%
 To access the field of an object, we generate code that checks each alternative of the field if it is non-null and includes the rest of the code generation for the expression for each branch. At runtime, only one branch will be true, and this is the branch of generated code which will be executed.
 
 For structural subtyping, we create an new nominal subtype with the same implementation for each structural subtype a type has, so that it is accepted as a proper subtype in the JVM.
 
 Like methods with boolean types, we similarly implement methods with method types by defining an overloaded alternative for each type that implements the specified method.
 
-We have now defined the code generation for each expression in our syntax of terms and for field, constructor and method declarations, so therefore have defined how
+This concludes the code generation phase for all expressions in SFJ.
 
-\section{Conclusion, Related Work and Future Work}
+\section{Conclusion}
 \label{sec:conclusion}
 
 In this paper we presented the design and implementation of SFJ---Semantic Featherweight Java, an extension of Featherweight Java featuring boolean types, semantic subtyping, and integrating both nominal and structural subtyping. Due to the expressivity of semantic subtyping, in SFJ we are able to restore standard Java constructs and features for example, lists and overloading meathods, which were not present in FJ, thus making SFJ a more complete language.
 We presented \autoref{alg:types} on validity of type definitions and
 \autoref{alg:subtyping} on semantic subtyping, which finds all nominal and structural subtypes for all types in an SFJ program. We also described typing of terms in SFJ, which follows that of Java and builds upon relevant work \cite{Dardha2013,Dardha2017}.
 
-When it comes to executing an SFJ program, our approach is to translate an SFJ program into Java bytecode and then run it on the Java Virtual Machine (JVM). This is a standard approach used also by other object-oriented languages, for example, Kotlin\footnote{https://kotlinlang.org/}.
-The main challenge in translating SFJ to bytecode is in translating boolean connectives.
-For example, a field typed by \textbf{string or int}, will be translated as two Java fields, one of type \textbf{string} and one of type \textbf{int}, and at any given time, only one of the two types will be inhabited by a value. We have fully detailed the strategy for the code generation phase of SFJ using ANTLR \cite{parr2013}, however this is work in progress.
 
 Semantic subtyping goes back to more than two decades ago \cite{Aiken,Damm}.
 %
