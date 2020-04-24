@@ -105,7 +105,6 @@ Finally, as discussed in Dardha \emph{et al.} \cite[\S 8.4]{Dardha2017}, thanks 
     We want to define a method \emph{diagonal} that takes a polygon and returns the length of its longest diagonal.
     This method makes sense only if the polygon passed to it has at least four sides, hence triangles are excluded.
     In Java this could be implemented in the following ways:
-
     \begin{equation*}
         \begin{array}{l}
             \synclass Polygon \ \{ \ldots\}
@@ -125,9 +124,7 @@ Finally, as discussed in Dardha \emph{et al.} \cite[\S 8.4]{Dardha2017}, thanks 
             \syndecl{Rhombus}{Other\_Polygons} {\ldots}
         \end{array}
     \end{equation*}
-
     Or by means of an interface \emph{Diagonal}:
-
     \begin{equation*}
         \begin{array}{l}
             public \ \syninterface Diagonal\ \{
@@ -144,17 +141,15 @@ Finally, as discussed in Dardha \emph{et al.} \cite[\S 8.4]{Dardha2017}, thanks 
             \\
             \synidecl{Rhombus}{Polygon} \synimpl Diagonal \ \{\ldots\}
             \\
-            \hspace{4.5cm} \ldots
+            \hspace{2.5cm} // \text{ other geometric figures} \ldots
         \end{array}
     \end{equation*}
-
     Now, suppose our class hierarchy is such that \emph{Polygon} is the parent class and all other geometric figures extend \emph{Polygon}, which is how one would naturally define the set of polygons.
     Suppose the class hierarchy is given and is part of legacy code, which cannot be changed.
     Then again, a natural way to implement this in Java is by defining the method \emph{diagonal} in the class \emph{Polygon} and using an \textbf{instanceof}, for example, inside a \textbf{try-catch} construct.
     Then, an exception would be thrown at runtime, if the argument passed to the method is a triangle.
 
     We propose a more elegant solution, by combining boolean types and semantic subtyping, where only static typechecking is required and we implement this in SFJ \cite{UD20}: it is enough to define a method \emph{diagonal} that has an argument of type \emph{Polygon} \textbf{and not} \emph{Triangle}, thus allowing the typechecker to check at compile time the restrictions on types:
-
     \begin{equation*}
         \begin{array}{l}
             \synclass Polygon \ \{\ldots\}
@@ -176,7 +171,6 @@ Finally, as discussed in Dardha \emph{et al.} \cite[\S 8.4]{Dardha2017}, thanks 
             \}
         \end{array}
     \end{equation*}
-
     We can now call \emph{diagonal} on an argument of type \emph{Polygon}: if the polygon is \textbf{not} a \emph{Triangle}, then the method computes and returns the length of its longest diagonal; otherwise, there will be a type error at compile time.
 \end{example}
 
@@ -193,7 +187,7 @@ Finally, as discussed in Dardha \emph{et al.} \cite[\S 8.4]{Dardha2017}, thanks 
 
 \section{SFJ: Design and Implementation}
 \label{sec:design}
-\subsection{Valid type definitions}
+\subsection{On Valid Type Definitions}
 Since we want to use types $\tau$ in practice in SFJ, we restrict them to \emph{finite trees} whose leaves are basic types $\btypes$ \autoref{sec:terms} with no cycles.
 For example, a recursive type $\alpha = [a : \alpha]$ denotes an infinite program tree \textbf{new} $C$(\textbf{new} $C$($\cdots{}$)), hence we rule it out as it is not inhabitable.
 Similarly, the types $\alpha = [b: \beta]$, $\beta = [a = \alpha]$ create a cycle and thus would not be inhabitable.
@@ -247,13 +241,12 @@ However, if there is at least one type unresolved, meaning there is a cycle in t
     }
 \end{algorithm}
 
-\subsection{Building semantic subtyping for SFJ}
+\subsection{Building Semantic Subtyping for SFJ}
 
 If \autoref{alg:types} returns $True$, meaning all type definitions in a program are valid, we can then build the semantic subtyping.
 Leveraging the interpretation of types as sets of values to define semantic subtyping for FJ \cite{Dardha2013,Dardha2017}, in SFJ we keep track of the semantic subtyping relation by defining a map from a type to the set of its subtypes, satisfying the property that the set of values of a subtype is included in the set of values of the type.
-We start with basic types and map $Universe$ to the set of all types.
-The full mapping for basic types is defined as follows:
-
+We start with basic types and let $Universe$ be a supertype of all types.
+The full mapping for basic types is defined in \autoref{eq:initialSubtype}.
 \begin{equation}
     \label{eq:initialSubtype}
     \begin{array}{llllll}
@@ -265,7 +258,6 @@ The full mapping for basic types is defined as follows:
         &          & \quad Short, Byte, Boolean, Void\}
    \end{array}
 \end{equation}
-
 Note that \emph{Int} is not a subtype of \emph{Float} as a 32-bit \emph{float} cannot represent the whole set of 32-bit \emph{integer} values accurately and therefore \emph{Int} is not fully set-contained in \emph{Float}, however this is not the case for \emph{Int} and \emph{Double}.
 Similarly, \emph{Long} is not a subtype of \emph{Double}.
 
@@ -365,7 +357,7 @@ The complexity of \autoref{alg:types} is $\mathcal{O}(n)$, and the complexity of
 The reason for a quadratic complexity of \autoref{alg:subtyping} is due to the symmetric check of structural subtyping between a $class$ and an $existingClass$ in $relation$.
 Notice that if we were to only work with nominal subtyping, then we only require traversing the class hierarchy once,  which gives an $\mathcal{O}(n)$ complexity.
 
-\subsection{Type system for SFJ}
+\subsection{Type System for SFJ}
 
 The type system for the SFJ language, given in \autoref{sec:terms}, is based on the type system by Dardha \emph{et al.} \cite{Dardha2013,Dardha2017} where the formal typing rules and soundness properties are detailed. As these formal developments are beyond the scope of this paper, we discuss typing for SFJ only informally.
 
@@ -395,31 +387,33 @@ We read this typing rule as follows:
 if an expression $e$ is of type $\alpha_1$ under a typing context $\Gamma$ (details of a typing context are irrelevant here) and type $\alpha$ is a subtype $\leq$ of $\alpha_2$, then expression $e$ can be typed with $\alpha_2$.
 
 
-\subsection{Polygons: continued}
+\subsection{Polygons: Continued}
 
-Let us illustrate the subtyping algorithm with our \emph{Polygons} \autoref{polygons}.
-The algorithm generates the following subtyping relation, which also includes the subtyping relation for basic types defined in the first step.
+Let us illustrate the semantic subtyping algorithm on our \emph{Polygons} given in \autoref{polygons}.
+\autoref{alg:subtyping} generates the subtyping relation given in \autoref{eq:sugtypePolygons}, together with the subtyping relation for basic types, omitted here and defined in \autoref{eq:initialSubtype}. Notice that the mapping for $Universe$ is extended with the new types for polygons.
+\begin{equation}
+    \label{eq:sugtypePolygons}
+    \begin{array}{llllll}
+         & Polygon  & = \left\{Polygon, Triangle, Square, Rhombus \right\} &  & Triangle & = \left\{Triangle\right\}           \\
+         & Square   & = \left\{Square\right\}                              &  & Rhombus  & = \left\{Rhombus\right\}            \\
+         & Universe & = \{Double, Float, Long, Int, Short, Byte                                                              &  & Diagonal & = \left\{Diagonal\right\}          \\
+         &          & \quad Boolean, Void, Polygon, Square                                                                     \\
+         &          & \quad Square, Rhombus, Diagonal\}
+    \end{array}
+\end{equation}
+Recall the method \emph{diagonal} in class \emph{Diagonal}, with signature
+$$
+\mathbf{double}\ diagonal((\textit{Polygon} \textbf{ and not }  \textit{Triangle}) \ shape)
+$$
+The result of the set operation on its parameter type gives the following set of polygons:
+$$
+Polygon \textbf{ and not } Triangle = \left\{Polygon, Square, Rhombus \right\}
+$$
+In order to define the \textbf{not} $Triangle$ type we need the $Universe$ type so that we can define it as $Universe\ \mathbf{\setminus}\ Triangle$. Then, the \textbf{and} connective is the intersection of sets of $Polygon$ with \textbf{not} $Triangle$.
 
-\begin{flalign*}
-    &Polygon = \left\{Polygon, Triangle, Square, Rhombus \right\} \qquad Triangle = \left\{Triangle\right\}\\
-    &Square = \left\{Square\right\} \qquad  Rhombus  = \left\{Rhombus\right\} \qquad
-    Diagonal = \left\{Diagonal\right\}
-\end{flalign*}
+Thus, if we pass to \emph{diagonal} an argument of type \emph{Triangle}, we get a typechecking error at compile time, as illustrated in the accompanying video \cite{UD20}.
 
-Recall method \emph{diagonal} in class \emph{Diagonal}, we can see that the result of the set operation on its parameter type gives the following set of polygons:
-
-\begin{flalign*}
-    Polygon \textbf{ and not } Triangle = \left\{Polygon, Square, Rhombus \right\}
-\end{flalign*}
-
-If we pass to \emph{diagonal} an argument of type \emph{Triangle}, as it is not contained in the computed set of subtypes, we get a typechecking error at compile time \cite{UD20}.
-
-%It finds all nominal subtypes as they inherit all fields and methods of their super class, so are always guaranteed to be a superset.
-%Similarly, given all pairs of types, the algorithm checks if one is a superset of the other, i.e.,\ they share common fields and methods, and if so, they are related by structural subtyping.
-%For example, type $empty = []$, will have all classes as structural subtypes.
-%The above algorithm will without differentiating, find all nominal and structural subtypes as we always consider all other classes in the program to be potential subtype candidates.
-
-\subsection{Nominal vs Structural}
+\subsection{Nominal vs. Structural Subtyping}
 
 Note that both approaches to subtyping have their drawbacks.
 %However, it can be argued that structural subtyping is counterproductive in writing logically correct programs.

@@ -20,7 +20,6 @@ $$
 & \mbox{{\em Method types} ($\mu $-types)}
 \end{array}
 $$
-
 The $\alpha$-types are used to type fields and the $\mu$-types are used to type methods.
 Type $\zero$ is the empty type.
 Type $\btypes$ denotes the \emph{basic} types, such as integers, booleans, etc.
@@ -39,7 +38,6 @@ The syntax of terms is defined by the following grammar and is based on the stan
      & \mbox{\textit{Method declaration}} & M \; ::= \; & \alpha \ m\ (\alpha \ x)\ \{\ \synret e; \}                             \\
      & \mbox{\textit{Expressions}}        & e \; ::=\;  & x\ |\  c\ |\ e.a\ |\ e.m(e) \ | \ \synnew C(\wt{e})
 \end{align*}
-
 We assume an infinite set of names, with some special names:
 $\mathit{Object}$ denotes the root class, $\synthis$ denotes the current object and $\synsuper$ denotes the parent object.
 We let  $A, B,\ldots$ range over classes; $a, b,\ldots$ over fields; $m, n,\ldots$ over methods and $x, y, z, \ldots$ over variables.
