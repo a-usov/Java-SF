@@ -358,6 +358,7 @@ The reason for a quadratic complexity of \autoref{alg:subtyping} is due to the s
 Notice that if we were to only work with nominal subtyping, then we only require traversing the class hierarchy once,  which gives an $\mathcal{O}(n)$ complexity.
 
 \subsection{Type System for SFJ}
+\label{sec:typing}
 
 The type system for the SFJ language, given in \autoref{sec:terms}, is based on the type system by Dardha \emph{et al.} \cite{Dardha2013,Dardha2017} where the formal typing rules and soundness properties are detailed. As these formal developments are beyond the scope of this paper, we discuss typing for SFJ only informally.
 
@@ -411,7 +412,19 @@ Polygon \textbf{ and not } Triangle = \left\{Polygon, Square, Rhombus \right\}
 $$
 In order to define the \textbf{not} $Triangle$ type we need the $Universe$ type so that we can define it as $Universe\ \mathbf{\setminus}\ Triangle$. Then, the \textbf{and} connective is the intersection of sets of $Polygon$ with \textbf{not} $Triangle$.
 
-Thus, if we pass to \emph{diagonal} an argument of type \emph{Triangle}, we get a typechecking error at compile time, as illustrated in the accompanying video \cite{UD20}.
+If we write in our SFJ program the following expression:
+$$
+    (\textbf{new}\ Diagonal()).diagonal(\textbf{new}\ Square())
+$$
+the argument \textbf{new} $Square()$ of the $diagonal$ method is of type $Square$, by the type system in \autoref{sec:typing} and $Square$ is contained in the set of the parameter type of the method, so this expression will successfully type checks.
+
+However, if we write the following SFJ expression:
+$$
+    (\textbf{new}\ Diagonal()).diagonal(\textbf{new}\ Triangle())
+$$
+Type $Triangle$ is not contained in $\left\{Polygon, Square, Rhombus \right\}$, therefore this expression will not type check and will return a type error at compile time.
+
+This is further illustrated in the accompanying video of this paper \cite{UD20}.
 
 \subsection{Nominal vs. Structural Subtyping}
 
