@@ -66,7 +66,7 @@
     However, these benefits were illustrated only at a theoretical level, but not exploited practically.
 
     We present SFJ---Semantic Featherweight Java, an implementation of FJ which features boolean types, semantic subtyping and integrates nominal as well as structural subtyping.
-    The benefits of SFJ, illustrated in the paper and the accompanying video (with audio/subtitles) \cite{UD20}, show how static typechecking of boolean types and semantic subtyping gives higher guarantees of program correctness, more flexibility and compactness of program writing.
+    The benefits of SFJ, illustrated in the paper and the accompanying video (with audio/subtitles) \cite{UD20}, show how static type-checking of boolean types and semantic subtyping gives higher guarantees of program correctness, more flexibility and compactness of program writing.
     \keywords{Nominal subtyping \and Structural subtyping  \and Semantic Featherweight Java \and Object-oriented languages \and Boolean types \and Type theory.}
 \end{abstract}
 
@@ -149,7 +149,7 @@ Finally, as discussed in Dardha \emph{et al.} \cite[\S 8.4]{Dardha2017}, thanks 
     Then again, a natural way to implement this in Java is by defining the method \emph{diagonal} in the class \emph{Polygon} and using an \textbf{instanceof}, for example, inside a \textbf{try-catch} construct.
     Then, an exception would be thrown at runtime, if the argument passed to the method is a triangle.
 
-    We propose a more elegant solution, by combining boolean types and semantic subtyping, where only static typechecking is required and we implement this in SFJ \cite{UD20}: it is enough to define a method \emph{diagonal} that has an argument of type \emph{Polygon} \textbf{and not} \emph{Triangle}, thus allowing the typechecker to check at compile time the restrictions on types:
+    We propose a more elegant solution, by combining boolean types and semantic subtyping, where only static type-checking is required and we implement this in SFJ \cite{UD20}: it is enough to define a method \emph{diagonal} that has an argument of type \emph{Polygon} \textbf{and not} \emph{Triangle}, thus allowing the type-checker to check at compile time the restrictions on types:
     \begin{equation*}
         \begin{array}{l}
             \synclass Polygon \ \{\ldots\}
@@ -417,13 +417,13 @@ If we write in our SFJ program the following expression:
 $$
     (\textbf{new}\ Diagonal()).diagonal(\textbf{new}\ Square())
 $$
-the argument \textbf{new} $Square()$ of the $diagonal$ method is of type $Square$, by the type system in \autoref{sec:typing} and $Square$ is contained in the set of the parameter type of the method, so this expression will successfully type checks.
+the argument \textbf{new} $Square()$ of the $diagonal$ method is of type $Square$, by the type system in \autoref{sec:typing} and $Square$ is contained in the set of the parameter type of the method, so this expression will successfully type-checks.
 
 However, if we write the following SFJ expression:
 $$
     (\textbf{new}\ Diagonal()).diagonal(\textbf{new}\ Triangle())
 $$
-Type $Triangle$ is not contained in $\left\{Polygon, Square, Rhombus \right\}$, therefore this expression will not type check and will return a type error at compile time.
+Type $Triangle$ is not contained in $\left\{Polygon, Square, Rhombus \right\}$, therefore this expression will not type-check and will return a type error at compile time.
 
 This is further illustrated in the accompanying video of this paper \cite{UD20}.
 
@@ -521,7 +521,7 @@ As such, we iterate over the list of \emph{classes} in an SFJ program (as we did
 The resulting collection of types is the union of all classes where $diagonal$ is defined together with their subtypes $([\![type_{1}]\!] \cup [\![type_{2}]\!] \cup \ldots)$, where each $[\![type_{i}]\!]$ denotes a mapping of $type_i$ to the set of its subtypes, similar to \autoref{eq:sugtypePolygons}.
 
 However, calculating this collection of types for each method of every class would be computationally inefficient and most importantly unnecessary as only few methods would in turn be used as method types.
-Therefore we only compute them on demand during typechecking when we come across such a type.
+Therefore we only compute them on demand during type-checking when we come across such a type.
 
 We can therefore use method types to statically include or exclude a portion of our class hierarchy.
 However, unlike the use of interfaces, as in one of the proposed Java approaches in \autoref{polygons}, the values that can be accepted by a method type do not have to be related to each other in any way in the class hierarchy.
@@ -529,7 +529,7 @@ This indeed is useful if we are dealing with legacy code as we can still accept 
 
 %In the implementation of SFJ, we are liberal in the use of fields and method which might not be implemented for all types in the subtyping relation rather than restricting only it to those which we know are shared by all types.
 %Improper use of this allows for run-time exceptions however it more closely follows the idea of giving the programmer tools to create more expressive programs at the cost of checking program correctness such as with the use of structural subtypes.
-\section{Related Work and Conclusion}
+\section{Conclusion, Related Work and Future Work}
 \label{sec:conclusion}
 
 Semantic subtyping approach goes back to more than two decades ago \cite{Aiken,Damm}.
