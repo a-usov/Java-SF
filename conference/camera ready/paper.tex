@@ -428,21 +428,45 @@ This is further illustrated in the accompanying video of this paper \cite{UD20}.
 
 \subsection{Nominal vs. Structural Subtyping}
 
-Note that both approaches to subtyping have their drawbacks.
-%However, it can be argued that structural subtyping is counterproductive in writing logically correct programs.
-Consider two structurally equivalent class/record types $coordinate = [x:int, y:int, z:int]$ and $colour = [x:int, y:int, z:int]$.
-While structurally they can be used interchangeably in our type system, their ``meaning'' is completely different.
-Therefore, we lose some safety in our language as it is unlikely we would like to use a colour where we expect a coordinate, but in the eyes of the type-checker, it is correct.
+In this section we will comment on pros and cons of nominal vs. structural subtyping.
 
-Dardha \emph{et al.}\cite{Dardha2017} suggest a possible extension to the language by including a $nominal$ keyword that can be used in the class signature to indicate that this class should only be considered by the nominal component of the type system.
-This would allow us finer control over the type system and eliminate the previously mentioned problems.
-However, being optional, we argue this would create more bugs than problems it would solve, due to easily forgetting the keyword.
-For example with destructors in C++ classes,leaving out the virtual keyword of the parent class destructor in certain situations can lead to memory leaks.
-Instead a \emph{structural} keyword could be introduced as an extension to the language which specifies that this class is allowed to have structural subtypes.
-A class with this keyword is not added to the subtyping relation of other structurally similar classes which are not marked \emph{structural} as this would weaken the invariant conditions of that class.
+Structural subtyping allows for more flexibility in defining this relation and the user does not need to explicitly definite it, as would do with nominal subtyping.
+However, for this flexibility we might need to pay in meaning.
+For example, consider the following two structurally equivalent classes, hence record types
+$coordinate = [x:int, y:int, z:int]$ and $colour = [x:int, y:int, z:int]$.
+While they can be used interchangeably in a type system using structural subtyping, their ``meaning'' is different and we might want to prohibit it, because intuitively speaking we do not want to use a $colour$ where a $coordinate$ is expected.
 
-On the other hand, with nominal subtyping in Java one can define an overridden method to perform the opposite logic to what the super class is expecting.
-Therefore, both approaches leave an expectation on the developer to ensure what they are doing is correct, hence the integration of both in SFJ is the key to overcoming these drawbacks, as one can choose which approach to use for a given task.
+On the other hand, while nominal subtyping can avoid the above problem, it can introduce others and in particular, a developer can define an overridden method to perform the opposite logic to what the super class is expecting, as illustrated by the following classes in Java:
+\begin{equation*}
+    \begin{array}{ll}
+        \syndecl{A}{\mathit{Object}} {
+         &
+            \qquad
+            \syndecl{B}{A} {
+                \\
+               \qquad \ldots \qquad
+         &
+                \qquad\qquad \ldots
+                \\
+                \quad \textbf{int}\ n;\qquad
+         &
+                \qquad\quad \textbf{int}\ length()\{\ \synret{-n};\ \}
+                \\
+                \quad \textbf{int}\ length()\{\ \synret{n};\ \}\qquad
+         &
+                \qquad}
+                \\   }
+    \end{array}
+\end{equation*}
+Both approaches have their pros and cons, and they leave an expectation on the developer to use the logic behind subtyping correctly when writing code. Hence, the integration of both approaches in SFJ makes it possible to  overcome these drawbacks, as one can choose on which subtyping to focus for a given task.
+
+% Dardha \emph{et al.}\cite{Dardha2017} suggest a possible extension to the language by including a $nominal$ keyword that can be used in the class signature to indicate that this class should only be considered by the nominal component of the type system.
+% This would allow us finer control over the type system and eliminate the previously mentioned problems.
+% However, being optional, we argue this would create more bugs than problems it would solve, due to easily forgetting the keyword.
+% For example with destructors in C++ classes,leaving out the virtual keyword of the parent class destructor in certain situations can lead to memory leaks.
+% Instead a \emph{structural} keyword could be introduced as an extension to the language which specifies that this class is allowed to have structural subtypes.
+% A class with this keyword is not added to the subtyping relation of other structurally similar classes which are not marked \emph{structural} as this would weaken the invariant conditions of that class.
+
 
 \subsection{Method Types}
 
