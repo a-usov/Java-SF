@@ -582,13 +582,8 @@ Like methods with boolean types, we similarly implement methods with method type
 %
 This concludes the code generation phase for all expressions in SFJ given in \autoref{sec:terms}.
 
-\section{Conclusion}
+\section{Related Work and Conclusion}
 \label{sec:conclusion}
-
-In this paper we presented the design and implementation of SFJ---Semantic Featherweight Java, an extension of Featherweight Java featuring boolean types, semantic subtyping, and integrating both nominal and structural subtyping. Due to the expressivity of semantic subtyping, in SFJ we are able to restore standard Java constructs and features for example, lists and overloading meathods, which were not present in FJ, thus making SFJ a more complete language.
-We presented \autoref{alg:types} on validity of type definitions and
-\autoref{alg:subtyping} on semantic subtyping, which finds all nominal and structural subtypes for all types in an SFJ program. We also described typing of terms in SFJ, which follows that of Java and builds upon relevant work \cite{Dardha2013,Dardha2017}.
-
 
 Semantic subtyping goes back to more than two decades ago \cite{Aiken,Damm}.
 %
@@ -612,6 +607,11 @@ Muehlboeck and Tate \cite{Muehlboeck2018} define a syntactic framework with bool
 Ancona and Corradi \cite{AnconaC16} define semantic subtyping for an imperative object-oriented language with mutable fields. In our framework we are considering only the functional fragment of Java, which is FJ, and as a result the semantic subtyping framework is simpler. The authors also propose a prototype implementation of their subtyping algorithm.
 %
 Chaudhuri \emph{et al.} \cite{ChaudhuriVGRL17} present the design and implementation of \textsc{Flow}, which is a type checker for JavaScript. They use boolean connectives \textbf{and}, \textbf{not}, \textbf{or} for their predicates, however they do not define semantic subtyping for their language.
+
+In this paper we presented the design and implementation of SFJ---Semantic Featherweight Java, an extension of Featherweight Java featuring boolean types, semantic subtyping, and integrating both nominal and structural subtyping. Due to the expressivity of semantic subtyping, in SFJ we are able to restore standard Java constructs and features for example, lists and overloading meathods, which were not present in FJ, thus making SFJ a more complete language.
+We presented \autoref{alg:types} on validity of type definitions and
+\autoref{alg:subtyping} on semantic subtyping, which finds all nominal and structural subtypes for all types in an SFJ program. We also described typing of terms in SFJ, which follows that of Java and builds upon relevant work \cite{Dardha2013,Dardha2017}.
+As future work, we aim to finalise the code generation phase, which is sketched in \autoref{sec:code_generation}.
 
 %% References
 \bibliographystyle{splncs04}
