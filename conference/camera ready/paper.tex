@@ -31,9 +31,9 @@
 \addto\extrasenglish{%
   \renewcommand{\sectionautorefname}{\S}%
   \renewcommand{\subsectionautorefname}{\S}%
-  \renewcommand{\algorithmautorefname}{Algorithm}%
+  \renewcommand{\algorithmautorefname}{Algo.}%
   %\renewcommand{\exampleautorefname}{Ex.}%
-  \renewcommand{\equationautorefname}{Mapping}%
+  \renewcommand{\equationautorefname}{Map}%
 }
 
 % Non standard
@@ -190,21 +190,20 @@ We discuss related work and conclude the paper in \autoref{sec:conclusion}.
 \label{sec:design}
 \subsection{On Valid Type Definitions}
 \label{sec:valid}
-Since we want to use types $\tau$ in practice in SFJ, we restrict them to \emph{finite trees} whose leaves are basic types $\btypes$ \autoref{sec:terms} with no cycles.
+Since we want to use types $\tau$ to program in SFJ, we restrict them to \emph{finite trees} whose leaves are basic types $\btypes$ \autoref{sec:terms} with no cycles.
 For example, a recursive type $\alpha = [a : \alpha]$ denotes an infinite program tree \textbf{new} $C$(\textbf{new} $C$($\cdots{}$)), hence we rule it out as it is not inhabitable.
 Similarly, the types $\alpha = [b: \beta]$, $\beta = [a = \alpha]$ create a cycle and thus would not be inhabitable.
 Notice that these types can be defined and inhabited in Java by assigning \emph{null} to all fields in a class, however they are not useful in practice.
 
 SFJ is implemented using ANTLR \cite{parr2013}.
 We start by defining the grammar of the language in Extended Backus-Naur Form (EBNF), following \autoref{sec:types} and by running ANTLR, we can automatically generate a parser for SFJ and extend it in order to implement the required checks for our types and type system.
-Running the parser on an SFJ program returns an abstract syntax tree (AST) of that program.
 
+Running the parser on an SFJ program returns an abstract syntax tree (AST) of that program.
 When visiting the AST, we check if the program is well-formed, following the intuition at the end of \autoref{sec:background}.
-We mark any classes containing fields typed with only basic types as \emph{resolved} otherwise, as \emph{unresolved}.
-Using this information, \autoref{alg:types} checks if the type definitions in a program are valid, namely, if they are finite trees whose leaves are basic types with no cycles.
+We mark any classes containing only fields typed with basic types as \emph{resolved}, otherwise we mark them as \emph{unresolved}.
+Using this information, \autoref{alg:types} checks if the type definitions in a program are valid, namely if they are finite trees whose leaves are basic types with no cycles.
 %
-At each iteration of the algorithm we can resolve at least one type, until all the types in the SFJ program are resolved, and return $True$.
-However, if there is at least one type unresolved, meaning there is a cycle in the type definition, we return $False$.
+The algorithm returns $True$ only if all the types in the program are resolved, otherwise it returns $False$, meaning there is at least one type definition which is invalid and contains a cycle.
 
 \begin{algorithm}[t]
     \SetAlgoLined
@@ -212,7 +211,7 @@ However, if there is at least one type unresolved, meaning there is a cycle in t
     \label{alg:types}
 
     \DontPrintSemicolon
-    \Input{$classes$, the set of classes marked $resolved$ if their fields contain only basic types, $unresolved$ otherwise.}
+    \Input{$classes$, the set of classes in an SFJ program marked $resolved$, if their fields contain only basic types, $unresolved$ otherwise.}
     \Output{$True$ if all classes are valid type definitions, $False$ otherwise.}
     \BlankLine
     \Begin{
@@ -282,8 +281,8 @@ Finally, upon returning from $checkSuperSet$, we also add $class$ to its own rel
     \label{alg:subtyping}
 
     \DontPrintSemicolon
-    \Input{$classes$, the set of classes in an SFJ program for which we have not yet defined the subtyping relation.\;
-    $relation$, the mapping of types to the set of subtypes, initially being Mapping \ref{eq:initialSubtype}. \;
+    \Input{$classes$, the set of classes in an SFJ program.\\
+    $relation$, the mapping of types to the set of subtypes, initially Map \ref{eq:initialSubtype}. \;
     }
     \Begin{
         \Fn{generateRelation(classes: List<Class>)}{
@@ -349,7 +348,7 @@ Finally, upon returning from $checkSuperSet$, we also add $class$ to its own rel
 \end{algorithm}
 
 It is worth noticing that the subtyping algorithm finds all nominal and structural subtypes of a given type. This is due to the fact that all pairs of types are inspected.
-Recall from \autoref{sec:intro} that nominal subtyping is name-based and given by the class hierarchy defined by the programmer, whether structural subtyping is structure-based and given by the set-inclusion of fields and methods. In particular, it is contra-variant with respect to this set-inclusion.
+Recall from \autoref{sec:intro} that nominal subtyping is name-based and given by the class hierarchy defined by the programmer, whereas structural subtyping is structure-based and given by the set-inclusion of fields and methods. In particular, structural subtyping is contra-variant with respect to this set-inclusion.
 \autoref{alg:subtyping} finds all structural subtypes of a given class because it checks that its fields and methods are a superset of existing types in $relation$. For example, all classes are structural subtypes of type $empty = []$.
 On the other hand, it also finds all nominal subtypes because a class inherits all fields and methods of its superclass and as such its fields and methods are a superset of its superclass.
 This means that checking for structural subtyping is enough because nominal subtyping will be captured due to inheritance of fields and methods.
@@ -357,7 +356,7 @@ This means that checking for structural subtyping is enough because nominal subt
 Finally, a note on complexity.
 The complexity of \autoref{alg:types} is $\mathcal{O}(n)$, and the complexity of \autoref{alg:subtyping} is $\mathcal{O}(n^{2})$, with $n$ being the size of the input.
 The reason for a quadratic complexity of \autoref{alg:subtyping} is due to the symmetric check of structural subtyping between a $class$ and an $existingClass$ in $relation$.
-Notice that if we were to only work with nominal subtyping, then we only require traversing the class hierarchy once,  which gives an $\mathcal{O}(n)$ complexity.
+Notice that if we were to only work with nominal subtyping, then we would only require traversing the class hierarchy once,  which gives an $\mathcal{O}(n)$ complexity.
 
 \subsection{Type System for SFJ}
 \label{sec:typing}
@@ -460,7 +459,8 @@ On the other hand, while nominal subtyping can avoid the above problem, it can i
                 \\   }
     \end{array}
 \end{equation*}
-Both approaches have their pros and cons, and they leave an expectation on the developer to use the logic behind subtyping correctly when writing code. Hence, the integration of both approaches in SFJ makes it possible to  overcome these drawbacks, as one can choose on which subtyping to focus for a given task.
+Both approaches have their pros and cons, and they leave an expectation on the developer to use the logic behind subtyping correctly when writing code.
+The integration of both subtyping approaches in SFJ gives the developer the freedom to choose the most suitable subtyping relation to use for a given task.
 
 % Dardha \emph{et al.}\cite{Dardha2017} suggest a possible extension to the language by including a $nominal$ keyword that can be used in the class signature to indicate that this class should only be considered by the nominal component of the type system.
 % This would allow us finer control over the type system and eliminate the previously mentioned problems.
@@ -518,14 +518,14 @@ $$
 We define the type of the (outside) $diagonal$ method as accepting any type and its subtypes implementing the (inside) \emph{diagonal} method with type signature \textbf{void} to \textbf{double}.
 
 In order to type check an argument passed to the (outside) $diagonal$ method, at compile time we build a collection of types $\{type_{1},\ type_{2},\ldots\}$ which are class types where the (inside) $diagonal$ method is defined.
-As such, we iterate over the list of \emph{classes} in an SFJ program (as we did in \autoref{alg:subtyping})) to check for the required method.
+As such, we iterate over the list of \emph{classes} in an SFJ program (as we did in \autoref{alg:subtyping}) to check for the required method.
 The resulting collection of types is the union of all classes where $diagonal$ is defined together with their subtypes $([\![type_{1}]\!] \cup [\![type_{2}]\!] \cup \ldots)$, where each $[\![type_{i}]\!]$ denotes a mapping of $type_i$ to the set of its subtypes, similar to \autoref{eq:sugtypePolygons}.
 
 However, calculating this collection of types for each method of every class would be computationally inefficient and most importantly unnecessary as only few methods would in turn be used as method types.
 Therefore we only compute them on demand during type-checking when we come across such a type.
 
 We can therefore use method types to statically include or exclude a portion of our class hierarchy.
-However, unlike the use of interfaces, as in one of the proposed Java approaches in \autoref{polygons}, the values that can be accepted by a method type do not have to be related to each other in any way in the class hierarchy.
+However, unlike with interfaces as in \autoref{polygons}, the values that can be accepted by a method type do not have to be related to each other in any way in the class hierarchy.
 This indeed is useful if we are dealing with legacy code as we can still accept all classes where \emph{diagonal} is defined, without having to go back and add interface implementations.
 
 %In the implementation of SFJ, we are liberal in the use of fields and method which might not be implemented for all types in the subtyping relation rather than restricting only it to those which we know are shared by all types.
@@ -534,12 +534,12 @@ This indeed is useful if we are dealing with legacy code as we can still accept 
 \subsection{Code Generation}
 \label{sec:code_generation}
 %%
-SFJ only includes the typechecking component of the language. We provide a ``proof'' of the code generation algorithm, which is work in progress at this stage.
+SFJ only includes the typechecking component of the language. In this section, we provide a sketch of the code generation algorithm, which is work in progress.
 
-Given the similarity of SFJ to Java, our approach is to translate an SFJ program into Java bytecode and then run it on the Java Virtual Machine (JVM) \cite{lindholm2013}. This is a standard approach used also by other object-oriented languages, for example, Kotlin\footnote{https://kotlinlang.org/}. 
+Given the similarity of SFJ to Java, our approach is to translate an SFJ program into Java bytecode and then run it on the Java Virtual Machine (JVM) \cite{lindholm2013}. This is a standard approach also used by other object-oriented languages, for example, Kotlin\footnote{https://kotlinlang.org/}. 
 
 The main challenge in translating SFJ into bytecode is translating types using boolean connectives.
-
+%
 For example, a field $f_1$ of type \textbf{int or bool}, will be translated as two Java fields, one of type \textbf{int} and one of type \textbf{bool}, and only one of the two types will be inhabited by a value. 
 %
 In order to achieve this, we first analyse our program and reduce the boolean types by keeping only the alternatives which actually get used in the program.
@@ -558,8 +558,8 @@ Depending on which alternative the argument inhabits at run time, a different me
 %
 %For structural subtyping, we create an new nominal subtype with the same implementation for each structural subtype a type has, so that it is accepted as a proper subtype in the JVM.
 Like methods with boolean types, we similarly implement methods with method types, as we discussed in \autoref{sec:methods}, by defining an overloaded alternative for each type that implements the specified method.
-
-This concludes the code generation phase for all expressions in SFJ.
+%
+This concludes the code generation phase for all expressions in SFJ given in \autoref{sec:terms}.
 
 \section{Conclusion}
 \label{sec:conclusion}
@@ -584,7 +584,7 @@ Bonsangue \emph{et al.}~\cite{BRABR14} study a coalgebraic approach to coinducti
 %
 Pearce \cite{Pearce19} defines semantic subtyping for rewriting rules in the Whiley Rewrite Language and for a flow-typing calculus  \cite{Pearce13}.
 
-On the implementation side, in addition to $\mathbb{C}$Duce, to the best of our knowledge there are few work who have developed tools.
+Regarding implementations of semantic subtyping, to the best of our knowledge, there are only a few works in the literature.
 %
 Muehlboeck and Tate \cite{Muehlboeck2018} define a syntactic framework with boolean connectives which has been implemented in the Ceylon programming language \cite{Ceylon2016}.
 %
